@@ -1,10 +1,10 @@
 {
-  "name": "Baseball Growth",
+  "name": "Baseball Growth Ver.3",
   "short_name": "Baseball Growth",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#0b2d5c",
+  "theme_color": "#0b356d",
   "icons": [
     {
       "src": "icon-192.png",

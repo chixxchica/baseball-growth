@@ -3,45 +3,57 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0b2d5c">
+<meta name="theme-color" content="#0b356d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.json">
-<title>Baseball Growth</title>
+<title>Baseball Growth Ver.3</title>
 <style>
-:root{--navy:#0b2d5c;--blue:#1458a5;--bg:#f4f7fa;--card:#fff;--text:#17202a;--muted:#6b7280;--line:#dfe5ec;--green:#238a4b;--orange:#cf6a20}
+:root{--navy:#0c386f;--navy2:#092b57;--blue:#1967d2;--bg:#f5f7fa;--card:#fff;--text:#17212c;--muted:#6c7684;--line:#dfe5ec;--green:#e4f7e9;--greenb:#57a96f;--yellow:#fff4cf;--yellowb:#d6a92f;--red:#fee9e6;--redb:#e1786b;--purple:#f0e9ff;--purpleb:#9b78d0}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;color:var(--text)}
-button,input,select,textarea{font:inherit}.app{max-width:760px;margin:auto;min-height:100vh;background:#fff;padding-bottom:88px}
-header{position:sticky;top:0;z-index:20;background:linear-gradient(135deg,#08264f,#17477f);color:#fff;padding:14px 16px}
-.top{display:flex;justify-content:space-between;align-items:center;gap:12px}.brand{font-size:21px;font-weight:900}.sub{font-size:12px;opacity:.85}
-.playerSelect{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:8px 11px;max-width:45%}
-main{padding:14px}.page{display:none}.page.active{display:block}.title{font-weight:900;font-size:21px;margin:6px 0 12px}
-.card{border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.04)}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}.k{font-size:11px;color:var(--muted)}.v{font-size:24px;font-weight:900;margin-top:4px}
-.blue{color:var(--blue)}.green{color:var(--green)}.orange{color:var(--orange)}.btn{border:0;border-radius:12px;padding:13px 14px;font-weight:800}.primary{width:100%;background:var(--navy);color:#fff}.outline{background:#fff;border:1px solid var(--line)}.danger{background:#fff2f2;color:#a92727;border:1px solid #efc3c3}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}label{font-size:12px;font-weight:800;color:#46505b}input,select,textarea{width:100%;margin-top:5px;padding:11px;border:1px solid var(--line);border-radius:10px;background:#fff}textarea{min-height:75px}
-.result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}.choice{padding:11px 5px;border:1px solid var(--line);border-radius:10px;background:#fff;font-weight:800;font-size:13px}.choice.active{background:#e9f2ff;border-color:#83afe7;color:#0a4f97}
-.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 10px;font-size:12px;font-weight:800}.chip.active{background:var(--navy);border-color:var(--navy);color:#fff}
-.atbat{border-top:1px dashed var(--line);padding-top:12px;margin-top:12px}.atbat:first-child{border-top:0;margin-top:0;padding-top:0}.athead{display:flex;justify-content:space-between;align-items:center}.tiny{font-size:12px;color:var(--muted)}
-.stepper{display:flex;align-items:center;gap:10px;margin-top:7px}.stepper button{width:42px;height:42px;border-radius:10px;border:1px solid var(--line);background:#fff;font-size:22px}.stepper span{min-width:24px;text-align:center;font-weight:900}
-.posgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:8px}.posbtn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 4px;font-weight:800;font-size:12px}.posbtn.active{background:#edf4ff;border-color:#8cb4e8;color:#0b4e94}
-.row{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding:11px 0}.row:last-child{border-bottom:0}.row b{display:block}.meta{font-size:12px;color:var(--muted);margin-top:3px}
+button,input,select,textarea{font:inherit}.app{max-width:760px;margin:auto;min-height:100vh;background:#fff;padding-bottom:86px}
+header{position:sticky;top:0;z-index:20;background:linear-gradient(135deg,var(--navy2),#155699);color:#fff;padding:14px 16px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px}.brand{font-size:21px;font-weight:900}.sub{font-size:12px;opacity:.87;margin-top:2px}.playerSelect{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:9px 12px;max-width:46%}
+main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size:22px;font-weight:900;margin:6px 0 12px}.section{font-weight:900;margin:3px 0 10px}.tiny{font-size:12px;color:var(--muted)}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,.035)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{border:1px solid var(--line);border-radius:13px;padding:10px;text-align:center}.k{font-size:11px;color:var(--muted)}.v{font-size:23px;font-weight:900;margin-top:4px}
+.blue{color:var(--blue)}.greenTxt{color:#258746}.orange{color:#c86419}.btn{border:0;border-radius:12px;padding:13px 14px;font-weight:850}.primary{width:100%;background:var(--navy);color:#fff}.outline{background:#fff;border:1px solid var(--line);color:var(--text)}.danger{background:#fff3f2;color:#a22d27;border:1px solid #edc3be}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid var(--line);padding:11px 0}.row:last-child{border-bottom:0}.row b{display:block}.meta{font-size:12px;color:var(--muted);margin-top:3px}.empty{text-align:center;color:var(--muted);padding:20px 10px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}label{font-size:12px;font-weight:800;color:#46505b}input,select,textarea{width:100%;margin-top:5px;padding:11px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--text)}textarea{min-height:74px}
+.bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:760px;width:100%;display:grid;grid-template-columns:repeat(5,1fr);background:#fff;border-top:1px solid var(--line);padding-bottom:max(6px,env(safe-area-inset-bottom));z-index:30}.nav{border:0;background:#fff;padding:9px 2px 7px;font-size:11px;color:#707986}.nav b{display:block;font-size:18px}.nav.active{color:var(--navy);font-weight:900}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:60;align-items:flex-end}.modal.open{display:flex}.sheet{width:min(760px,100%);margin:auto;max-height:95vh;overflow:auto;background:#fff;border-radius:20px 20px 0 0;padding:12px 14px calc(20px + env(safe-area-inset-bottom))}.sheethead{position:sticky;top:-12px;z-index:5;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:10px 0}.close{width:36px;height:36px;border:0;border-radius:50%;background:#eef2f6;font-size:22px}
+.segment{display:grid;grid-template-columns:1fr 1fr;gap:8px}.seg{border:1px solid var(--line);background:#fff;border-radius:12px;padding:12px 7px;font-weight:850}.seg.active{border-color:#6ea5e6;background:#eef5ff;color:#0c579f}
+.result-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.choice{border:1px solid var(--line);border-radius:11px;background:#fff;padding:10px 4px;font-weight:850;font-size:12px}.hit{background:var(--green);border-color:#b8e6c3}.reach{background:var(--yellow);border-color:#ead58b}.out{background:var(--red);border-color:#efc3bb}.bunt{background:var(--purple);border-color:#d1c1ef}.choice.active{outline:3px solid rgba(25,103,210,.23);border-color:#4c8dd9}
+.fieldWrap{position:relative;height:250px;margin:8px auto 12px;max-width:440px;background:linear-gradient(180deg,#79b965 0 59%,#caa468 59%);clip-path:polygon(50% 100%,0 34%,7% 8%,93% 8%,100% 34%);border-radius:8px}.fieldWrap:after{content:"";position:absolute;left:34%;top:50%;width:32%;height:32%;border:2px solid rgba(255,255,255,.85);transform:rotate(45deg);transform-origin:center;background:rgba(205,174,119,.4)}
+.zone{position:absolute;z-index:2;border:0;background:rgba(255,255,255,.78);border-radius:999px;padding:8px 10px;font-weight:850;font-size:12px}.zone.active{background:#d8ebff;color:#0d4d91;box-shadow:0 0 0 3px rgba(25,103,210,.25)}.zL{left:8%;top:30%}.zLC{left:23%;top:13%}.zC{left:44%;top:7%}.zRC{right:23%;top:13%}.zR{right:8%;top:30%}
+.chips{display:flex;flex-wrap:wrap;gap:7px}.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 11px;font-size:12px;font-weight:850}.chip.active{background:var(--navy);border-color:var(--navy);color:#fff}
+.diamondBox{display:flex;justify-content:center;margin:8px 0 12px}.diamond{position:relative;width:210px;height:210px}.baseLine{position:absolute;left:50%;top:50%;width:115px;height:115px;border:3px solid #c7ced7;transform:translate(-50%,-50%) rotate(45deg)}.base{position:absolute;width:48px;height:48px;border:1px solid var(--line);background:#fff;border-radius:11px;font-size:10px;font-weight:850;z-index:2}.base.active{background:#ffdd66;border-color:#d5aa1f}.home{left:81px;bottom:0}.first{right:0;top:81px}.second{left:81px;top:0}.third{left:0;top:81px}
+.stepper{display:flex;align-items:center;gap:10px;margin-top:6px}.stepper button{width:42px;height:42px;border-radius:10px;border:1px solid var(--line);background:#fff;font-size:22px}.stepper span{font-weight:900;min-width:25px;text-align:center}
+.paCard{border:1px solid var(--line);border-radius:13px;padding:10px;margin-bottom:8px}.paTop{display:flex;justify-content:space-between;align-items:center}.tag{display:inline-block;border-radius:7px;padding:5px 8px;font-size:12px;font-weight:850}.tag.hit{background:var(--green)}.tag.reach{background:var(--yellow)}.tag.out{background:var(--red)}.tag.bunt{background:var(--purple)}
 .analysis-row{display:grid;grid-template-columns:100px 1fr 52px;gap:8px;align-items:center;margin:9px 0;font-size:13px}.bar{height:10px;background:#edf1f5;border-radius:999px;overflow:hidden}.bar div{height:100%;background:var(--blue)}
-.bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:760px;width:100%;display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid var(--line);background:#fff;padding-bottom:max(6px,env(safe-area-inset-bottom));z-index:30}.nav{border:0;background:#fff;padding:9px 3px 7px;font-size:11px;color:#6d7681}.nav b{display:block;font-size:18px}.nav.active{color:var(--navy);font-weight:900}
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:50;align-items:flex-end}.modal.open{display:flex}.sheet{width:min(760px,100%);margin:auto;max-height:94vh;overflow:auto;background:#fff;border-radius:20px 20px 0 0;padding:15px 14px calc(18px + env(safe-area-inset-bottom))}.sheethead{display:flex;justify-content:space-between;align-items:center;position:sticky;top:-15px;background:#fff;padding:10px 0;z-index:5}.close{width:36px;height:36px;border:0;border-radius:999px;background:#eef2f6;font-size:22px}
-.empty{text-align:center;color:var(--muted);padding:22px}.grow{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.growcard{border:1px solid var(--line);border-radius:12px;padding:11px}.section{font-weight:900;margin:4px 0 9px}
-.playerCard{display:flex;justify-content:space-between;gap:10px;align-items:center}.playerName{font-size:18px;font-weight:900}
-@media(max-width:480px){.grid2{grid-template-columns:1fr}.v{font-size:21px}}
+.grow{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.growcard{border:1px solid var(--line);border-radius:12px;padding:11px}
+.modeNote{border-left:4px solid #77a9df;background:#f4f8fd;padding:10px;border-radius:8px;font-size:12px;color:#55616e}
+.summaryGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.summaryGrid label{font-size:11px}
+.toolbar{display:grid;grid-template-columns:1fr 1fr;gap:8px}.fileInput{display:none}
+@media(max-width:480px){.grid2{grid-template-columns:1fr}.result-grid{grid-template-columns:repeat(3,1fr)}.v{font-size:21px}.fieldWrap{height:220px}}
 </style>
 </head>
 <body>
 <div class="app">
-<header><div class="top"><div><div class="brand">⚾ Baseball Growth</div><div class="sub">兄弟それぞれの野球成長記録・Ver.2.2</div></div><select id="playerSelect" class="playerSelect"></select></div></header>
+<header>
+<div class="top">
+<div><div class="brand">⚾ Baseball Growth</div><div class="sub">野球成長記録・Ver.3 TEST</div></div>
+<select id="playerSelect" class="playerSelect"></select>
+</div>
+</header>
+
 <main>
 <section id="home" class="page active">
 <div id="playerSummary" class="card"></div>
 <div class="title">今シーズン</div>
 <div class="stats">
 <div class="stat"><div class="k">打率</div><div id="hAVG" class="v blue">.---</div></div>
-<div class="stat"><div class="k">出塁率</div><div id="hOBP" class="v green">.---</div></div>
+<div class="stat"><div class="k">出塁率</div><div id="hOBP" class="v greenTxt">.---</div></div>
 <div class="stat"><div class="k">OPS</div><div id="hOPS" class="v orange">.---</div></div>
 <div class="stat"><div class="k">安打</div><div id="hH" class="v">0</div></div>
 <div class="stat"><div class="k">打点</div><div id="hRBI" class="v">0</div></div>
@@ -51,98 +63,328 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-weig
 <div class="card"><div class="section">最近5試合</div><div id="recent"></div></div>
 </section>
 
-<section id="games" class="page"><div class="title">試合一覧</div><div class="card"><button id="newGame2" class="btn primary">＋ 新しい試合</button></div><div id="gameList" class="card"></div></section>
+<section id="games" class="page">
+<div class="title">試合</div>
+<div class="card"><button id="newGame2" class="btn primary">＋ 試合を記録する</button></div>
+<div id="gameList" class="card"></div>
+</section>
+
 <section id="stats" class="page"><div class="title">成績</div><div class="card"><div id="statsGrid" class="stats"></div></div></section>
-<section id="analysis" class="page"><div class="title">分析</div><div class="card"><div class="section">打順別成績</div><div id="orderAnalysis"></div></div><div class="card"><div class="section">打球方向</div><div id="dirAnalysis"></div></div><div class="card"><div class="section">打球タイプ</div><div id="contactAnalysis"></div></div><div class="card"><div class="section">選球・得点圏</div><div id="discAnalysis"></div></div></section>
-<section id="growth" class="page"><div class="title">成長</div><div class="card"><div class="section">学年別</div><div id="gradeGrowth" class="grow"></div></div><div class="card"><div class="section">試合メモ</div><div id="memoList"></div></div><div class="card"><div class="section">選手管理</div><div id="playerList"></div><button id="addPlayerBtn" class="btn outline" style="width:100%;margin-top:8px">＋ 選手を追加</button></div></section>
+
+<section id="analysis" class="page">
+<div class="title">分析</div>
+<div class="card"><div class="section">打順別成績</div><div id="orderAnalysis"></div></div>
+<div class="card"><div class="section">打球方向</div><div id="dirAnalysis"></div></div>
+<div class="card"><div class="section">打球タイプ</div><div id="contactAnalysis"></div></div>
+<div class="card"><div class="section">選球・得点圏</div><div id="discAnalysis"></div></div>
+</section>
+
+<section id="growth" class="page">
+<div class="title">成長</div>
+<div class="card"><div class="section">学年別</div><div id="gradeGrowth" class="grow"></div></div>
+<div class="card"><div class="section">選手管理</div><div id="playerList"></div><button id="addPlayerBtn" class="btn outline" style="width:100%;margin-top:8px">＋ 選手を追加</button></div>
+<div class="card">
+<div class="section">バックアップ</div>
+<div class="modeNote">記録はこの端末内に保存されます。ときどきバックアップを書き出しておくと安心です。</div>
+<div class="toolbar" style="margin-top:10px">
+<button id="exportBtn" class="btn outline">データを書き出す</button>
+<button id="importBtn" class="btn outline">データを読み込む</button>
+</div>
+<input id="importFile" class="fileInput" type="file" accept="application/json">
+</div>
+</section>
 </main>
-<nav class="bottom"><button class="nav active" data-tab="home"><b>⌂</b>ホーム</button><button class="nav" data-tab="games"><b>＋</b>試合</button><button class="nav" data-tab="stats"><b>▥</b>成績</button><button class="nav" data-tab="analysis"><b>◫</b>分析</button><button class="nav" data-tab="growth"><b>↗</b>成長</button></nav>
+
+<nav class="bottom">
+<button class="nav active" data-tab="home"><b>⌂</b>ホーム</button>
+<button class="nav" data-tab="games"><b>＋</b>試合</button>
+<button class="nav" data-tab="stats"><b>▥</b>成績</button>
+<button class="nav" data-tab="analysis"><b>◫</b>分析</button>
+<button class="nav" data-tab="growth"><b>↗</b>成長</button>
+</nav>
 </div>
 
-<div id="modal" class="modal"><div class="sheet">
-<div class="sheethead"><div><div style="font-size:18px;font-weight:900">試合入力</div><div class="tiny">選択中の選手に保存されます</div></div><button id="close" class="close">×</button></div>
-<div class="card"><div class="grid2"><label>日付<input id="date" type="date"></label><label>学年<select id="grade"></select></label><label>対戦相手<input id="opp" placeholder="例：○○ジュニア"></label><label>試合種別<select id="type"><option>練習試合</option><option>公式戦</option><option>大会</option></select></label><label>打順<select id="batOrder"><option value="">選択</option><option value="1">1番</option><option value="2">2番</option><option value="3">3番</option><option value="4">4番</option><option value="5">5番</option><option value="6">6番</option><option value="7">7番</option><option value="8">8番</option><option value="9">9番</option></select></label></div></div>
-<div class="card"><div class="section">打席</div><div id="atbats"></div><button id="addAB" class="btn outline" style="width:100%">＋ 打席を追加</button></div>
-<div class="card"><div class="section">試合結果・走塁</div><div class="grid2">
+<!-- 試合設定 -->
+<div id="gameModal" class="modal"><div class="sheet">
+<div class="sheethead"><div><b style="font-size:18px">試合を記録する</b><div class="tiny">過去の日付も選べます</div></div><button class="close" onclick="closeModal(gameModal)">×</button></div>
+<div class="card"><div class="grid2">
+<label>日付<input id="gDate" type="date"></label>
+<label>対戦相手<input id="gOpp" placeholder="例：○○クラブ"></label>
+<label>試合時点の学年<select id="gGrade"></select></label>
+<label>大会・試合種別<select id="gType"><option>練習試合</option><option>公式戦</option><option>大会</option><option>紅白戦</option><option>その他</option></select></label>
+<label>打順<select id="gOrder"><option value="">未設定</option><option value="1">1番</option><option value="2">2番</option><option value="3">3番</option><option value="4">4番</option><option value="5">5番</option><option value="6">6番</option><option value="7">7番</option><option value="8">8番</option><option value="9">9番</option></select></label>
+<label>守備位置<input id="gPos" placeholder="例：中堅、遊撃"></label>
+</div></div>
+<div class="card"><div class="section">入力方法</div><div class="segment">
+<button id="modeDetail" class="seg active">打席ごとに入力<div class="tiny">打球・走塁も記録</div></button>
+<button id="modeSummary" class="seg">成績だけ入力<div class="tiny">過去データ向け</div></button>
+</div></div>
+<button id="startGame" class="btn primary">入力を始める</button>
+</div></div>
+
+<!-- 詳細試合画面 -->
+<div id="detailModal" class="modal"><div class="sheet">
+<div class="sheethead"><div><b id="detailTitle" style="font-size:18px">試合入力</b><div id="detailMeta" class="tiny"></div></div><button class="close" onclick="closeModal(detailModal)">×</button></div>
+<div class="card">
+<div class="section">打席一覧</div>
+<div id="paList"></div>
+<button id="addPA" class="btn outline" style="width:100%">＋ 打席を追加</button>
+</div>
+<div class="card">
+<div class="grid2">
 <div><label>得点</label><div class="stepper"><button data-step="runs" data-d="-1">−</button><span id="runsVal">0</span><button data-step="runs" data-d="1">＋</button></div></div>
 <div><label>盗塁</label><div class="stepper"><button data-step="sb" data-d="-1">−</button><span id="sbVal">0</span><button data-step="sb" data-d="1">＋</button></div></div>
 <div><label>盗塁死</label><div class="stepper"><button data-step="cs" data-d="-1">−</button><span id="csVal">0</span><button data-step="cs" data-d="1">＋</button></div></div>
-<div><label>失策</label><div class="stepper"><button data-step="err" data-d="-1">−</button><span id="errVal">0</span><button data-step="err" data-d="1">＋</button></div></div>
-</div></div>
-<div class="card"><div class="section">守備位置（複数選択可）</div><div id="positions" class="posgrid"></div><div style="margin-top:12px"><label>一言メモ<textarea id="memo" placeholder="例：追い込まれてからセンター前！"></textarea></label></div></div>
-<button id="save" class="btn primary">この試合を保存</button><button id="del" class="btn danger" style="width:100%;margin-top:8px;display:none">この試合を削除</button>
+<div><label>失策</label><div class="stepper"><button data-step="errors" data-d="-1">−</button><span id="errorsVal">0</span><button data-step="errors" data-d="1">＋</button></div></div>
+</div>
+<label style="display:block;margin-top:12px">試合メモ<textarea id="gMemo" placeholder="今日の良かったところ、課題など"></textarea></label>
+</div>
+<button id="finishDetail" class="btn primary">試合を終了して確認</button>
 </div></div>
 
+<!-- 打席入力 -->
+<div id="paModal" class="modal"><div class="sheet">
+<div class="sheethead"><div><b id="paTitle" style="font-size:18px">第1打席</b><div class="tiny">分からない項目は空欄でOK</div></div><button class="close" onclick="closeModal(paModal)">×</button></div>
+<div class="card">
+<div class="section">どうなりましたか？</div>
+<div id="resultGrid" class="result-grid"></div>
+</div>
+<div id="battedBallArea" class="card">
+<div class="section">打球はどこに飛びましたか？</div>
+<div class="tiny">グラウンド上のエリアをタップ</div>
+<div class="fieldWrap" id="fieldWrap">
+<button class="zone zL" data-dir="左">レフト</button>
+<button class="zone zLC" data-dir="左中間">左中間</button>
+<button class="zone zC" data-dir="中">センター</button>
+<button class="zone zRC" data-dir="右中間">右中間</button>
+<button class="zone zR" data-dir="右">ライト</button>
+</div>
+<div class="section">打球タイプ</div>
+<div id="contactChips" class="chips"></div>
+</div>
+<div class="card">
+<div class="section">この打席の状況</div>
+<div class="grid2">
+<label>打点<input id="paRBI" type="number" min="0" max="4" value="0"></label>
+<label>アウト数<select id="paOuts"><option value="">未入力</option><option value="0">0アウト</option><option value="1">1アウト</option><option value="2">2アウト</option></select></label>
+</div>
+<label style="display:flex;gap:8px;align-items:center;margin-top:12px"><input id="paRisp" type="checkbox" style="width:auto;margin:0">得点圏にランナーがいた</label>
+</div>
+<div class="card">
+<div class="section">走塁・進塁</div>
+<div class="tiny">この打席で本人が到達した一番先の塁をタップ（任意）</div>
+<div class="diamondBox"><div class="diamond">
+<div class="baseLine"></div>
+<button class="base home" data-base="HOME">HOME</button>
+<button class="base first" data-base="1B">一塁</button>
+<button class="base second" data-base="2B">二塁</button>
+<button class="base third" data-base="3B">三塁</button>
+</div></div>
+<label style="display:flex;gap:8px;align-items:center"><input id="paSB" type="checkbox" style="width:auto;margin:0">この打席後の走塁で盗塁あり</label>
+</div>
+<button id="savePA" class="btn primary">この打席を保存</button>
+</div></div>
+
+<!-- 過去成績まとめ入力 -->
+<div id="summaryModal" class="modal"><div class="sheet">
+<div class="sheethead"><div><b style="font-size:18px">過去成績を入力</b><div class="tiny">分かる数字だけ入力できます</div></div><button class="close" onclick="closeModal(summaryModal)">×</button></div>
+<div class="card"><div class="summaryGrid">
+<label>打席<input id="sPA" type="number" min="0" value="0"></label><label>打数<input id="sAB" type="number" min="0" value="0"></label><label>安打<input id="sH" type="number" min="0" value="0"></label>
+<label>二塁打<input id="s2B" type="number" min="0" value="0"></label><label>三塁打<input id="s3B" type="number" min="0" value="0"></label><label>本塁打<input id="sHR" type="number" min="0" value="0"></label>
+<label>四球<input id="sBB" type="number" min="0" value="0"></label><label>死球<input id="sHBP" type="number" min="0" value="0"></label><label>三振<input id="sSO" type="number" min="0" value="0"></label>
+<label>打点<input id="sRBI" type="number" min="0" value="0"></label><label>得点<input id="sR" type="number" min="0" value="0"></label><label>盗塁<input id="sSB" type="number" min="0" value="0"></label>
+</div>
+<label style="display:block;margin-top:12px">メモ<textarea id="sMemo" placeholder="分かる範囲でOK"></textarea></label>
+</div>
+<button id="saveSummary" class="btn primary">この成績を保存</button>
+</div></div>
+
+<!-- 試合確認 -->
+<div id="confirmModal" class="modal"><div class="sheet">
+<div class="sheethead"><div><b style="font-size:18px">試合結果を確認</b><div id="confirmMeta" class="tiny"></div></div><button class="close" onclick="closeModal(confirmModal)">×</button></div>
+<div class="card"><div id="confirmStats" class="stats"></div></div>
+<div class="card"><div class="section">打席</div><div id="confirmPA"></div></div>
+<button id="confirmSave" class="btn primary">この内容で保存する</button>
+<button id="backEdit" class="btn outline" style="width:100%;margin-top:8px">編集に戻る</button>
+</div></div>
+
+<!-- 選手 -->
 <div id="playerModal" class="modal"><div class="sheet">
-<div class="sheethead"><div><div id="playerModalTitle" style="font-size:18px;font-weight:900">選手追加・編集</div><div class="tiny">兄弟それぞれ別に記録できます</div></div><button id="closePlayer" class="close">×</button></div>
-<div class="card"><label>表示名<input id="playerName" placeholder="例：長男 / 次男 / 名前"></label><div style="margin-top:10px"><label>現在の学年<select id="playerGrade"></select></label></div></div>
+<div class="sheethead"><div><b id="playerModalTitle" style="font-size:18px">選手</b></div><button class="close" onclick="closeModal(playerModal)">×</button></div>
+<div class="card"><label>表示名<input id="playerName" placeholder="名前・ニックネーム"></label><label style="display:block;margin-top:10px">現在の学年<select id="playerGrade"></select></label></div>
 <button id="savePlayer" class="btn primary">保存する</button>
 </div></div>
 
 <script>
 const KEY='baseballGrowthMultiV2';
-const GRADES=['小学1年生','小学2年生','小学3年生','小学4年生','小学5年生','小学6年生','中学1年生','中学2年生','中学3年生'];
-let db=JSON.parse(localStorage.getItem(KEY)||'null');
-if(!db){
-  const old=JSON.parse(localStorage.getItem('baseballGrowthV1')||'null');
-  const p1={id:'p1',name:'長男',grade:'小学4年生'};
-  db={players:[p1,{id:'p2',name:'次男',grade:'小学2年生'}],currentPlayerId:'p1',games:[]};
-  if(old?.games?.length) db.games=old.games.map(g=>({...g,playerId:'p1'}));
+const GRADES=['小学1年生','小学2年生','小学3年生','小学4年生','小学5年生','小学6年生','中学1年生','中学2年生','中学3年生','高校1年生','高校2年生','高校3年生'];
+const RESULTS=[
+ {c:'1B',n:'ヒット',cls:'hit'},{c:'2B',n:'二塁打',cls:'hit'},{c:'3B',n:'三塁打',cls:'hit'},{c:'HR',n:'ホームラン',cls:'hit'},
+ {c:'BB',n:'四球',cls:'reach'},{c:'HBP',n:'死球',cls:'reach'},{c:'E',n:'エラー',cls:'reach'},{c:'FC',n:'野選',cls:'reach'},
+ {c:'GO',n:'ゴロアウト',cls:'out'},{c:'FO',n:'フライアウト',cls:'out'},{c:'LO',n:'ライナーアウト',cls:'out'},{c:'SO',n:'三振',cls:'out'},
+ {c:'KWP',n:'振り逃げ',cls:'reach'},{c:'SH',n:'犠打',cls:'bunt'},{c:'SF',n:'犠飛',cls:'bunt'}
+];
+const CONTACTS=['ゴロ','ライナー','フライ'];
+let db;
+try{db=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){}
+if(!db || !Array.isArray(db.players)){
+ db={players:[{id:'p1',name:'長男',grade:'小学4年生'},{id:'p2',name:'次男',grade:'小学2年生'}],currentPlayerId:'p1',games:[]};
 }
-let editing=null,editingPlayer=null,counters={runs:0,sb:0,cs:0,err:0};
-const RESULTS=[['1B','単打'],['2B','二塁打'],['3B','三塁打'],['HR','本塁打'],['BB','四球'],['HBP','死球'],['SO','三振'],['GO','ゴロアウト'],['FO','フライアウト'],['LO','ライナーアウト'],['E','エラー出塁'],['FC','野選'],['KWP','振り逃げ'],['SH','犠打'],['SF','犠飛']];
-const DIRS=['左','左中間','中','右中間','右'],CONTACTS=['ゴロ','ライナー','フライ'],POS=['投手','捕手','一塁','二塁','三塁','遊撃','左翼','中堅','右翼'];
+db.games=db.games||[];
+let draft=null, paDraft=null, paEditIndex=null, inputMode='detail', counters={runs:0,sb:0,cs:0,errors:0}, editingPlayer=null;
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const closeModal=m=>m.classList.remove('open');
+const openModal=m=>m.classList.add('open');
+const currentPlayer=()=>db.players.find(p=>p.id===db.currentPlayerId)||db.players[0];
+const gamesForPlayer=()=>db.games.filter(g=>g.playerId===currentPlayer().id);
+const rate=x=>Number.isFinite(x)?x.toFixed(3).replace(/^0/,''):'.---';
+
+function normalizeOldGame(g){
+ if(g.mode)return g;
+ return {...g,mode:'detail',positions:g.positions||[],atbats:g.atbats||[]};
+}
+db.games=db.games.map(normalizeOldGame);
+
+function detailStats(g){
+ const A=g.atbats||[], n=c=>A.filter(a=>a.result===c).length;
+ const H=n('1B')+n('2B')+n('3B')+n('HR'), BB=n('BB'),HBP=n('HBP'),SO=n('SO'),SH=n('SH'),SF=n('SF');
+ const outs=n('GO')+n('FO')+n('LO')+n('E')+n('FC')+n('KWP');
+ const AB=H+SO+outs, PA=AB+BB+HBP+SH+SF, TB=n('1B')+2*n('2B')+3*n('3B')+4*n('HR');
+ const RBI=A.reduce((s,a)=>s+(+a.rbi||0),0);
+ return {PA,AB,H,B2:n('2B'),B3:n('3B'),HR:n('HR'),BB,HBP,SO,SH,SF,TB,RBI,R:+g.runs||0,SB:+g.sb||0,CS:+g.cs||0,ERR:+g.errors||0};
+}
+function summaryStats(g){
+ const s=g.summary||{};
+ let PA=+s.PA||0,AB=+s.AB||0,H=+s.H||0,B2=+s.B2||0,B3=+s.B3||0,HR=+s.HR||0,BB=+s.BB||0,HBP=+s.HBP||0,SO=+s.SO||0;
+ if(!PA)PA=AB+BB+HBP;
+ return {PA,AB,H,B2,B3,HR,BB,HBP,SO,SH:0,SF:0,TB:Math.max(0,H-B2-B3-HR)+2*B2+3*B3+4*HR,RBI:+s.RBI||0,R:+s.R||0,SB:+s.SB||0,CS:0,ERR:0};
+}
+function statOfGame(g){return g.mode==='summary'?summaryStats(g):detailStats(g)}
+function calc(gs){
+ let t={PA:0,AB:0,H:0,B2:0,B3:0,HR:0,BB:0,HBP:0,SO:0,SH:0,SF:0,TB:0,RBI:0,R:0,SB:0,CS:0,ERR:0};
+ gs.forEach(g=>{const x=statOfGame(g);Object.keys(t).forEach(k=>t[k]+=+x[k]||0)});
+ t.AVG=t.AB?t.H/t.AB:NaN;t.OBP=(t.AB+t.BB+t.HBP+t.SF)?(t.H+t.BB+t.HBP)/(t.AB+t.BB+t.HBP+t.SF):NaN;t.SLG=t.AB?t.TB/t.AB:NaN;t.OPS=Number.isFinite(t.OBP)&&Number.isFinite(t.SLG)?t.OBP+t.SLG:NaN;
+ const detailed=gs.filter(g=>g.mode!=='summary').flatMap(g=>g.atbats||[]);
+ const risp=detailed.filter(a=>a.risp),rispAB=risp.filter(a=>['1B','2B','3B','HR','SO','GO','FO','LO','E','FC','KWP'].includes(a.result)).length,rispH=risp.filter(a=>['1B','2B','3B','HR'].includes(a.result)).length;
+ t.RISPAVG=rispAB?rispH/rispAB:NaN;t.Kpct=t.PA?t.SO/t.PA:NaN;t.BBpct=t.PA?t.BB/t.PA:NaN;return t;
+}
 function persist(){localStorage.setItem(KEY,JSON.stringify(db));render()}
-function currentPlayer(){return db.players.find(p=>p.id===db.currentPlayerId)||db.players[0]}
-function gamesForPlayer(){return db.games.filter(g=>g.playerId===currentPlayer().id)}
-function esc(s=''){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-function rate(x){return Number.isFinite(x)?x.toFixed(3).replace(/^0/,''):'.---'}
-function absOf(gs){return gs.flatMap(g=>(g.atbats||[]).map(a=>({...a,game:g})))}
-function calc(gs){const A=absOf(gs),n=c=>A.filter(a=>a.result===c).length,H=n('1B')+n('2B')+n('3B')+n('HR'),BB=n('BB'),HBP=n('HBP'),SO=n('SO'),SH=n('SH'),SF=n('SF'),outs=n('GO')+n('FO')+n('LO')+n('E')+n('FC')+n('KWP'),AB=H+SO+outs,PA=AB+BB+HBP+SH+SF,TB=n('1B')+2*n('2B')+3*n('3B')+4*n('HR'),AVG=AB?H/AB:NaN,OBP=(AB+BB+HBP+SF)?(H+BB+HBP)/(AB+BB+HBP+SF):NaN,SLG=AB?TB/AB:NaN,OPS=(Number.isFinite(OBP)&&Number.isFinite(SLG))?OBP+SLG:NaN,RBI=A.reduce((s,a)=>s+(+a.rbi||0),0),R=gs.reduce((s,g)=>s+(+g.runs||0),0),SB=gs.reduce((s,g)=>s+(+g.sb||0),0),CS=gs.reduce((s,g)=>s+(+g.cs||0),0),ERR=gs.reduce((s,g)=>s+(+g.errors||0),0),risp=A.filter(a=>a.risp),rispAB=risp.filter(a=>['1B','2B','3B','HR','SO','GO','FO','LO','E','FC','KWP'].includes(a.result)).length,rispH=risp.filter(a=>['1B','2B','3B','HR'].includes(a.result)).length;return{PA,AB,H,B2:n('2B'),B3:n('3B'),HR:n('HR'),BB,HBP,SO,SH,SF,AVG,OBP,SLG,OPS,RBI,R,SB,CS,ERR,Kpct:PA?SO/PA:NaN,BBpct:PA?BB/PA:NaN,RISPAVG:rispAB?rispH/rispAB:NaN}}
+
 function render(){
- const p=currentPlayer(),games=gamesForPlayer().sort((a,b)=>b.date.localeCompare(a.date)),s=calc(games);
- playerSelect.innerHTML=db.players.map(x=>`<option value="${x.id}" ${x.id===p.id?'selected':''}>${esc(x.name)}</option>`).join('');
- playerSummary.innerHTML=`<div class="playerCard"><div><div class="playerName">${esc(p.name)}</div><div class="meta">${p.grade} / ${games.length}試合記録</div></div><div class="tiny">上の選手名で切替</div></div>`;
- hAVG.textContent=rate(s.AVG);hOBP.textContent=rate(s.OBP);hOPS.textContent=rate(s.OPS);hH.textContent=s.H;hRBI.textContent=s.RBI;hSB.textContent=s.SB;
- recent.innerHTML=games.length?games.slice(0,5).map(g=>{const x=calc([g]);return `<div class="row"><div><b>vs ${esc(g.opponent||'未入力')}</b><div class="meta">${g.date}・${g.batOrder?g.batOrder+'番・':''}${g.grade}</div></div><div><b>${rate(x.AVG)}</b><div class="meta">${x.H}/${x.AB}</div></div></div>`}).join(''):`<div class="empty">まだ試合データがありません。</div>`;
- gameList.innerHTML=games.length?games.map(g=>{const x=calc([g]);return `<div class="row" onclick="editGame('${g.id}')"><div><b>${g.date} vs ${esc(g.opponent||'未入力')}</b><div class="meta">${g.type}・${g.batOrder?g.batOrder+'番・':''}${x.H}安打 ${x.RBI}打点</div></div><div class="tiny">編集</div></div>`}).join(''):`<div class="empty">試合を記録しよう⚾️</div>`;
- const items=[['打率',rate(s.AVG)],['出塁率',rate(s.OBP)],['長打率',rate(s.SLG)],['OPS',rate(s.OPS)],['打席',s.PA],['打数',s.AB],['安打',s.H],['二塁打',s.B2],['三塁打',s.B3],['本塁打',s.HR],['打点',s.RBI],['得点',s.R],['四球',s.BB],['死球',s.HBP],['三振',s.SO],['盗塁',s.SB],['盗塁死',s.CS],['得点圏打率',rate(s.RISPAVG)]];
- statsGrid.innerHTML=items.map(([k,v])=>`<div class="stat"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');
- renderBars(dirAnalysis,DIRS.map(d=>[d,absOf(games).filter(a=>a.direction===d).length]));
- renderBars(contactAnalysis,CONTACTS.map(d=>[d,absOf(games).filter(a=>a.contact===d).length]));
- discAnalysis.innerHTML=`<div class="analysis-row"><div>三振率</div><div class="bar"><div style="width:${Number.isFinite(s.Kpct)?s.Kpct*100:0}%"></div></div><div>${Number.isFinite(s.Kpct)?Math.round(s.Kpct*100):0}%</div></div><div class="analysis-row"><div>四球率</div><div class="bar"><div style="width:${Number.isFinite(s.BBpct)?s.BBpct*100:0}%"></div></div><div>${Number.isFinite(s.BBpct)?Math.round(s.BBpct*100):0}%</div></div><div class="analysis-row"><div>得点圏</div><div></div><div>${rate(s.RISPAVG)}</div></div>`;
+ const p=currentPlayer(),games=[...gamesForPlayer()].sort((a,b)=>String(b.date).localeCompare(String(a.date))),s=calc(games);
+ $('playerSelect').innerHTML=db.players.map(x=>`<option value="${x.id}" ${x.id===p.id?'selected':''}>${esc(x.name)}</option>`).join('');
+ $('playerSummary').innerHTML=`<div class="row"><div><b style="font-size:18px">${esc(p.name)}</b><div class="meta">${p.grade} / ${games.length}試合記録</div></div><div class="tiny">選手を切替できます</div></div>`;
+ $('hAVG').textContent=rate(s.AVG);$('hOBP').textContent=rate(s.OBP);$('hOPS').textContent=rate(s.OPS);$('hH').textContent=s.H;$('hRBI').textContent=s.RBI;$('hSB').textContent=s.SB;
+ $('recent').innerHTML=games.length?games.slice(0,5).map(gameRow).join(''):`<div class="empty">まだ試合データがありません。</div>`;
+ $('gameList').innerHTML=games.length?games.map(gameRow).join(''):`<div class="empty">試合を記録してみよう⚾️</div>`;
+ const stats=[['打率',rate(s.AVG)],['出塁率',rate(s.OBP)],['長打率',rate(s.SLG)],['OPS',rate(s.OPS)],['打席',s.PA],['打数',s.AB],['安打',s.H],['二塁打',s.B2],['三塁打',s.B3],['本塁打',s.HR],['打点',s.RBI],['得点',s.R],['四球',s.BB],['死球',s.HBP],['三振',s.SO],['盗塁',s.SB],['盗塁死',s.CS],['得点圏打率',rate(s.RISPAVG)]];
+ $('statsGrid').innerHTML=stats.map(([k,v])=>`<div class="stat"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');
  const orders=[1,2,3,4,5,6,7,8,9].map(o=>[o,games.filter(g=>+g.batOrder===o)]).filter(x=>x[1].length);
- orderAnalysis.innerHTML=orders.length?orders.map(([o,gs])=>{const x=calc(gs);return `<div class="row"><div><b>${o}番</b><div class="meta">${gs.length}試合・${x.PA}打席</div></div><div style="text-align:right"><b>打率 ${rate(x.AVG)}</b><div class="meta">出塁率 ${rate(x.OBP)} / OPS ${rate(x.OPS)}</div></div></div>`}).join(''):`<div class="empty">試合入力で打順を選ぶと表示されます。</div>`;
- const grades=[...new Set(games.map(g=>g.grade))];
- gradeGrowth.innerHTML=grades.length?grades.map(gr=>{const gs=games.filter(g=>g.grade===gr),x=calc(gs);return `<div class="growcard"><b>${gr}</b><div class="meta">${gs.length}試合</div><div style="margin-top:7px">打率 <b>${rate(x.AVG)}</b></div><div>OPS <b>${rate(x.OPS)}</b></div><div>三振率 <b>${Number.isFinite(x.Kpct)?Math.round(x.Kpct*100):0}%</b></div></div>`}).join(''):`<div class="empty">学年ごとの成長がここに残ります。</div>`;
- memoList.innerHTML=games.filter(g=>g.memo).length?games.filter(g=>g.memo).map(g=>`<div class="row"><div><b>${g.date} vs ${esc(g.opponent||'')}</b><div class="meta">${esc(g.memo)}</div></div></div>`).join(''):`<div class="empty">メモはまだありません。</div>`;
- playerList.innerHTML=db.players.map(x=>`<div class="row"><div><b>${esc(x.name)}</b><div class="meta">${x.grade} / ${db.games.filter(g=>g.playerId===x.id).length}試合</div></div><button class="btn outline" style="padding:7px 10px" onclick="editPlayer('${x.id}')">編集</button></div>`).join('');
+ $('orderAnalysis').innerHTML=orders.length?orders.map(([o,gs])=>{const x=calc(gs);return `<div class="row"><div><b>${o}番</b><div class="meta">${gs.length}試合・${x.PA}打席</div></div><div style="text-align:right"><b>打率 ${rate(x.AVG)}</b><div class="meta">出塁率 ${rate(x.OBP)} / OPS ${rate(x.OPS)}</div></div></div>`}).join(''):`<div class="empty">打順を記録すると表示されます。</div>`;
+ const abs=games.filter(g=>g.mode!=='summary').flatMap(g=>g.atbats||[]);
+ renderBars($('dirAnalysis'),['左','左中間','中','右中間','右'].map(d=>[d,abs.filter(a=>a.direction===d).length]));
+ renderBars($('contactAnalysis'),CONTACTS.map(d=>[d,abs.filter(a=>a.contact===d).length]));
+ $('discAnalysis').innerHTML=`<div class="analysis-row"><div>三振率</div><div class="bar"><div style="width:${Number.isFinite(s.Kpct)?s.Kpct*100:0}%"></div></div><div>${Number.isFinite(s.Kpct)?Math.round(s.Kpct*100):0}%</div></div><div class="analysis-row"><div>四球率</div><div class="bar"><div style="width:${Number.isFinite(s.BBpct)?s.BBpct*100:0}%"></div></div><div>${Number.isFinite(s.BBpct)?Math.round(s.BBpct*100):0}%</div></div><div class="row"><b>得点圏打率</b><b>${rate(s.RISPAVG)}</b></div>`;
+ const grades=[...new Set(games.map(g=>g.grade).filter(Boolean))];
+ $('gradeGrowth').innerHTML=grades.length?grades.map(gr=>{const x=calc(games.filter(g=>g.grade===gr));return `<div class="growcard"><b>${gr}</b><div class="meta">${games.filter(g=>g.grade===gr).length}試合</div><div style="margin-top:7px">打率 <b>${rate(x.AVG)}</b></div><div>出塁率 <b>${rate(x.OBP)}</b></div><div>OPS <b>${rate(x.OPS)}</b></div></div>`}).join(''):`<div class="empty">試合を記録すると学年別に残ります。</div>`;
+ $('playerList').innerHTML=db.players.map(x=>`<div class="row"><div><b>${esc(x.name)}</b><div class="meta">${x.grade} / ${db.games.filter(g=>g.playerId===x.id).length}試合</div></div><button class="btn outline" style="padding:7px 11px" onclick="editPlayer('${x.id}')">編集</button></div>`).join('');
 }
-function renderBars(el,pairs){const t=pairs.reduce((s,x)=>s+x[1],0);el.innerHTML=t?pairs.map(([k,v])=>{const p=Math.round(v/t*100);return `<div class="analysis-row"><div>${k}</div><div class="bar"><div style="width:${p}%"></div></div><div>${p}%</div></div>`}).join(''):`<div class="empty">打球データを入力すると表示されます。</div>`}
-playerSelect.onchange=()=>{db.currentPlayerId=playerSelect.value;persist()}
+function gameRow(g){const x=statOfGame(g);return `<div class="row"><div><b>${esc(g.date||'')} vs ${esc(g.opponent||'未入力')}</b><div class="meta">${g.grade||''}${g.batOrder?'・'+g.batOrder+'番':''}・${g.mode==='summary'?'成績入力':'詳細入力'}</div></div><div style="text-align:right"><b>${x.H}安打 ${x.RBI}打点</b><div class="meta">${x.AB}打数</div></div></div>`}
+function renderBars(el,pairs){const t=pairs.reduce((s,x)=>s+x[1],0);el.innerHTML=t?pairs.map(([k,v])=>{const p=Math.round(v/t*100);return `<div class="analysis-row"><div>${k}</div><div class="bar"><div style="width:${p}%"></div></div><div>${p}%</div></div>`}).join(''):`<div class="empty">詳しく入力した試合がたまると表示されます。</div>`}
+
+$('playerSelect').onchange=()=>{db.currentPlayerId=$('playerSelect').value;persist()};
 document.querySelectorAll('.nav').forEach(b=>b.onclick=()=>{document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===b.dataset.tab));document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('active',n===b));window.scrollTo(0,0)});
-function setCounter(k,v){counters[k]=Math.max(0,v);document.getElementById(k==='err'?'errVal':k+'Val').textContent=counters[k]}
-document.querySelectorAll('[data-step]').forEach(b=>b.onclick=()=>setCounter(b.dataset.step,counters[b.dataset.step]+(+b.dataset.d)));
-grade.innerHTML=playerGrade.innerHTML=GRADES.map(g=>`<option>${g}</option>`).join('');
-positions.innerHTML=POS.map(p=>`<button type="button" class="posbtn" data-pos="${p}">${p}</button>`).join('');positions.querySelectorAll('.posbtn').forEach(b=>b.onclick=()=>b.classList.toggle('active'));
-function addAtbat(d={}){const w=document.createElement('div');w.className='atbat';w.dataset.id=d.id||crypto.randomUUID();w.innerHTML=`<div class="athead"><b>第${atbats.children.length+1}打席</b><button class="btn outline rm" style="padding:6px 9px">削除</button></div><div class="tiny" style="margin-top:8px">① 結果</div><div class="result-grid">${RESULTS.map(([c,n])=>`<button type="button" class="choice ${d.result===c?'active':''}" data-r="${c}">${n}</button>`).join('')}</div><div class="tiny" style="margin-top:12px">② 打球方向（分かる時だけ）</div><div class="chips dirs">${DIRS.map(x=>`<button type="button" class="chip ${d.direction===x?'active':''}" data-v="${x}">${x}</button>`).join('')}</div><div class="tiny" style="margin-top:12px">③ 打球タイプ（分かる時だけ）</div><div class="chips contacts">${CONTACTS.map(x=>`<button type="button" class="chip ${d.contact===x?'active':''}" data-v="${x}">${x}</button>`).join('')}</div><div class="grid2" style="margin-top:12px"><label>打点<input class="rbi" type="number" min="0" max="4" value="${d.rbi||0}"></label><label style="display:flex;align-items:center;gap:8px;margin-top:22px"><input class="risp" type="checkbox" style="width:auto;margin:0" ${d.risp?'checked':''}>得点圏だった</label></div>`;w.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{w.querySelectorAll('[data-r]').forEach(x=>x.classList.remove('active'));b.classList.add('active')});['.dirs .chip','.contacts .chip'].forEach(sel=>w.querySelectorAll(sel).forEach(b=>b.onclick=()=>{const was=b.classList.contains('active');w.querySelectorAll(sel).forEach(x=>x.classList.remove('active'));if(!was)b.classList.add('active')}));w.querySelector('.rm').onclick=()=>{w.remove();[...atbats.children].forEach((x,i)=>x.querySelector('.athead b').textContent=`第${i+1}打席`)};atbats.appendChild(w)}
-function openModal(g=null){editing=g?.id||null;const p=currentPlayer();date.value=g?.date||new Date().toISOString().slice(0,10);grade.value=g?.grade||p.grade;opp.value=g?.opponent||'';type.value=g?.type||'練習試合';batOrder.value=g?.batOrder||'';atbats.innerHTML='';(g?.atbats?.length?g.atbats:[{}]).forEach(addAtbat);setCounter('runs',g?.runs||0);setCounter('sb',g?.sb||0);setCounter('cs',g?.cs||0);setCounter('err',g?.errors||0);positions.querySelectorAll('.posbtn').forEach(b=>b.classList.toggle('active',(g?.positions||[]).includes(b.dataset.pos)));memo.value=g?.memo||'';del.style.display=editing?'block':'none';modal.classList.add('open')}
-newGame.onclick=()=>openModal();newGame2.onclick=()=>openModal();close.onclick=()=>modal.classList.remove('open');addAB.onclick=()=>addAtbat();window.editGame=id=>openModal(db.games.find(g=>g.id===id));
-save.onclick=()=>{const A=[...atbats.children].map(w=>({id:w.dataset.id,result:w.querySelector('[data-r].active')?.dataset.r||'',direction:w.querySelector('.dirs .active')?.dataset.v||'',contact:w.querySelector('.contacts .active')?.dataset.v||'',rbi:+w.querySelector('.rbi').value||0,risp:w.querySelector('.risp').checked})).filter(a=>a.result);if(!A.length){alert('少なくとも1打席の結果を選んでください');return}const g={id:editing||crypto.randomUUID(),playerId:currentPlayer().id,date:date.value,grade:grade.value,opponent:opp.value.trim(),type:type.value,batOrder:batOrder.value,atbats:A,runs:counters.runs,sb:counters.sb,cs:counters.cs,errors:counters.err,positions:[...positions.querySelectorAll('.active')].map(b=>b.dataset.pos),memo:memo.value.trim()};if(editing){const i=db.games.findIndex(x=>x.id===editing);db.games[i]=g}else db.games.push(g);persist();modal.classList.remove('open')}
-del.onclick=()=>{if(editing&&confirm('この試合を削除しますか？')){db.games=db.games.filter(g=>g.id!==editing);persist();modal.classList.remove('open')}};
-addPlayerBtn.onclick=()=>{editingPlayer=null;playerModalTitle.textContent='選手を追加';playerName.value='';playerGrade.value='小学2年生';playerModal.classList.add('open')};
-closePlayer.onclick=()=>playerModal.classList.remove('open');
-window.editPlayer=id=>{const x=db.players.find(p=>p.id===id);if(!x)return;editingPlayer=id;playerModalTitle.textContent='選手を編集';playerName.value=x.name;playerGrade.value=x.grade;playerModal.classList.add('open')};
-savePlayer.onclick=()=>{const name=playerName.value.trim();if(!name){alert('表示名を入力してください');return}
- if(editingPlayer){const x=db.players.find(p=>p.id===editingPlayer);x.name=name;x.grade=playerGrade.value;}
- else{const id=crypto.randomUUID();db.players.push({id,name,grade:playerGrade.value});db.currentPlayerId=id;}
- persist();playerModal.classList.remove('open')};
-render();
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(reg=>{
-    reg.update().catch(()=>{});
-  }).catch(()=>{});
+GRADES.forEach(g=>{$('gGrade').add(new Option(g,g));$('playerGrade').add(new Option(g,g))});
+
+function newGame(){
+ const p=currentPlayer();$('gDate').value=new Date().toISOString().slice(0,10);$('gOpp').value='';$('gGrade').value=p.grade;$('gType').value='練習試合';$('gOrder').value='';$('gPos').value='';setMode('detail');openModal($('gameModal'));
 }
+$('newGame').onclick=newGame;$('newGame2').onclick=newGame;
+function setMode(m){inputMode=m;$('modeDetail').classList.toggle('active',m==='detail');$('modeSummary').classList.toggle('active',m==='summary')}
+$('modeDetail').onclick=()=>setMode('detail');$('modeSummary').onclick=()=>setMode('summary');
+
+$('startGame').onclick=()=>{
+ draft={id:crypto.randomUUID(),playerId:currentPlayer().id,date:$('gDate').value,opponent:$('gOpp').value.trim(),grade:$('gGrade').value,type:$('gType').value,batOrder:$('gOrder').value,positions:$('gPos').value.split(/[、,]/).map(s=>s.trim()).filter(Boolean),mode:inputMode};
+ closeModal($('gameModal'));
+ if(inputMode==='summary'){
+   ['sPA','sAB','sH','s2B','s3B','sHR','sBB','sHBP','sSO','sRBI','sR','sSB'].forEach(id=>$(id).value=0);$('sMemo').value='';openModal($('summaryModal'));
+ }else{
+   draft.atbats=[];draft.runs=0;draft.sb=0;draft.cs=0;draft.errors=0;draft.memo='';counters={runs:0,sb:0,cs:0,errors:0};syncCounters();renderDraft();openModal($('detailModal'));
+ }
+};
+
+function syncCounters(){['runs','sb','cs','errors'].forEach(k=>$(k+'Val').textContent=counters[k])}
+document.querySelectorAll('[data-step]').forEach(b=>b.onclick=()=>{const k=b.dataset.step;counters[k]=Math.max(0,counters[k]+(+b.dataset.d));syncCounters()});
+
+function renderDraft(){
+ $('detailTitle').textContent=`${draft?.opponent?'vs '+draft.opponent:'試合入力'}`;
+ $('detailMeta').textContent=`${draft?.date||''}・${draft?.grade||''}${draft?.batOrder?'・'+draft.batOrder+'番':''}`;
+ const A=draft?.atbats||[];
+ $('paList').innerHTML=A.length?A.map((a,i)=>`<div class="paCard" onclick="editPA(${i})"><div class="paTop"><b>第${i+1}打席</b><span class="tag ${resultClass(a.result)}">${resultName(a.result)}</span></div><div class="meta">${a.direction?dirLabel(a):''}${a.contact?'・'+a.contact:''}${a.rbi?'・'+a.rbi+'打点':''}${a.base?'・到達 '+a.base:''}</div></div>`).join(''):`<div class="empty">まだ打席がありません。</div>`;
+}
+const resultName=c=>RESULTS.find(x=>x.c===c)?.n||c||'未入力';
+const resultClass=c=>RESULTS.find(x=>x.c===c)?.cls||'';
+const dirLabel=a=>a.direction==='中'?'センター':a.direction==='左'?'レフト':a.direction==='右'?'ライト':a.direction;
+
+$('resultGrid').innerHTML=RESULTS.map(x=>`<button type="button" class="choice ${x.cls}" data-result="${x.c}">${x.n}</button>`).join('');
+$('contactChips').innerHTML=CONTACTS.map(x=>`<button type="button" class="chip" data-contact="${x}">${x}</button>`).join('');
+
+function openPA(index=null){
+ paEditIndex=index;paDraft=index===null?{result:'',direction:'',contact:'',rbi:0,outs:'',risp:false,base:'',sb:false}:{...draft.atbats[index]};
+ $('paTitle').textContent=`第${index===null?draft.atbats.length+1:index+1}打席`;
+ document.querySelectorAll('[data-result]').forEach(b=>b.classList.toggle('active',b.dataset.result===paDraft.result));
+ document.querySelectorAll('[data-dir]').forEach(b=>b.classList.toggle('active',b.dataset.dir===paDraft.direction));
+ document.querySelectorAll('[data-contact]').forEach(b=>b.classList.toggle('active',b.dataset.contact===paDraft.contact));
+ document.querySelectorAll('[data-base]').forEach(b=>b.classList.toggle('active',b.dataset.base===paDraft.base));
+ $('paRBI').value=paDraft.rbi||0;$('paOuts').value=paDraft.outs??'';$('paRisp').checked=!!paDraft.risp;$('paSB').checked=!!paDraft.sb;openModal($('paModal'));
+}
+$('addPA').onclick=()=>openPA();window.editPA=i=>openPA(i);
+document.querySelectorAll('[data-result]').forEach(b=>b.onclick=()=>{paDraft.result=b.dataset.result;document.querySelectorAll('[data-result]').forEach(x=>x.classList.toggle('active',x===b))});
+document.querySelectorAll('[data-dir]').forEach(b=>b.onclick=()=>{paDraft.direction=b.dataset.dir;document.querySelectorAll('[data-dir]').forEach(x=>x.classList.toggle('active',x===b))});
+document.querySelectorAll('[data-contact]').forEach(b=>b.onclick=()=>{paDraft.contact=b.dataset.contact;document.querySelectorAll('[data-contact]').forEach(x=>x.classList.toggle('active',x===b))});
+document.querySelectorAll('[data-base]').forEach(b=>b.onclick=()=>{paDraft.base=b.dataset.base;document.querySelectorAll('[data-base]').forEach(x=>x.classList.toggle('active',x===b))});
+$('savePA').onclick=()=>{
+ if(!paDraft.result){alert('打席結果を選んでください');return}
+ paDraft.rbi=+$('paRBI').value||0;paDraft.outs=$('paOuts').value;paDraft.risp=$('paRisp').checked;paDraft.sb=$('paSB').checked;
+ if(paEditIndex===null)draft.atbats.push(paDraft);else draft.atbats[paEditIndex]=paDraft;
+ closeModal($('paModal'));renderDraft();
+};
+
+$('finishDetail').onclick=()=>{
+ if(!draft.atbats.length){alert('少なくとも1打席入力してください');return}
+ draft.runs=counters.runs;draft.sb=counters.sb + draft.atbats.filter(a=>a.sb).length;draft.cs=counters.cs;draft.errors=counters.errors;draft.memo=$('gMemo').value.trim();
+ showConfirm();
+};
+function showConfirm(){
+ const x=detailStats(draft);$('confirmMeta').textContent=`${draft.date} vs ${draft.opponent||'未入力'}・${draft.grade}${draft.batOrder?'・'+draft.batOrder+'番':''}`;
+ const items=[['打席',x.PA],['打数',x.AB],['安打',x.H],['打点',x.RBI],['打率',x.AB?rate(x.H/x.AB):'.---'],['盗塁',x.SB]];
+ $('confirmStats').innerHTML=items.map(([k,v])=>`<div class="stat"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');
+ $('confirmPA').innerHTML=draft.atbats.map((a,i)=>`<div class="row"><div><b>第${i+1}打席 ${resultName(a.result)}</b><div class="meta">${a.direction?dirLabel(a):''}${a.contact?'・'+a.contact:''}${a.rbi?'・'+a.rbi+'打点':''}</div></div></div>`).join('');
+ closeModal($('detailModal'));openModal($('confirmModal'));
+}
+$('backEdit').onclick=()=>{closeModal($('confirmModal'));openModal($('detailModal'))};
+$('confirmSave').onclick=()=>{db.games.push(draft);draft=null;persist();closeModal($('confirmModal'));alert('試合を保存しました⚾️')};
+
+$('saveSummary').onclick=()=>{
+ draft.summary={PA:+$('sPA').value||0,AB:+$('sAB').value||0,H:+$('sH').value||0,B2:+$('s2B').value||0,B3:+$('s3B').value||0,HR:+$('sHR').value||0,BB:+$('sBB').value||0,HBP:+$('sHBP').value||0,SO:+$('sSO').value||0,RBI:+$('sRBI').value||0,R:+$('sR').value||0,SB:+$('sSB').value||0};
+ draft.memo=$('sMemo').value.trim();db.games.push(draft);draft=null;persist();closeModal($('summaryModal'));alert('過去成績を保存しました⚾️')
+};
+
+$('addPlayerBtn').onclick=()=>{editingPlayer=null;$('playerModalTitle').textContent='選手を追加';$('playerName').value='';$('playerGrade').value='小学2年生';openModal($('playerModal'))};
+window.editPlayer=id=>{const p=db.players.find(x=>x.id===id);editingPlayer=id;$('playerModalTitle').textContent='選手を編集';$('playerName').value=p.name;$('playerGrade').value=p.grade;openModal($('playerModal'))};
+$('savePlayer').onclick=()=>{const name=$('playerName').value.trim();if(!name){alert('表示名を入力してください');return}if(editingPlayer){const p=db.players.find(x=>x.id===editingPlayer);p.name=name;p.grade=$('playerGrade').value}else{const id=crypto.randomUUID();db.players.push({id,name,grade:$('playerGrade').value});db.currentPlayerId=id}persist();closeModal($('playerModal'))};
+
+$('exportBtn').onclick=()=>{
+ const blob=new Blob([JSON.stringify({app:'Baseball Growth',version:3,exportedAt:new Date().toISOString(),data:db},null,2)],{type:'application/json'});
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`baseball-growth-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+};
+$('importBtn').onclick=()=>$('importFile').click();
+$('importFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const obj=JSON.parse(r.result);const data=obj.data||obj;if(!Array.isArray(data.players)||!Array.isArray(data.games))throw new Error();if(confirm('現在のデータをバックアップの内容で置き換えますか？')){db=data;persist();alert('復元しました')}}catch(err){alert('このファイルは読み込めませんでした')}};r.readAsText(f);e.target.value=''};
+
+render();
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>r.update().catch(()=>{})).catch(()=>{})}
 </script>
 </body>
 </html>
