@@ -74,9 +74,9 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-weig
 </div></div>
 
 <div id="playerModal" class="modal"><div class="sheet">
-<div class="sheethead"><div><div id="playerModalTitle" style="font-size:18px;font-weight:900">選手追加・編集</div><div class="tiny">兄弟それぞれ別に記録できます</div></div><button id="closePlayer" class="close">×</button></div>
+<div class="sheethead"><div><div style="font-size:18px;font-weight:900">選手追加</div><div class="tiny">兄弟それぞれ別に記録できます</div></div><button id="closePlayer" class="close">×</button></div>
 <div class="card"><label>表示名<input id="playerName" placeholder="例：長男 / 次男 / 名前"></label><div style="margin-top:10px"><label>現在の学年<select id="playerGrade"></select></label></div></div>
-<button id="savePlayer" class="btn primary">保存する</button>
+<button id="savePlayer" class="btn primary">選手を追加</button>
 </div></div>
 
 <script>
@@ -89,7 +89,7 @@ if(!db){
   db={players:[p1,{id:'p2',name:'次男',grade:'小学2年生'}],currentPlayerId:'p1',games:[]};
   if(old?.games?.length) db.games=old.games.map(g=>({...g,playerId:'p1'}));
 }
-let editing=null,editingPlayer=null,counters={runs:0,sb:0,cs:0,err:0};
+let editing=null,counters={runs:0,sb:0,cs:0,err:0};
 const RESULTS=[['1B','単打'],['2B','二塁打'],['3B','三塁打'],['HR','本塁打'],['BB','四球'],['HBP','死球'],['SO','三振'],['GO','ゴロアウト'],['FO','フライアウト'],['LO','ライナーアウト'],['E','エラー出塁'],['FC','野選'],['KWP','振り逃げ'],['SH','犠打'],['SF','犠飛']];
 const DIRS=['左','左中間','中','右中間','右'],CONTACTS=['ゴロ','ライナー','フライ'],POS=['投手','捕手','一塁','二塁','三塁','遊撃','左翼','中堅','右翼'];
 function persist(){localStorage.setItem(KEY,JSON.stringify(db));render()}
@@ -116,7 +116,7 @@ function render(){
  const grades=[...new Set(games.map(g=>g.grade))];
  gradeGrowth.innerHTML=grades.length?grades.map(gr=>{const gs=games.filter(g=>g.grade===gr),x=calc(gs);return `<div class="growcard"><b>${gr}</b><div class="meta">${gs.length}試合</div><div style="margin-top:7px">打率 <b>${rate(x.AVG)}</b></div><div>OPS <b>${rate(x.OPS)}</b></div><div>三振率 <b>${Number.isFinite(x.Kpct)?Math.round(x.Kpct*100):0}%</b></div></div>`}).join(''):`<div class="empty">学年ごとの成長がここに残ります。</div>`;
  memoList.innerHTML=games.filter(g=>g.memo).length?games.filter(g=>g.memo).map(g=>`<div class="row"><div><b>${g.date} vs ${esc(g.opponent||'')}</b><div class="meta">${esc(g.memo)}</div></div></div>`).join(''):`<div class="empty">メモはまだありません。</div>`;
- playerList.innerHTML=db.players.map(x=>`<div class="row"><div><b>${esc(x.name)}</b><div class="meta">${x.grade} / ${db.games.filter(g=>g.playerId===x.id).length}試合</div></div><button class="btn outline" style="padding:7px 10px" onclick="editPlayer('${x.id}')">編集</button></div>`).join('');
+ playerList.innerHTML=db.players.map(x=>`<div class="row"><div><b>${esc(x.name)}</b><div class="meta">${x.grade} / ${db.games.filter(g=>g.playerId===x.id).length}試合</div></div><div class="tiny">${x.id===p.id?'選択中':''}</div></div>`).join('');
 }
 function renderBars(el,pairs){const t=pairs.reduce((s,x)=>s+x[1],0);el.innerHTML=t?pairs.map(([k,v])=>{const p=Math.round(v/t*100);return `<div class="analysis-row"><div>${k}</div><div class="bar"><div style="width:${p}%"></div></div><div>${p}%</div></div>`}).join(''):`<div class="empty">打球データを入力すると表示されます。</div>`}
 playerSelect.onchange=()=>{db.currentPlayerId=playerSelect.value;persist()}
@@ -130,13 +130,7 @@ function openModal(g=null){editing=g?.id||null;const p=currentPlayer();date.valu
 newGame.onclick=()=>openModal();newGame2.onclick=()=>openModal();close.onclick=()=>modal.classList.remove('open');addAB.onclick=()=>addAtbat();window.editGame=id=>openModal(db.games.find(g=>g.id===id));
 save.onclick=()=>{const A=[...atbats.children].map(w=>({id:w.dataset.id,result:w.querySelector('[data-r].active')?.dataset.r||'',direction:w.querySelector('.dirs .active')?.dataset.v||'',contact:w.querySelector('.contacts .active')?.dataset.v||'',rbi:+w.querySelector('.rbi').value||0,risp:w.querySelector('.risp').checked})).filter(a=>a.result);if(!A.length){alert('少なくとも1打席の結果を選んでください');return}const g={id:editing||crypto.randomUUID(),playerId:currentPlayer().id,date:date.value,grade:grade.value,opponent:opp.value.trim(),type:type.value,batOrder:batOrder.value,atbats:A,runs:counters.runs,sb:counters.sb,cs:counters.cs,errors:counters.err,positions:[...positions.querySelectorAll('.active')].map(b=>b.dataset.pos),memo:memo.value.trim()};if(editing){const i=db.games.findIndex(x=>x.id===editing);db.games[i]=g}else db.games.push(g);persist();modal.classList.remove('open')}
 del.onclick=()=>{if(editing&&confirm('この試合を削除しますか？')){db.games=db.games.filter(g=>g.id!==editing);persist();modal.classList.remove('open')}};
-addPlayerBtn.onclick=()=>{editingPlayer=null;playerModalTitle.textContent='選手を追加';playerName.value='';playerGrade.value='小学2年生';playerModal.classList.add('open')};
-closePlayer.onclick=()=>playerModal.classList.remove('open');
-window.editPlayer=id=>{const x=db.players.find(p=>p.id===id);if(!x)return;editingPlayer=id;playerModalTitle.textContent='選手を編集';playerName.value=x.name;playerGrade.value=x.grade;playerModal.classList.add('open')};
-savePlayer.onclick=()=>{const name=playerName.value.trim();if(!name){alert('表示名を入力してください');return}
- if(editingPlayer){const x=db.players.find(p=>p.id===editingPlayer);x.name=name;x.grade=playerGrade.value;}
- else{const id=crypto.randomUUID();db.players.push({id,name,grade:playerGrade.value});db.currentPlayerId=id;}
- persist();playerModal.classList.remove('open')};
+addPlayerBtn.onclick=()=>{playerName.value='';playerGrade.value='小学2年生';playerModal.classList.add('open')};closePlayer.onclick=()=>playerModal.classList.remove('open');savePlayer.onclick=()=>{const name=playerName.value.trim();if(!name){alert('表示名を入力してください');return}const id=crypto.randomUUID();db.players.push({id,name,grade:playerGrade.value});db.currentPlayerId=id;persist();playerModal.classList.remove('open')};
 render();if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
 </script>
 </body>
