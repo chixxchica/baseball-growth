@@ -34,7 +34,7 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-weig
 </head>
 <body>
 <div class="app">
-<header><div class="top"><div><div class="brand">⚾ Baseball Growth</div><div class="sub">兄弟それぞれの野球成長記録</div></div><select id="playerSelect" class="playerSelect"></select></div></header>
+<header><div class="top"><div><div class="brand">⚾ Baseball Growth</div><div class="sub">兄弟それぞれの野球成長記録・Ver.2.2</div></div><select id="playerSelect" class="playerSelect"></select></div></header>
 <main>
 <section id="home" class="page active">
 <div id="playerSummary" class="card"></div>
@@ -137,7 +137,12 @@ savePlayer.onclick=()=>{const name=playerName.value.trim();if(!name){alert('表�
  if(editingPlayer){const x=db.players.find(p=>p.id===editingPlayer);x.name=name;x.grade=playerGrade.value;}
  else{const id=crypto.randomUUID();db.players.push({id,name,grade:playerGrade.value});db.currentPlayerId=id;}
  persist();playerModal.classList.remove('open')};
-render();if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+render();
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(reg=>{
+    reg.update().catch(()=>{});
+  }).catch(()=>{});
+}
 </script>
 </body>
 </html>
