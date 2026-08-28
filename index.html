@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0b2d5c" />
+  <link rel="manifest" href="manifest.json" />
+  <title>Baseball Growth</title>
+  <style>
+    :root{
+      --navy:#0b2d5c;--blue:#1557a0;--red:#d84040;--bg:#f4f6f8;
+      --card:#fff;--text:#17202a;--muted:#6b7280;--line:#dfe4ea;
+      --green:#1f8f4e;--orange:#d96b1f;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;color:var(--text)}
+    button,input,select,textarea{font:inherit}
+    .app{max-width:760px;margin:0 auto;min-height:100vh;background:#fff;padding-bottom:84px}
+    header{position:sticky;top:0;z-index:10;background:linear-gradient(135deg,var(--navy),#0d4386);color:#fff;padding:14px 16px 12px}
+    .topline{display:flex;justify-content:space-between;align-items:center;gap:12px}
+    .brand{font-weight:800;font-size:20px}
+    .sub{opacity:.86;font-size:12px;margin-top:2px}
+    .pill{background:rgba(255,255,255,.14);padding:7px 10px;border-radius:999px;font-size:12px}
+    main{padding:14px}
+    .tabpage{display:none}
+    .tabpage.active{display:block}
+    .section-title{font-weight:800;margin:8px 0 10px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+    .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+    .stat{border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center;background:#fff}
+    .stat .k{font-size:11px;color:var(--muted)}
+    .stat .v{font-size:24px;font-weight:800;margin-top:3px}
+    .stat .v.green{color:var(--green)} .stat .v.blue{color:var(--blue)} .stat .v.orange{color:var(--orange)}
+    .btn{border:0;border-radius:12px;padding:13px 14px;font-weight:700;cursor:pointer}
+    .btn-primary{background:var(--navy);color:#fff;width:100%}
+    .btn-outline{background:#fff;border:1px solid var(--line);color:var(--text)}
+    .btn-danger{background:#fff2f2;color:#a61b1b;border:1px solid #f2caca}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    label{font-size:12px;font-weight:700;color:#445}
+    input,select,textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px;background:#fff;margin-top:5px}
+    textarea{min-height:74px;resize:vertical}
+    .result-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+    .choice{border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 5px;text-align:center;font-weight:700;font-size:13px}
+    .choice.active{background:#eaf2ff;border-color:#8ab4ef;color:#0a4f9a}
+    .choice.hit.active{background:#eaf8ee;border-color:#8bd19f;color:#176f38}
+    .choice.out.active{background:#fff1ec;border-color:#f3aa8c;color:#9b3f1c}
+    .choice.walk.active{background:#f3edff;border-color:#c9b3f3;color:#5d2d99}
+    .atbat{border-top:1px dashed var(--line);padding-top:12px;margin-top:12px}
+    .atbat:first-child{border-top:0;padding-top:0;margin-top:0}
+    .atbat-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+    .tiny{font-size:12px;color:var(--muted)}
+    .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+    .chip{padding:8px 10px;border:1px solid var(--line);border-radius:999px;background:#fff;font-size:12px;font-weight:700}
+    .chip.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+    .stepper{display:flex;align-items:center;gap:8px;margin-top:8px}
+    .stepper button{width:38px;height:38px;border:1px solid var(--line);background:#fff;border-radius:10px;font-size:20px}
+    .stepper span{min-width:28px;text-align:center;font-weight:800}
+    .checks{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px}
+    .checks label{display:flex;gap:7px;align-items:center;font-size:13px;font-weight:600}
+    .checks input{width:auto;margin:0}
+    .game-row{display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid var(--line);padding:11px 0}
+    .game-row:last-child{border-bottom:0}
+    .game-title{font-weight:800}
+    .game-meta{font-size:12px;color:var(--muted);margin-top:3px}
+    .mini-badge{font-size:11px;padding:4px 7px;border-radius:999px;background:#edf2f7}
+    .bar{height:10px;background:#edf1f5;border-radius:999px;overflow:hidden}
+    .bar>div{height:100%;background:var(--blue)}
+    .analysis-row{display:grid;grid-template-columns:100px 1fr 48px;align-items:center;gap:8px;margin:8px 0;font-size:13px}
+    .empty{padding:24px;text-align:center;color:var(--muted)}
+    .bottomnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:760px;width:100%;display:grid;grid-template-columns:repeat(5,1fr);background:#fff;border-top:1px solid var(--line);padding-bottom:max(6px,env(safe-area-inset-bottom));z-index:20}
+    .navbtn{border:0;background:#fff;padding:9px 4px 7px;font-size:11px;color:#67707b}
+    .navbtn b{display:block;font-size:18px;margin-bottom:2px}
+    .navbtn.active{color:var(--navy);font-weight:800}
+    .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;align-items:flex-end;justify-content:center}
+    .modal.open{display:flex}
+    .sheet{width:min(760px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:20px 20px 0 0;padding:16px 14px calc(18px + env(safe-area-inset-bottom))}
+    .sheet-head{display:flex;justify-content:space-between;align-items:center;position:sticky;top:-16px;background:#fff;padding:12px 0 8px;z-index:3}
+    .close{border:0;background:#eef1f5;border-radius:999px;width:34px;height:34px}
+    .summaryline{font-size:13px;color:var(--muted)}
+    .grow-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .grow-card{border:1px solid var(--line);border-radius:12px;padding:12px}
+    @media(max-width:480px){
+      .stats-grid{grid-template-columns:repeat(3,1fr)}
+      .stat .v{font-size:21px}
+      .result-grid{grid-template-columns:repeat(3,1fr)}
+      .grid2{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="topline">
+      <div>
+        <div class="brand">⚾ Baseball Growth</div>
+        <div class="sub">小4からの野球成長記録</div>
+      </div>
+      <div class="pill" id="headerGrade">小学4年生</div>
+    </div>
+  </header>
+
+  <main>
+    <section id="home" class="tabpage active">
+      <div class="section-title">今シーズン</div>
+      <div class="stats-grid">
+        <div class="stat"><div class="k">打率</div><div class="v blue" id="hAVG">.---</div></div>
+        <div class="stat"><div class="k">出塁率</div><div class="v green" id="hOBP">.---</div></div>
+        <div class="stat"><div class="k">OPS</div><div class="v orange" id="hOPS">.---</div></div>
+        <div class="stat"><div class="k">安打</div><div class="v" id="hH">0</div></div>
+        <div class="stat"><div class="k">打点</div><div class="v" id="hRBI">0</div></div>
+        <div class="stat"><div class="k">盗塁</div><div class="v" id="hSB">0</div></div>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <button class="btn btn-primary" id="newGameBtn">＋ 試合を記録する</button>
+      </div>
+
+      <div class="card">
+        <div class="section-title" style="margin-top:0">最近5試合</div>
+        <div id="recentGames"></div>
+      </div>
+
+      <div class="card">
+        <div class="section-title" style="margin-top:0">成長のヒント</div>
+        <div id="growthHint" class="summaryline">データがたまると、三振率や打球傾向の変化を表示します。</div>
+      </div>
+    </section>
+
+    <section id="games" class="tabpage">
+      <div class="section-title">試合一覧</div>
+      <div class="card">
+        <button class="btn btn-primary" id="newGameBtn2">＋ 新しい試合</button>
+      </div>
+      <div class="card" id="gameList"></div>
+    </section>
+
+    <section id="stats" class="tabpage">
+      <div class="section-title">成績</div>
+      <div class="card">
+        <div class="stats-grid" id="statsGrid"></div>
+      </div>
+    </section>
+
+    <section id="analysis" class="tabpage">
+      <div class="section-title">分析</div>
+      <div class="card">
+        <div class="section-title" style="margin-top:0">打球方向</div>
+        <div id="directionAnalysis"></div>
+      </div>
+      <div class="card">
+        <div class="section-title" style="margin-top:0">打球タイプ</div>
+        <div id="contactAnalysis"></div>
+      </div>
+      <div class="card">
+        <div class="section-title" style="margin-top:0">選球・三振</div>
+        <div id="disciplineAnalysis"></div>
+      </div>
+    </section>
+
+    <section id="growth" class="tabpage">
+      <div class="section-title">成長</div>
+      <div class="card">
+        <div class="section-title" style="margin-top:0">学年別</div>
+        <div id="gradeGrowth" class="grow-grid"></div>
+      </div>
+      <div class="card">
+        <div class="section-title" style="margin-top:0">試合メモ</div>
+        <div id="memoList"></div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottomnav">
+    <button class="navbtn active" data-tab="home"><b>⌂</b>ホーム</button>
+    <button class="navbtn" data-tab="games"><b>＋</b>試合</button>
+    <button class="navbtn" data-tab="stats"><b>▥</b>成績</button>
+    <button class="navbtn" data-tab="analysis"><b>◫</b>分析</button>
+    <button class="navbtn" data-tab="growth"><b>↗</b>成長</button>
+  </nav>
+</div>
+
+<div class="modal" id="gameModal">
+  <div class="sheet">
+    <div class="sheet-head">
+      <div>
+        <div style="font-weight:800;font-size:18px">試合入力</div>
+        <div class="tiny">スコアブックを見ながら入力できます</div>
+      </div>
+      <button class="close" id="closeModal">×</button>
+    </div>
+
+    <div class="card">
+      <div class="grid2">
+        <div><label>日付<input type="date" id="gameDate"></label></div>
+        <div><label>学年
+          <select id="gameGrade">
+            <option>小学4年生</option><option>小学5年生</option><option>小学6年生</option>
+            <option>中学1年生</option><option>中学2年生</option><option>中学3年生</option>
+          </select>
+        </label></div>
+        <div><label>対戦相手<input id="opponent" placeholder="例：○○ジュニア"></label></div>
+        <div><label>試合種別
+          <select id="gameType"><option>練習試合</option><option>公式戦</option><option>大会</option></select>
+        </label></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title" style="margin-top:0">打席</div>
+      <div id="atbats"></div>
+      <button class="btn btn-outline" id="addAtbat" style="width:100%;margin-top:8px">＋ 打席を追加</button>
+    </div>
+
+    <div class="card">
+      <div class="grid2">
+        <div><label>得点<input type="number" id="runs" min="0" value="0"></label></div>
+        <div><label>盗塁<input type="number" id="sb" min="0" value="0"></label></div>
+        <div><label>盗塁死<input type="number" id="cs" min="0" value="0"></label></div>
+        <div><label>失策<input type="number" id="errors" min="0" value="0"></label></div>
+      </div>
+      <div style="margin-top:10px"><label>守備位置<input id="position" placeholder="例：遊撃手、投手"></label></div>
+      <div style="margin-top:10px"><label>一言メモ<textarea id="memo" placeholder="例：追い込まれてからセンター前！"></textarea></label></div>
+    </div>
+
+    <button class="btn btn-primary" id="saveGame">この試合を保存</button>
+    <button class="btn btn-danger" id="deleteGame" style="width:100%;margin-top:8px;display:none">この試合を削除</button>
+  </div>
+</div>
+
+<script>
+const KEY='baseballGrowthV1';
+let db=JSON.parse(localStorage.getItem(KEY) || '{"games":[]}');
+let editingId=null;
+
+const RESULTS=[
+  ['1B','単打','hit'],['2B','二塁打','hit'],['3B','三塁打','hit'],['HR','本塁打','hit'],
+  ['BB','四球','walk'],['HBP','死球','walk'],['SO','三振','out'],
+  ['GO','ゴロアウト','out'],['FO','フライアウト','out'],['LO','ライナーアウト','out'],
+  ['E','エラー出塁','out'],['SH','犠打','out'],['SF','犠飛','out']
+];
+const DIRS=['左','左中間','中','右中間','右'];
+const CONTACTS=['ゴロ','ライナー','フライ'];
+
+function saveDB(){ localStorage.setItem(KEY,JSON.stringify(db)); renderAll(); }
+function fmtRate(n){ return Number.isFinite(n) ? n.toFixed(3).replace(/^0/,'') : '.---'; }
+function today(){ const d=new Date(); return d.toISOString().slice(0,10); }
+
+function allAtbats(games=db.games){ return games.flatMap(g=>g.atbats||[]); }
+function calc(games=db.games){
+  const abs=allAtbats(games);
+  const c=(code)=>abs.filter(a=>a.result===code).length;
+  const H=c('1B')+c('2B')+c('3B')+c('HR');
+  const BB=c('BB'),HBP=c('HBP'),SO=c('SO'),SH=c('SH'),SF=c('SF');
+  const E=c('E'), GO=c('GO'), FO=c('FO'), LO=c('LO');
+  const AB=H+SO+GO+FO+LO+E;
+  const PA=AB+BB+HBP+SH+SF;
+  const TB=c('1B')+2*c('2B')+3*c('3B')+4*c('HR');
+  const AVG=AB?H/AB:NaN;
+  const OBP=(AB+BB+HBP+SF)?(H+BB+HBP)/(AB+BB+HBP+SF):NaN;
+  const SLG=AB?TB/AB:NaN;
+  const OPS=(Number.isFinite(OBP)&&Number.isFinite(SLG))?OBP+SLG:NaN;
+  const RBI=abs.reduce((s,a)=>s+(+a.rbi||0),0);
+  const R=games.reduce((s,g)=>s+(+g.runs||0),0);
+  const SB=games.reduce((s,g)=>s+(+g.sb||0),0);
+  const CS=games.reduce((s,g)=>s+(+g.cs||0),0);
+  const ERR=games.reduce((s,g)=>s+(+g.errors||0),0);
+  const RISP=abs.filter(a=>a.risp);
+  const RISP_H=RISP.filter(a=>['1B','2B','3B','HR'].includes(a.result)).length;
+  const RISP_AB=RISP.filter(a=>['1B','2B','3B','HR','SO','GO','FO','LO','E'].includes(a.result)).length;
+  return {PA,AB,H,_2B:c('2B'),_3B:c('3B'),HR:c('HR'),BB,HBP,SO,SH,SF,AVG,OBP,SLG,OPS,RBI,R,SB,CS,ERR,
+    Kpct:PA?SO/PA:NaN, BBpct:PA?BB/PA:NaN, RISPAVG:RISP_AB?RISP_H/RISP_AB:NaN};
+}
+
+function renderAll(){
+  const s=calc();
+  hAVG.textContent=fmtRate(s.AVG); hOBP.textContent=fmtRate(s.OBP); hOPS.textContent=fmtRate(s.OPS);
+  hH.textContent=s.H; hRBI.textContent=s.RBI; hSB.textContent=s.SB;
+
+  const recent=[...db.games].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+  recentGames.innerHTML=recent.length?recent.map(g=>{
+    const gs=calc([g]);
+    return `<div class="game-row"><div><div class="game-title">vs ${esc(g.opponent||'対戦相手未入力')}</div>
+    <div class="game-meta">${g.date} ・ ${g.type} ・ ${g.grade}</div></div>
+    <div style="text-align:right"><b>${fmtRate(gs.AVG)}</b><div class="tiny">${gs.H}/${gs.AB}</div></div></div>`;
+  }).join(''):`<div class="empty">まだ試合データがありません。</div>`;
+
+  const games=[...db.games].sort((a,b)=>b.date.localeCompare(a.date));
+  gameList.innerHTML=games.length?games.map(g=>{
+    const gs=calc([g]);
+    return `<div class="game-row" onclick="editGame('${g.id}')"><div><div class="game-title">${g.date}　vs ${esc(g.opponent||'未入力')}</div>
+    <div class="game-meta">${g.type} ・ ${g.grade} ・ ${gs.H}安打 ${gs.RBI}打点</div></div>
+    <span class="mini-badge">編集</span></div>`;
+  }).join(''):`<div class="empty">「＋新しい試合」から記録を始めよう⚾️</div>`;
+
+  const items=[
+    ['打率',fmtRate(s.AVG)],['出塁率',fmtRate(s.OBP)],['長打率',fmtRate(s.SLG)],
+    ['OPS',fmtRate(s.OPS)],['打席',s.PA],['打数',s.AB],['安打',s.H],['二塁打',s._2B],
+    ['三塁打',s._3B],['本塁打',s.HR],['打点',s.RBI],['得点',s.R],['四球',s.BB],['死球',s.HBP],
+    ['三振',s.SO],['盗塁',s.SB],['盗塁死',s.CS],['得点圏打率',fmtRate(s.RISPAVG)]
+  ];
+  statsGrid.innerHTML=items.map(([k,v])=>`<div class="stat"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');
+
+  renderBars(directionAnalysis, DIRS.map(d=>[d,allAtbats().filter(a=>a.direction===d).length]));
+  renderBars(contactAnalysis, CONTACTS.map(d=>[d,allAtbats().filter(a=>a.contact===d).length]));
+  disciplineAnalysis.innerHTML=`<div class="analysis-row"><div>三振率</div><div class="bar"><div style="width:${Number.isFinite(s.Kpct)?s.Kpct*100:0}%"></div></div><div>${Number.isFinite(s.Kpct)?Math.round(s.Kpct*100):0}%</div></div>
+  <div class="analysis-row"><div>四球率</div><div class="bar"><div style="width:${Number.isFinite(s.BBpct)?s.BBpct*100:0}%"></div></div><div>${Number.isFinite(s.BBpct)?Math.round(s.BBpct*100):0}%</div></div>
+  <div class="analysis-row"><div>得点圏</div><div></div><div>${fmtRate(s.RISPAVG)}</div></div>`;
+
+  const grades=[...new Set(db.games.map(g=>g.grade))];
+  gradeGrowth.innerHTML=grades.length?grades.map(gr=>{
+    const gs=calc(db.games.filter(g=>g.grade===gr));
+    return `<div class="grow-card"><b>${gr}</b><div class="game-meta">${db.games.filter(g=>g.grade===gr).length}試合</div>
+    <div style="margin-top:8px">打率 <b>${fmtRate(gs.AVG)}</b></div><div>OPS <b>${fmtRate(gs.OPS)}</b></div>
+    <div>三振率 <b>${Number.isFinite(gs.Kpct)?Math.round(gs.Kpct*100):0}%</b></div></div>`;
+  }).join(''):`<div class="empty">学年ごとのデータがここにたまります。</div>`;
+
+  memoList.innerHTML=games.filter(g=>g.memo).length?games.filter(g=>g.memo).map(g=>`<div class="game-row"><div>
+  <div class="game-title">${g.date} vs ${esc(g.opponent||'')}</div><div class="game-meta">${esc(g.memo)}</div></div></div>`).join(''):`<div class="empty">試合メモはまだありません。</div>`;
+
+  if(db.games.length>=3){
+    const recent3=calc(games.slice(0,3)), prev3=calc(games.slice(3,6));
+    let hint='データがたまってきました。';
+    if(Number.isFinite(recent3.Kpct)&&Number.isFinite(prev3.Kpct)){
+      if(recent3.Kpct<prev3.Kpct) hint=`最近3試合は三振率が前の3試合より ${Math.round((prev3.Kpct-recent3.Kpct)*100)}pt 低下 👍`;
+      else if(recent3.Kpct>prev3.Kpct) hint='最近は三振率が少し上がっています。追い込まれてからの内容をメモすると振り返りやすいです。';
+    }
+    growthHint.textContent=hint;
+  }
+}
+
+function renderBars(el,pairs){
+  const total=pairs.reduce((s,x)=>s+x[1],0);
+  el.innerHTML=total?pairs.map(([k,v])=>{
+    const p=Math.round(v/total*100);
+    return `<div class="analysis-row"><div>${k}</div><div class="bar"><div style="width:${p}%"></div></div><div>${p}%</div></div>`;
+  }).join(''):`<div class="empty">打球データを入力すると表示されます。</div>`;
+}
+function esc(s=''){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+
+function switchTab(tab){
+  document.querySelectorAll('.tabpage').forEach(x=>x.classList.toggle('active',x.id===tab));
+  document.querySelectorAll('.navbtn').forEach(x=>x.classList.toggle('active',x.dataset.tab===tab));
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('.navbtn').forEach(b=>b.onclick=()=>switchTab(b.dataset.tab));
+
+function newAtbat(data={}){
+  const wrap=document.createElement('div'); wrap.className='atbat';
+  wrap.dataset.id=data.id||crypto.randomUUID();
+  wrap.innerHTML=`<div class="atbat-head"><b>第${atbats.children.length+1}打席</b><button class="btn btn-outline remove" style="padding:6px 9px">削除</button></div>
+  <div class="tiny">① 結果</div><div class="result-grid">${RESULTS.map(([c,n,cl])=>`<button type="button" class="choice ${cl} ${data.result===c?'active':''}" data-result="${c}">${n}</button>`).join('')}</div>
+  <div class="tiny" style="margin-top:12px">② 打球方向（分かる時だけ）</div><div class="chips dirs">${DIRS.map(d=>`<button type="button" class="chip ${data.direction===d?'active':''}" data-v="${d}">${d}</button>`).join('')}</div>
+  <div class="tiny" style="margin-top:12px">③ 打球タイプ（分かる時だけ）</div><div class="chips contacts">${CONTACTS.map(d=>`<button type="button" class="chip ${data.contact===d?'active':''}" data-v="${d}">${d}</button>`).join('')}</div>
+  <div class="grid2" style="margin-top:12px">
+    <div><label>打点<input class="rbi" type="number" min="0" max="4" value="${data.rbi||0}"></label></div>
+    <div class="checks"><label><input class="risp" type="checkbox" ${data.risp?'checked':''}>得点圏だった</label></div>
+  </div>`;
+  wrap.querySelectorAll('[data-result]').forEach(b=>b.onclick=()=>{wrap.querySelectorAll('[data-result]').forEach(x=>x.classList.remove('active'));b.classList.add('active')});
+  wrap.querySelectorAll('.dirs .chip').forEach(b=>b.onclick=()=>toggleSingle(wrap,'.dirs .chip',b));
+  wrap.querySelectorAll('.contacts .chip').forEach(b=>b.onclick=()=>toggleSingle(wrap,'.contacts .chip',b));
+  wrap.querySelector('.remove').onclick=()=>{wrap.remove(); renumberAtbats()};
+  atbats.appendChild(wrap);
+}
+function toggleSingle(wrap,sel,b){const was=b.classList.contains('active');wrap.querySelectorAll(sel).forEach(x=>x.classList.remove('active'));if(!was)b.classList.add('active')}
+function renumberAtbats(){[...atbats.children].forEach((x,i)=>x.querySelector('.atbat-head b').textContent=`第${i+1}打席`)}
+
+function openModal(game=null){
+  editingId=game?.id||null;
+  gameDate.value=game?.date||today(); gameGrade.value=game?.grade||'小学4年生';
+  opponent.value=game?.opponent||''; gameType.value=game?.type||'練習試合';
+  runs.value=game?.runs||0; sb.value=game?.sb||0; cs.value=game?.cs||0; errors.value=game?.errors||0;
+  position.value=game?.position||''; memo.value=game?.memo||'';
+  atbats.innerHTML=''; (game?.atbats?.length?game.atbats:[{}]).forEach(newAtbat);
+  deleteGame.style.display=editingId?'block':'none';
+  gameModal.classList.add('open');
+}
+function closeModal(){gameModal.classList.remove('open')}
+newGameBtn.onclick=()=>openModal(); newGameBtn2.onclick=()=>openModal(); closeModal.onclick=closeModal;
+gameModal.addEventListener('click',e=>{if(e.target===gameModal)closeModal()});
+addAtbat.onclick=()=>newAtbat();
+
+window.editGame=(id)=>openModal(db.games.find(g=>g.id===id));
+
+saveGame.onclick=()=>{
+  const abs=[...atbats.children].map(w=>({
+    id:w.dataset.id,
+    result:w.querySelector('[data-result].active')?.dataset.result||'',
+    direction:w.querySelector('.dirs .active')?.dataset.v||'',
+    contact:w.querySelector('.contacts .active')?.dataset.v||'',
+    rbi:+w.querySelector('.rbi').value||0,
+    risp:w.querySelector('.risp').checked
+  })).filter(a=>a.result);
+  if(!gameDate.value){alert('日付を入力してください');return}
+  if(!abs.length){alert('少なくとも1打席の結果を選んでください');return}
+  const g={id:editingId||crypto.randomUUID(),date:gameDate.value,grade:gameGrade.value,opponent:opponent.value.trim(),
+    type:gameType.value,atbats:abs,runs:+runs.value||0,sb:+sb.value||0,cs:+cs.value||0,errors:+errors.value||0,
+    position:position.value.trim(),memo:memo.value.trim()};
+  if(editingId){const i=db.games.findIndex(x=>x.id===editingId);db.games[i]=g}else db.games.push(g);
+  saveDB(); closeModal(); switchTab('home');
+};
+deleteGame.onclick=()=>{
+  if(!editingId)return;
+  if(confirm('この試合を削除しますか？')){db.games=db.games.filter(g=>g.id!==editingId);saveDB();closeModal()}
+};
+
+renderAll();
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+</script>
+</body>
+</html>
