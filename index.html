@@ -35,6 +35,12 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 .modeNote{border-left:4px solid #77a9df;background:#f4f8fd;padding:10px;border-radius:8px;font-size:12px;color:#55616e}
 .summaryGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.summaryGrid label{font-size:11px}
 .toolbar{display:grid;grid-template-columns:1fr 1fr;gap:8px}.fileInput{display:none}
+
+.posGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-top:6px}.posBtn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 4px;font-weight:850}.posBtn.active{background:#e8f2ff;border-color:#6da2df;color:#0b4e94}
+.gameActions{display:flex;gap:6px;margin-top:7px}.miniBtn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:6px 9px;font-size:11px;font-weight:800}.miniBtn.del{color:#a52c25;background:#fff6f5;border-color:#edc9c5}
+.heatField{position:relative;height:300px;max-width:470px;margin:8px auto 12px;background:linear-gradient(180deg,#75b968 0 58%,#c8a06b 58%);clip-path:polygon(50% 100%,0 34%,7% 7%,93% 7%,100% 34%);border-radius:8px}.heatField:after{content:"";position:absolute;left:35%;top:51%;width:30%;height:30%;border:2px solid rgba(255,255,255,.78);transform:rotate(45deg);background:rgba(205,174,119,.32)}
+.heatDot{position:absolute;z-index:3;transform:translate(-50%,-50%);border-radius:50%;border:1px solid rgba(190,44,33,.25);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;color:#7c241e;min-width:28px;min-height:28px}.heatControls{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:8px}.heatCtl{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 10px;font-size:11px;font-weight:850}.heatCtl.active{background:var(--navy);color:#fff;border-color:var(--navy)}.help{font-size:9px;color:#66717d;display:block;margin-top:2px;font-weight:600}
+
 @media(max-width:480px){.grid2{grid-template-columns:1fr}.result-grid{grid-template-columns:repeat(3,1fr)}.v{font-size:21px}.fieldWrap{height:220px}}
 </style>
 </head>
@@ -42,7 +48,7 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 <div class="app">
 <header>
 <div class="top">
-<div><div class="brand">⚾ Baseball Growth</div><div class="sub">野球成長記録・Ver.3 TEST</div></div>
+<div><div class="brand">⚾ Baseball Growth</div><div class="sub">野球成長記録・Ver.3</div></div>
 <select id="playerSelect" class="playerSelect"></select>
 </div>
 </header>
@@ -74,7 +80,7 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 <section id="analysis" class="page">
 <div class="title">分析</div>
 <div class="card"><div class="section">打順別成績</div><div id="orderAnalysis"></div></div>
-<div class="card"><div class="section">打球方向</div><div id="dirAnalysis"></div></div>
+<div class="card"><div class="section">打球方向ヒートマップ</div><div class="heatControls"><button class="heatCtl active" data-heat="all">全打球</button><button class="heatCtl" data-heat="hits">安打のみ</button></div><div id="heatmap"></div><div class="tiny">詳しく入力した打席の打球方向を反映します。</div></div><div class="card"><div class="section">打球方向</div><div id="dirAnalysis"></div></div>
 <div class="card"><div class="section">打球タイプ</div><div id="contactAnalysis"></div></div>
 <div class="card"><div class="section">選球・得点圏</div><div id="discAnalysis"></div></div>
 </section>
@@ -113,7 +119,7 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 <label>試合時点の学年<select id="gGrade"></select></label>
 <label>大会・試合種別<select id="gType"><option>練習試合</option><option>公式戦</option><option>大会</option><option>紅白戦</option><option>その他</option></select></label>
 <label>打順<select id="gOrder"><option value="">未設定</option><option value="1">1番</option><option value="2">2番</option><option value="3">3番</option><option value="4">4番</option><option value="5">5番</option><option value="6">6番</option><option value="7">7番</option><option value="8">8番</option><option value="9">9番</option></select></label>
-<label>守備位置<input id="gPos" placeholder="例：中堅、遊撃"></label>
+<div style="grid-column:1/-1"><label>守備位置（複数選択OK）</label><div id="gPosGrid" class="posGrid"></div></div>
 </div></div>
 <div class="card"><div class="section">入力方法</div><div class="segment">
 <button id="modeDetail" class="seg active">打席ごとに入力<div class="tiny">打球・走塁も記録</div></button>
@@ -220,18 +226,19 @@ const KEY='baseballGrowthMultiV2';
 const GRADES=['小学1年生','小学2年生','小学3年生','小学4年生','小学5年生','小学6年生','中学1年生','中学2年生','中学3年生','高校1年生','高校2年生','高校3年生'];
 const RESULTS=[
  {c:'1B',n:'ヒット',cls:'hit'},{c:'2B',n:'二塁打',cls:'hit'},{c:'3B',n:'三塁打',cls:'hit'},{c:'HR',n:'ホームラン',cls:'hit'},
- {c:'BB',n:'四球',cls:'reach'},{c:'HBP',n:'死球',cls:'reach'},{c:'E',n:'エラー',cls:'reach'},{c:'FC',n:'野選',cls:'reach'},
+ {c:'BB',n:'四球',cls:'reach'},{c:'HBP',n:'死球',cls:'reach'},{c:'E',n:'エラー',cls:'reach'},{c:'FC',n:'野選（FC）',cls:'reach'},
  {c:'GO',n:'ゴロアウト',cls:'out'},{c:'FO',n:'フライアウト',cls:'out'},{c:'LO',n:'ライナーアウト',cls:'out'},{c:'SO',n:'三振',cls:'out'},
  {c:'KWP',n:'振り逃げ',cls:'reach'},{c:'SH',n:'犠打',cls:'bunt'},{c:'SF',n:'犠飛',cls:'bunt'}
 ];
 const CONTACTS=['ゴロ','ライナー','フライ'];
+const POSITIONS=['投','捕','一','二','三','遊','左','中','右','DH'];
 let db;
 try{db=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){}
 if(!db || !Array.isArray(db.players)){
  db={players:[{id:'p1',name:'長男',grade:'小学4年生'},{id:'p2',name:'次男',grade:'小学2年生'}],currentPlayerId:'p1',games:[]};
 }
 db.games=db.games||[];
-let draft=null, paDraft=null, paEditIndex=null, inputMode='detail', counters={runs:0,sb:0,cs:0,errors:0}, editingPlayer=null;
+let draft=null, paDraft=null, paEditIndex=null, inputMode='detail', counters={runs:0,sb:0,cs:0,errors:0}, editingPlayer=null, editingGameId=null, selectedPositions=[], heatFilter='all';
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
@@ -249,8 +256,8 @@ db.games=db.games.map(normalizeOldGame);
 
 function detailStats(g){
  const A=g.atbats||[], n=c=>A.filter(a=>a.result===c).length;
- const H=n('1B')+n('2B')+n('3B')+n('HR'), BB=n('BB'),HBP=n('HBP'),SO=n('SO'),SH=n('SH'),SF=n('SF');
- const outs=n('GO')+n('FO')+n('LO')+n('E')+n('FC')+n('KWP');
+ const H=n('1B')+n('2B')+n('3B')+n('HR'), BB=n('BB'),HBP=n('HBP'),SO=n('SO')+n('KWP'),SH=n('SH'),SF=n('SF');
+ const outs=n('GO')+n('FO')+n('LO')+n('E')+n('FC');
  const AB=H+SO+outs, PA=AB+BB+HBP+SH+SF, TB=n('1B')+2*n('2B')+3*n('3B')+4*n('HR');
  const RBI=A.reduce((s,a)=>s+(+a.rbi||0),0);
  return {PA,AB,H,B2:n('2B'),B3:n('3B'),HR:n('HR'),BB,HBP,SO,SH,SF,TB,RBI,R:+g.runs||0,SB:+g.sb||0,CS:+g.cs||0,ERR:+g.errors||0};
@@ -284,34 +291,37 @@ function render(){
  const orders=[1,2,3,4,5,6,7,8,9].map(o=>[o,games.filter(g=>+g.batOrder===o)]).filter(x=>x[1].length);
  $('orderAnalysis').innerHTML=orders.length?orders.map(([o,gs])=>{const x=calc(gs);return `<div class="row"><div><b>${o}番</b><div class="meta">${gs.length}試合・${x.PA}打席</div></div><div style="text-align:right"><b>打率 ${rate(x.AVG)}</b><div class="meta">出塁率 ${rate(x.OBP)} / OPS ${rate(x.OPS)}</div></div></div>`}).join(''):`<div class="empty">打順を記録すると表示されます。</div>`;
  const abs=games.filter(g=>g.mode!=='summary').flatMap(g=>g.atbats||[]);
- renderBars($('dirAnalysis'),['左','左中間','中','右中間','右'].map(d=>[d,abs.filter(a=>a.direction===d).length]));
+ renderHeatmap(abs);renderBars($('dirAnalysis'),['左','左中間','中','右中間','右'].map(d=>[d,abs.filter(a=>a.direction===d).length]));
  renderBars($('contactAnalysis'),CONTACTS.map(d=>[d,abs.filter(a=>a.contact===d).length]));
  $('discAnalysis').innerHTML=`<div class="analysis-row"><div>三振率</div><div class="bar"><div style="width:${Number.isFinite(s.Kpct)?s.Kpct*100:0}%"></div></div><div>${Number.isFinite(s.Kpct)?Math.round(s.Kpct*100):0}%</div></div><div class="analysis-row"><div>四球率</div><div class="bar"><div style="width:${Number.isFinite(s.BBpct)?s.BBpct*100:0}%"></div></div><div>${Number.isFinite(s.BBpct)?Math.round(s.BBpct*100):0}%</div></div><div class="row"><b>得点圏打率</b><b>${rate(s.RISPAVG)}</b></div>`;
  const grades=[...new Set(games.map(g=>g.grade).filter(Boolean))];
  $('gradeGrowth').innerHTML=grades.length?grades.map(gr=>{const x=calc(games.filter(g=>g.grade===gr));return `<div class="growcard"><b>${gr}</b><div class="meta">${games.filter(g=>g.grade===gr).length}試合</div><div style="margin-top:7px">打率 <b>${rate(x.AVG)}</b></div><div>出塁率 <b>${rate(x.OBP)}</b></div><div>OPS <b>${rate(x.OPS)}</b></div></div>`}).join(''):`<div class="empty">試合を記録すると学年別に残ります。</div>`;
  $('playerList').innerHTML=db.players.map(x=>`<div class="row"><div><b>${esc(x.name)}</b><div class="meta">${x.grade} / ${db.games.filter(g=>g.playerId===x.id).length}試合</div></div><button class="btn outline" style="padding:7px 11px" onclick="editPlayer('${x.id}')">編集</button></div>`).join('');
 }
-function gameRow(g){const x=statOfGame(g);return `<div class="row"><div><b>${esc(g.date||'')} vs ${esc(g.opponent||'未入力')}</b><div class="meta">${g.grade||''}${g.batOrder?'・'+g.batOrder+'番':''}・${g.mode==='summary'?'成績入力':'詳細入力'}</div></div><div style="text-align:right"><b>${x.H}安打 ${x.RBI}打点</b><div class="meta">${x.AB}打数</div></div></div>`}
+function gameRow(g){const x=statOfGame(g);return `<div class="row"><div><b>${esc(g.date||'')} vs ${esc(g.opponent||'未入力')}</b><div class="meta">${g.grade||''}${g.batOrder?'・'+g.batOrder+'番':''}${(g.positions||[]).length?'・'+g.positions.join('／'):''}・${g.mode==='summary'?'成績入力':'詳細入力'}</div><div class="gameActions"><button class="miniBtn" onclick="editGame('${g.id}')">修正</button><button class="miniBtn del" onclick="deleteGame('${g.id}')">削除</button></div></div><div style="text-align:right;white-space:nowrap"><b>${x.H}安打 ${x.RBI}打点</b><div class="meta">${x.AB}打数</div></div></div>`}
 function renderBars(el,pairs){const t=pairs.reduce((s,x)=>s+x[1],0);el.innerHTML=t?pairs.map(([k,v])=>{const p=Math.round(v/t*100);return `<div class="analysis-row"><div>${k}</div><div class="bar"><div style="width:${p}%"></div></div><div>${p}%</div></div>`}).join(''):`<div class="empty">詳しく入力した試合がたまると表示されます。</div>`}
 
 $('playerSelect').onchange=()=>{db.currentPlayerId=$('playerSelect').value;persist()};
 document.querySelectorAll('.nav').forEach(b=>b.onclick=()=>{document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===b.dataset.tab));document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('active',n===b));window.scrollTo(0,0)});
 GRADES.forEach(g=>{$('gGrade').add(new Option(g,g));$('playerGrade').add(new Option(g,g))});
+$('gPosGrid').innerHTML=POSITIONS.map(x=>`<button type="button" class="posBtn" data-pos="${x}">${x}</button>`).join('');
+document.querySelectorAll('[data-pos]').forEach(b=>b.onclick=()=>{const x=b.dataset.pos;selectedPositions=selectedPositions.includes(x)?selectedPositions.filter(v=>v!==x):[...selectedPositions,x];document.querySelectorAll('[data-pos]').forEach(z=>z.classList.toggle('active',selectedPositions.includes(z.dataset.pos)))});
+
 
 function newGame(){
- const p=currentPlayer();$('gDate').value=new Date().toISOString().slice(0,10);$('gOpp').value='';$('gGrade').value=p.grade;$('gType').value='練習試合';$('gOrder').value='';$('gPos').value='';setMode('detail');openModal($('gameModal'));
+ editingGameId=null;selectedPositions=[];document.querySelectorAll('[data-pos]').forEach(z=>z.classList.remove('active'));const p=currentPlayer();$('gDate').value=new Date().toISOString().slice(0,10);$('gOpp').value='';$('gGrade').value=p.grade;$('gType').value='練習試合';$('gOrder').value='';setMode('detail');openModal($('gameModal'));
 }
 $('newGame').onclick=newGame;$('newGame2').onclick=newGame;
 function setMode(m){inputMode=m;$('modeDetail').classList.toggle('active',m==='detail');$('modeSummary').classList.toggle('active',m==='summary')}
 $('modeDetail').onclick=()=>setMode('detail');$('modeSummary').onclick=()=>setMode('summary');
 
 $('startGame').onclick=()=>{
- draft={id:crypto.randomUUID(),playerId:currentPlayer().id,date:$('gDate').value,opponent:$('gOpp').value.trim(),grade:$('gGrade').value,type:$('gType').value,batOrder:$('gOrder').value,positions:$('gPos').value.split(/[、,]/).map(s=>s.trim()).filter(Boolean),mode:inputMode};
+ const existing=editingGameId?db.games.find(g=>g.id===editingGameId):null;draft={...(existing||{}),id:existing?.id||crypto.randomUUID(),playerId:existing?.playerId||currentPlayer().id,date:$('gDate').value,opponent:$('gOpp').value.trim(),grade:$('gGrade').value,type:$('gType').value,batOrder:$('gOrder').value,positions:[...selectedPositions],mode:inputMode};
  closeModal($('gameModal'));
  if(inputMode==='summary'){
-   ['sPA','sAB','sH','s2B','s3B','sHR','sBB','sHBP','sSO','sRBI','sR','sSB'].forEach(id=>$(id).value=0);$('sMemo').value='';openModal($('summaryModal'));
+   const q=draft.summary||{};const mp={sPA:'PA',sAB:'AB',sH:'H',s2B:'B2',s3B:'B3',sHR:'HR',sBB:'BB',sHBP:'HBP',sSO:'SO',sRBI:'RBI',sR:'R',sSB:'SB'};Object.entries(mp).forEach(([id,k])=>$(id).value=+q[k]||0);$('sMemo').value=draft.memo||'';openModal($('summaryModal'));
  }else{
-   draft.atbats=[];draft.runs=0;draft.sb=0;draft.cs=0;draft.errors=0;draft.memo='';counters={runs:0,sb:0,cs:0,errors:0};syncCounters();renderDraft();openModal($('detailModal'));
+   draft.atbats=draft.atbats||[];draft.runs=+draft.runs||0;draft.sb=+draft.sb||0;draft.cs=+draft.cs||0;draft.errors=+draft.errors||0;draft.memo=draft.memo||'';counters={runs:draft.runs,sb:draft.sb,cs:draft.cs,errors:draft.errors};$('gMemo').value=draft.memo;syncCounters();renderDraft();openModal($('detailModal'));
  }
 };
 
@@ -328,7 +338,7 @@ const resultName=c=>RESULTS.find(x=>x.c===c)?.n||c||'未入力';
 const resultClass=c=>RESULTS.find(x=>x.c===c)?.cls||'';
 const dirLabel=a=>a.direction==='中'?'センター':a.direction==='左'?'レフト':a.direction==='右'?'ライト':a.direction;
 
-$('resultGrid').innerHTML=RESULTS.map(x=>`<button type="button" class="choice ${x.cls}" data-result="${x.c}">${x.n}</button>`).join('');
+$('resultGrid').innerHTML=RESULTS.map(x=>`<button type="button" class="choice ${x.cls}" data-result="${x.c}">${x.n}${x.c==='FC'?'<span class="help">別の走者をアウトにしにいった</span>':''}</button>`).join('');
 $('contactChips').innerHTML=CONTACTS.map(x=>`<button type="button" class="chip" data-contact="${x}">${x}</button>`).join('');
 
 function openPA(index=null){
@@ -365,16 +375,22 @@ function showConfirm(){
  closeModal($('detailModal'));openModal($('confirmModal'));
 }
 $('backEdit').onclick=()=>{closeModal($('confirmModal'));openModal($('detailModal'))};
-$('confirmSave').onclick=()=>{db.games.push(draft);draft=null;persist();closeModal($('confirmModal'));alert('試合を保存しました⚾️')};
+$('confirmSave').onclick=()=>{const i=db.games.findIndex(g=>g.id===draft.id);if(i>=0)db.games[i]=draft;else db.games.push(draft);editingGameId=null;draft=null;persist();closeModal($('confirmModal'));alert('試合を保存しました⚾️')};
 
 $('saveSummary').onclick=()=>{
  draft.summary={PA:+$('sPA').value||0,AB:+$('sAB').value||0,H:+$('sH').value||0,B2:+$('s2B').value||0,B3:+$('s3B').value||0,HR:+$('sHR').value||0,BB:+$('sBB').value||0,HBP:+$('sHBP').value||0,SO:+$('sSO').value||0,RBI:+$('sRBI').value||0,R:+$('sR').value||0,SB:+$('sSB').value||0};
- draft.memo=$('sMemo').value.trim();db.games.push(draft);draft=null;persist();closeModal($('summaryModal'));alert('過去成績を保存しました⚾️')
+ draft.memo=$('sMemo').value.trim();const i=db.games.findIndex(g=>g.id===draft.id);if(i>=0)db.games[i]=draft;else db.games.push(draft);editingGameId=null;draft=null;persist();closeModal($('summaryModal'));alert('成績を保存しました⚾️')
 };
 
 $('addPlayerBtn').onclick=()=>{editingPlayer=null;$('playerModalTitle').textContent='選手を追加';$('playerName').value='';$('playerGrade').value='小学2年生';openModal($('playerModal'))};
 window.editPlayer=id=>{const p=db.players.find(x=>x.id===id);editingPlayer=id;$('playerModalTitle').textContent='選手を編集';$('playerName').value=p.name;$('playerGrade').value=p.grade;openModal($('playerModal'))};
 $('savePlayer').onclick=()=>{const name=$('playerName').value.trim();if(!name){alert('表示名を入力してください');return}if(editingPlayer){const p=db.players.find(x=>x.id===editingPlayer);p.name=name;p.grade=$('playerGrade').value}else{const id=crypto.randomUUID();db.players.push({id,name,grade:$('playerGrade').value});db.currentPlayerId=id}persist();closeModal($('playerModal'))};
+
+
+window.editGame=id=>{const g=db.games.find(x=>x.id===id);if(!g)return;editingGameId=id;selectedPositions=[...(g.positions||[])];$('gDate').value=g.date||'';$('gOpp').value=g.opponent||'';$('gGrade').value=g.grade||currentPlayer().grade;$('gType').value=g.type||'練習試合';$('gOrder').value=g.batOrder||'';setMode(g.mode||'detail');document.querySelectorAll('[data-pos]').forEach(z=>z.classList.toggle('active',selectedPositions.includes(z.dataset.pos)));openModal($('gameModal'))};
+window.deleteGame=id=>{const g=db.games.find(x=>x.id===id);if(!g)return;if(!confirm(`${g.date||''} ${g.opponent?'vs '+g.opponent:''} の記録を削除しますか？`))return;db.games=db.games.filter(x=>x.id!==id);persist()};
+function renderHeatmap(abs){const src=(heatFilter==='hits'?abs.filter(a=>['1B','2B','3B','HR'].includes(a.result)):abs).filter(a=>a.direction);const pos={左:[18,39],左中間:[33,22],中:[50,15],右中間:[67,22],右:[82,39]};const counts={};src.forEach(a=>counts[a.direction]=(counts[a.direction]||0)+1);const max=Math.max(1,...Object.values(counts));$('heatmap').innerHTML=src.length?`<div class="heatField">${Object.entries(counts).map(([d,n])=>{const q=pos[d]||[50,45],size=28+34*(n/max);return `<div class="heatDot" style="left:${q[0]}%;top:${q[1]}%;width:${size}px;height:${size}px;background:rgba(235,72,58,${.16+.5*(n/max)})">${n}</div>`}).join('')}</div>`:'<div class="empty">対象の打球データがありません。</div>'}
+document.querySelectorAll('[data-heat]').forEach(b=>b.onclick=()=>{heatFilter=b.dataset.heat;document.querySelectorAll('[data-heat]').forEach(x=>x.classList.toggle('active',x===b));const abs=gamesForPlayer().filter(g=>g.mode!=='summary').flatMap(g=>g.atbats||[]);renderHeatmap(abs)});
 
 $('exportBtn').onclick=()=>{
  const blob=new Blob([JSON.stringify({app:'Baseball Growth',version:3,exportedAt:new Date().toISOString(),data:db},null,2)],{type:'application/json'});
