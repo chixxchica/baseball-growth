@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.json">
-<title>Baseball Growth Ver.3.1</title>
+<title>Baseball Growth Ver.3.2</title>
 <style>
 :root{--navy:#0c386f;--navy2:#092b57;--blue:#1967d2;--bg:#f5f7fa;--card:#fff;--text:#17212c;--muted:#6c7684;--line:#dfe5ec;--green:#e4f7e9;--greenb:#57a96f;--yellow:#fff4cf;--yellowb:#d6a92f;--red:#fee9e6;--redb:#e1786b;--purple:#f0e9ff;--purpleb:#9b78d0}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;color:var(--text)}
@@ -41,14 +41,14 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 .heatField{position:relative;height:300px;max-width:470px;margin:8px auto 12px;background:linear-gradient(180deg,#75b968 0 58%,#c8a06b 58%);clip-path:polygon(50% 100%,0 34%,7% 7%,93% 7%,100% 34%);border-radius:8px}.heatField:after{content:"";position:absolute;left:35%;top:51%;width:30%;height:30%;border:2px solid rgba(255,255,255,.78);transform:rotate(45deg);background:rgba(205,174,119,.32)}
 .heatDot{position:absolute;z-index:3;transform:translate(-50%,-50%);border-radius:50%;border:1px solid rgba(190,44,33,.25);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;color:#7c241e;min-width:28px;min-height:28px}.heatControls{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:8px}.heatCtl{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 10px;font-size:11px;font-weight:850}.heatCtl.active{background:var(--navy);color:#fff;border-color:var(--navy)}.help{font-size:9px;color:#66717d;display:block;margin-top:2px;font-weight:600}
 
-@media(max-width:480px){.grid2{grid-template-columns:1fr}.result-grid{grid-template-columns:repeat(3,1fr)}.v{font-size:21px}.fieldWrap{height:220px}}
+.realField{position:relative;width:100%;max-width:500px;aspect-ratio:1.25/1;margin:10px auto 14px;overflow:hidden;border-radius:16px}.realField svg{width:100%;height:100%;display:block}.tapLayer{position:absolute;inset:0;z-index:8;touch-action:manipulation}.mark{position:absolute;z-index:10;width:26px;height:26px;border-radius:50%;transform:translate(-50%,-50%);background:#fff;border:4px solid #58bce8;box-shadow:0 2px 7px #0004;pointer-events:none}.mark:after{content:"";position:absolute;inset:5px;border-radius:50%;background:#58bce8}.heat2{position:absolute;z-index:9;transform:translate(-50%,-50%);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#76251f;border:1px solid #8b332f55}.fieldNames{display:flex;justify-content:space-around;font-size:11px;font-weight:800;color:#506170;margin-top:-7px}@media(max-width:480px){.grid2{grid-template-columns:1fr}.result-grid{grid-template-columns:repeat(3,1fr)}.v{font-size:21px}.fieldWrap{height:220px}}
 </style>
 </head>
 <body>
 <div class="app">
 <header>
 <div class="top">
-<div><div class="brand">⚾ Baseball Growth</div><div class="sub">野球成長記録・Ver.3.1</div></div>
+<div><div class="brand">⚾ Baseball Growth</div><div class="sub">野球成長記録・Ver.3.2</div></div>
 <select id="playerSelect" class="playerSelect"></select>
 </div>
 </header>
@@ -158,13 +158,7 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 <div id="battedBallArea" class="card">
 <div class="section">打球はどこに飛びましたか？</div>
 <div class="tiny">グラウンド上のエリアをタップ</div>
-<div class="fieldWrap" id="fieldWrap">
-<button class="zone zL" data-dir="左">レフト</button>
-<button class="zone zLC" data-dir="左中間">左中間</button>
-<button class="zone zC" data-dir="中">センター</button>
-<button class="zone zRC" data-dir="右中間">右中間</button>
-<button class="zone zR" data-dir="右">ライト</button>
-</div>
+<div class="realField" id="fieldWrap"></div><div class="fieldNames"><span>レフト</span><span>センター</span><span>ライト</span></div>
 <div class="section">打球タイプ</div>
 <div id="contactChips" class="chips"></div>
 </div>
@@ -341,18 +335,22 @@ const dirLabel=a=>a.direction==='中'?'センター':a.direction==='左'?'レフ
 $('resultGrid').innerHTML=RESULTS.map(x=>`<button type="button" class="choice ${x.cls}" data-result="${x.c}">${x.n}${x.c==='FC'?'<span class="help">別の走者をアウトにしにいった</span>':''}</button>`).join('');
 $('contactChips').innerHTML=CONTACTS.map(x=>`<button type="button" class="chip" data-contact="${x}">${x}</button>`).join('');
 
+function baseballFieldSVG(){return `<svg viewBox="0 0 600 480"><defs><radialGradient id="grass32" cx="50%" cy="82%" r="80%"><stop offset="0" stop-color="#79bd62"/><stop offset="1" stop-color="#50aa4e"/></radialGradient></defs><path d="M300 458 L46 236 Q61 120 150 68 Q216 28 300 28 Q384 28 450 68 Q539 120 554 236 Z" fill="url(#grass32)"/><path d="M300 451 L47 236 M300 451 L553 236" stroke="#fff" stroke-width="4" opacity=".88"/><path d="M300 451 C248 423 207 387 188 344 C207 301 247 273 300 262 C353 273 393 301 412 344 C393 387 352 423 300 451Z" fill="#cba267"/><path d="M300 408 L236 344 L300 281 L364 344 Z" fill="#78b960"/><path d="M300 420 L224 344 L300 269 L376 344 Z" fill="none" stroke="#ead6b5" stroke-width="7"/><ellipse cx="300" cy="344" rx="24" ry="14" fill="#b88b55"/><rect x="290" y="341" width="20" height="5" rx="2" fill="#fff"/><rect x="215" y="335" width="18" height="18" transform="rotate(45 224 344)" fill="#fff"/><rect x="291" y="260" width="18" height="18" transform="rotate(45 300 269)" fill="#fff"/><rect x="367" y="335" width="18" height="18" transform="rotate(45 376 344)" fill="#fff"/><path d="M289 427 L311 427 L315 438 L300 450 L285 438 Z" fill="#fff" stroke="#ddd" stroke-width="2"/></svg>`}
+function fieldXYForDir(d){return ({左:[20,34],左中間:[35,22],中:[50,14],右中間:[65,22],右:[80,34]})[d]||[50,25]}
+function dirForX(x){return x<28?'左':x<43?'左中間':x<57?'中':x<72?'右中間':'右'}
+function drawInputField(){const f=$('fieldWrap');if(!f)return;f.innerHTML=baseballFieldSVG()+`<div class="tapLayer"></div>`+(paDraft?.fieldX!=null?`<div class="mark" style="left:${paDraft.fieldX}%;top:${paDraft.fieldY}%"></div>`:'');f.querySelector('.tapLayer').onclick=e=>{const r=e.currentTarget.getBoundingClientRect(),x=Math.max(8,Math.min(92,(e.clientX-r.left)/r.width*100)),y=Math.max(7,Math.min(88,(e.clientY-r.top)/r.height*100));paDraft.fieldX=+x.toFixed(1);paDraft.fieldY=+y.toFixed(1);paDraft.direction=dirForX(x);drawInputField()}}
 function openPA(index=null){
- paEditIndex=index;paDraft=index===null?{result:'',direction:'',contact:'',rbi:0,outs:'',risp:false,base:'',sb:false}:{...draft.atbats[index]};
+ paEditIndex=index;paDraft=index===null?{result:'',direction:'',fieldX:null,fieldY:null,contact:'',rbi:0,outs:'',risp:false,base:'',sb:false}:{...draft.atbats[index]};
  $('paTitle').textContent=`第${index===null?draft.atbats.length+1:index+1}打席`;
  document.querySelectorAll('[data-result]').forEach(b=>b.classList.toggle('active',b.dataset.result===paDraft.result));
- document.querySelectorAll('[data-dir]').forEach(b=>b.classList.toggle('active',b.dataset.dir===paDraft.direction));
+ if(paDraft.fieldX==null&&paDraft.direction){const q=fieldXYForDir(paDraft.direction);paDraft.fieldX=q[0];paDraft.fieldY=q[1]}drawInputField();
  document.querySelectorAll('[data-contact]').forEach(b=>b.classList.toggle('active',b.dataset.contact===paDraft.contact));
  document.querySelectorAll('[data-base]').forEach(b=>b.classList.toggle('active',b.dataset.base===paDraft.base));
  $('paRBI').value=paDraft.rbi||0;$('paOuts').value=paDraft.outs??'';$('paRisp').checked=!!paDraft.risp;$('paSB').checked=!!paDraft.sb;openModal($('paModal'));
 }
 $('addPA').onclick=()=>openPA();window.editPA=i=>openPA(i);
 document.querySelectorAll('[data-result]').forEach(b=>b.onclick=()=>{paDraft.result=b.dataset.result;document.querySelectorAll('[data-result]').forEach(x=>x.classList.toggle('active',x===b))});
-document.querySelectorAll('[data-dir]').forEach(b=>b.onclick=()=>{paDraft.direction=b.dataset.dir;document.querySelectorAll('[data-dir]').forEach(x=>x.classList.toggle('active',x===b))});
+
 document.querySelectorAll('[data-contact]').forEach(b=>b.onclick=()=>{paDraft.contact=b.dataset.contact;document.querySelectorAll('[data-contact]').forEach(x=>x.classList.toggle('active',x===b))});
 document.querySelectorAll('[data-base]').forEach(b=>b.onclick=()=>{paDraft.base=b.dataset.base;document.querySelectorAll('[data-base]').forEach(x=>x.classList.toggle('active',x===b))});
 $('savePA').onclick=()=>{
@@ -389,8 +387,7 @@ $('savePlayer').onclick=()=>{const name=$('playerName').value.trim();if(!name){a
 
 window.editGame=id=>{const g=db.games.find(x=>x.id===id);if(!g)return;editingGameId=id;selectedPositions=[...(g.positions||[])];$('gDate').value=g.date||'';$('gOpp').value=g.opponent||'';$('gGrade').value=g.grade||currentPlayer().grade;$('gType').value=g.type||'練習試合';$('gOrder').value=g.batOrder||'';setMode(g.mode||'detail');document.querySelectorAll('[data-pos]').forEach(z=>z.classList.toggle('active',selectedPositions.includes(z.dataset.pos)));openModal($('gameModal'))};
 window.deleteGame=id=>{const g=db.games.find(x=>x.id===id);if(!g)return;if(!confirm(`${g.date||''} ${g.opponent?'vs '+g.opponent:''} の記録を削除しますか？`))return;db.games=db.games.filter(x=>x.id!==id);persist()};
-function renderHeatmap(abs){const src=(heatFilter==='hits'?abs.filter(a=>['1B','2B','3B','HR'].includes(a.result)):abs).filter(a=>a.direction);const pos={左:[18,39],左中間:[33,22],中:[50,15],右中間:[67,22],右:[82,39]};const counts={};src.forEach(a=>counts[a.direction]=(counts[a.direction]||0)+1);const max=Math.max(1,...Object.values(counts));$('heatmap').innerHTML=src.length?`<div class="heatField">${Object.entries(counts).map(([d,n])=>{const q=pos[d]||[50,45],size=28+34*(n/max);return `<div class="heatDot" style="left:${q[0]}%;top:${q[1]}%;width:${size}px;height:${size}px;background:rgba(235,72,58,${.16+.5*(n/max)})">${n}</div>`}).join('')}</div>`:'<div class="empty">対象の打球データがありません。</div>'}
-document.querySelectorAll('[data-heat]').forEach(b=>b.onclick=()=>{heatFilter=b.dataset.heat;document.querySelectorAll('[data-heat]').forEach(x=>x.classList.toggle('active',x===b));const abs=gamesForPlayer().filter(g=>g.mode!=='summary').flatMap(g=>g.atbats||[]);renderHeatmap(abs)});
+function renderHeatmap(abs){const src=(heatFilter==='hits'?abs.filter(a=>['1B','2B','3B','HR'].includes(a.result)):abs).filter(a=>a.direction);if(!src.length){$('heatmap').innerHTML='<div class="empty">対象の打球データがありません。</div>';return}const cells={};src.forEach(a=>{const q=(a.fieldX!=null&&a.fieldY!=null)?[+a.fieldX,+a.fieldY]:fieldXYForDir(a.direction),x=Math.round(q[0]/6)*6,y=Math.round(q[1]/6)*6,k=x+'_'+y;cells[k]=cells[k]||{x,y,n:0};cells[k].n++});const max=Math.max(...Object.values(cells).map(c=>c.n),1);$('heatmap').innerHTML=`<div class="realField">${baseballFieldSVG()}${Object.values(cells).map(c=>{const sz=25+35*c.n/max,a=.18+.52*c.n/max;return `<div class="heat2" style="left:${c.x}%;top:${c.y}%;width:${sz}px;height:${sz}px;background:rgba(231,87,61,${a})">${c.n}</div>`}).join('')}</div>`}document.querySelectorAll('[data-heat]').forEach(b=>b.onclick=()=>{heatFilter=b.dataset.heat;document.querySelectorAll('[data-heat]').forEach(x=>x.classList.toggle('active',x===b));const abs=gamesForPlayer().filter(g=>g.mode!=='summary').flatMap(g=>g.atbats||[]);renderHeatmap(abs)});
 
 $('exportBtn').onclick=()=>{
  const blob=new Blob([JSON.stringify({app:'Baseball Growth',version:3,exportedAt:new Date().toISOString(),data:db},null,2)],{type:'application/json'});
