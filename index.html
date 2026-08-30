@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.json">
-<title>Baseball Growth Ver.3.2</title>
+<title>Baseball Growth Ver.3.3</title>
 <style>
 :root{--navy:#0c386f;--navy2:#092b57;--blue:#1967d2;--bg:#f5f7fa;--card:#fff;--text:#17212c;--muted:#6c7684;--line:#dfe5ec;--green:#e4f7e9;--greenb:#57a96f;--yellow:#fff4cf;--yellowb:#d6a92f;--red:#fee9e6;--redb:#e1786b;--purple:#f0e9ff;--purpleb:#9b78d0}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;color:var(--text)}
@@ -48,7 +48,7 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 <div class="app">
 <header>
 <div class="top">
-<div><div class="brand">⚾ Baseball Growth</div><div class="sub">野球成長記録・Ver.3.2</div></div>
+<div><div class="brand">⚾ Baseball Growth</div><div class="sub">野球成長記録・Ver.3.3</div></div>
 <select id="playerSelect" class="playerSelect"></select>
 </div>
 </header>
@@ -219,8 +219,8 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 const KEY='baseballGrowthMultiV2';
 const GRADES=['小学1年生','小学2年生','小学3年生','小学4年生','小学5年生','小学6年生','中学1年生','中学2年生','中学3年生','高校1年生','高校2年生','高校3年生'];
 const RESULTS=[
- {c:'1B',n:'ヒット',cls:'hit'},{c:'2B',n:'二塁打',cls:'hit'},{c:'3B',n:'三塁打',cls:'hit'},{c:'HR',n:'ホームラン',cls:'hit'},
- {c:'BB',n:'四球',cls:'reach'},{c:'HBP',n:'死球',cls:'reach'},{c:'E',n:'エラー',cls:'reach'},{c:'FC',n:'野選（FC）',cls:'reach'},
+ {c:'1B',n:'ヒット',cls:'hit'},{c:'2B',n:'二塁打',cls:'hit'},{c:'3B',n:'三塁打',cls:'hit'},{c:'HR',n:'ホームラン',cls:'hit'},{c:'ITPHR',n:'ランニングホームラン',cls:'hit'},
+ {c:'BB',n:'四球',cls:'reach'},{c:'HBP',n:'死球',cls:'reach'},{c:'E',n:'エラー',cls:'reach'},
  {c:'GO',n:'ゴロアウト',cls:'out'},{c:'FO',n:'フライアウト',cls:'out'},{c:'LO',n:'ライナーアウト',cls:'out'},{c:'SO',n:'三振',cls:'out'},
  {c:'KWP',n:'振り逃げ',cls:'reach'},{c:'SH',n:'犠打',cls:'bunt'},{c:'SF',n:'犠飛',cls:'bunt'}
 ];
@@ -250,11 +250,11 @@ db.games=db.games.map(normalizeOldGame);
 
 function detailStats(g){
  const A=g.atbats||[], n=c=>A.filter(a=>a.result===c).length;
- const H=n('1B')+n('2B')+n('3B')+n('HR'), BB=n('BB'),HBP=n('HBP'),SO=n('SO')+n('KWP'),SH=n('SH'),SF=n('SF');
+ const H=n('1B')+n('2B')+n('3B')+n('HR')+n('ITPHR'), BB=n('BB'),HBP=n('HBP'),SO=n('SO')+n('KWP'),SH=n('SH'),SF=n('SF');
  const outs=n('GO')+n('FO')+n('LO')+n('E')+n('FC');
- const AB=H+SO+outs, PA=AB+BB+HBP+SH+SF, TB=n('1B')+2*n('2B')+3*n('3B')+4*n('HR');
+ const AB=H+SO+outs, PA=AB+BB+HBP+SH+SF, TB=n('1B')+2*n('2B')+3*n('3B')+4*(n('HR')+n('ITPHR'));
  const RBI=A.reduce((s,a)=>s+(+a.rbi||0),0);
- return {PA,AB,H,B2:n('2B'),B3:n('3B'),HR:n('HR'),BB,HBP,SO,SH,SF,TB,RBI,R:+g.runs||0,SB:+g.sb||0,CS:+g.cs||0,ERR:+g.errors||0};
+ return {PA,AB,H,B2:n('2B'),B3:n('3B'),HR:n('HR')+n('ITPHR'),BB,HBP,SO,SH,SF,TB,RBI,R:+g.runs||0,SB:+g.sb||0,CS:+g.cs||0,ERR:+g.errors||0};
 }
 function summaryStats(g){
  const s=g.summary||{};
@@ -268,7 +268,7 @@ function calc(gs){
  gs.forEach(g=>{const x=statOfGame(g);Object.keys(t).forEach(k=>t[k]+=+x[k]||0)});
  t.AVG=t.AB?t.H/t.AB:NaN;t.OBP=(t.AB+t.BB+t.HBP+t.SF)?(t.H+t.BB+t.HBP)/(t.AB+t.BB+t.HBP+t.SF):NaN;t.SLG=t.AB?t.TB/t.AB:NaN;t.OPS=Number.isFinite(t.OBP)&&Number.isFinite(t.SLG)?t.OBP+t.SLG:NaN;
  const detailed=gs.filter(g=>g.mode!=='summary').flatMap(g=>g.atbats||[]);
- const risp=detailed.filter(a=>a.risp),rispAB=risp.filter(a=>['1B','2B','3B','HR','SO','GO','FO','LO','E','FC','KWP'].includes(a.result)).length,rispH=risp.filter(a=>['1B','2B','3B','HR'].includes(a.result)).length;
+ const risp=detailed.filter(a=>a.risp),rispAB=risp.filter(a=>['1B','2B','3B','HR','ITPHR','SO','GO','FO','LO','E','FC','KWP'].includes(a.result)).length,rispH=risp.filter(a=>['1B','2B','3B','HR','ITPHR'].includes(a.result)).length;
  t.RISPAVG=rispAB?rispH/rispAB:NaN;t.Kpct=t.PA?t.SO/t.PA:NaN;t.BBpct=t.PA?t.BB/t.PA:NaN;return t;
 }
 function persist(){localStorage.setItem(KEY,JSON.stringify(db));render()}
@@ -332,7 +332,7 @@ const resultName=c=>RESULTS.find(x=>x.c===c)?.n||c||'未入力';
 const resultClass=c=>RESULTS.find(x=>x.c===c)?.cls||'';
 const dirLabel=a=>a.direction==='中'?'センター':a.direction==='左'?'レフト':a.direction==='右'?'ライト':a.direction;
 
-$('resultGrid').innerHTML=RESULTS.map(x=>`<button type="button" class="choice ${x.cls}" data-result="${x.c}">${x.n}${x.c==='FC'?'<span class="help">別の走者をアウトにしにいった</span>':''}</button>`).join('');
+$('resultGrid').innerHTML=RESULTS.map(x=>`<button type="button" class="choice ${x.cls}" data-result="${x.c}">${x.n}</button>`).join('');
 $('contactChips').innerHTML=CONTACTS.map(x=>`<button type="button" class="chip" data-contact="${x}">${x}</button>`).join('');
 
 function baseballFieldSVG(){return `<svg viewBox="0 0 600 480"><defs><radialGradient id="grass32" cx="50%" cy="82%" r="80%"><stop offset="0" stop-color="#79bd62"/><stop offset="1" stop-color="#50aa4e"/></radialGradient></defs><path d="M300 458 L46 236 Q61 120 150 68 Q216 28 300 28 Q384 28 450 68 Q539 120 554 236 Z" fill="url(#grass32)"/><path d="M300 451 L47 236 M300 451 L553 236" stroke="#fff" stroke-width="4" opacity=".88"/><path d="M300 451 C248 423 207 387 188 344 C207 301 247 273 300 262 C353 273 393 301 412 344 C393 387 352 423 300 451Z" fill="#cba267"/><path d="M300 408 L236 344 L300 281 L364 344 Z" fill="#78b960"/><path d="M300 420 L224 344 L300 269 L376 344 Z" fill="none" stroke="#ead6b5" stroke-width="7"/><ellipse cx="300" cy="344" rx="24" ry="14" fill="#b88b55"/><rect x="290" y="341" width="20" height="5" rx="2" fill="#fff"/><rect x="215" y="335" width="18" height="18" transform="rotate(45 224 344)" fill="#fff"/><rect x="291" y="260" width="18" height="18" transform="rotate(45 300 269)" fill="#fff"/><rect x="367" y="335" width="18" height="18" transform="rotate(45 376 344)" fill="#fff"/><path d="M289 427 L311 427 L315 438 L300 450 L285 438 Z" fill="#fff" stroke="#ddd" stroke-width="2"/></svg>`}
@@ -387,7 +387,7 @@ $('savePlayer').onclick=()=>{const name=$('playerName').value.trim();if(!name){a
 
 window.editGame=id=>{const g=db.games.find(x=>x.id===id);if(!g)return;editingGameId=id;selectedPositions=[...(g.positions||[])];$('gDate').value=g.date||'';$('gOpp').value=g.opponent||'';$('gGrade').value=g.grade||currentPlayer().grade;$('gType').value=g.type||'練習試合';$('gOrder').value=g.batOrder||'';setMode(g.mode||'detail');document.querySelectorAll('[data-pos]').forEach(z=>z.classList.toggle('active',selectedPositions.includes(z.dataset.pos)));openModal($('gameModal'))};
 window.deleteGame=id=>{const g=db.games.find(x=>x.id===id);if(!g)return;if(!confirm(`${g.date||''} ${g.opponent?'vs '+g.opponent:''} の記録を削除しますか？`))return;db.games=db.games.filter(x=>x.id!==id);persist()};
-function renderHeatmap(abs){const src=(heatFilter==='hits'?abs.filter(a=>['1B','2B','3B','HR'].includes(a.result)):abs).filter(a=>a.direction);if(!src.length){$('heatmap').innerHTML='<div class="empty">対象の打球データがありません。</div>';return}const cells={};src.forEach(a=>{const q=(a.fieldX!=null&&a.fieldY!=null)?[+a.fieldX,+a.fieldY]:fieldXYForDir(a.direction),x=Math.round(q[0]/6)*6,y=Math.round(q[1]/6)*6,k=x+'_'+y;cells[k]=cells[k]||{x,y,n:0};cells[k].n++});const max=Math.max(...Object.values(cells).map(c=>c.n),1);$('heatmap').innerHTML=`<div class="realField">${baseballFieldSVG()}${Object.values(cells).map(c=>{const sz=25+35*c.n/max,a=.18+.52*c.n/max;return `<div class="heat2" style="left:${c.x}%;top:${c.y}%;width:${sz}px;height:${sz}px;background:rgba(231,87,61,${a})">${c.n}</div>`}).join('')}</div>`}document.querySelectorAll('[data-heat]').forEach(b=>b.onclick=()=>{heatFilter=b.dataset.heat;document.querySelectorAll('[data-heat]').forEach(x=>x.classList.toggle('active',x===b));const abs=gamesForPlayer().filter(g=>g.mode!=='summary').flatMap(g=>g.atbats||[]);renderHeatmap(abs)});
+function renderHeatmap(abs){const src=(heatFilter==='hits'?abs.filter(a=>['1B','2B','3B','HR','ITPHR'].includes(a.result)):abs).filter(a=>a.direction);if(!src.length){$('heatmap').innerHTML='<div class="empty">対象の打球データがありません。</div>';return}const cells={};src.forEach(a=>{const q=(a.fieldX!=null&&a.fieldY!=null)?[+a.fieldX,+a.fieldY]:fieldXYForDir(a.direction),x=Math.round(q[0]/6)*6,y=Math.round(q[1]/6)*6,k=x+'_'+y;cells[k]=cells[k]||{x,y,n:0};cells[k].n++});const max=Math.max(...Object.values(cells).map(c=>c.n),1);$('heatmap').innerHTML=`<div class="realField">${baseballFieldSVG()}${Object.values(cells).map(c=>{const sz=25+35*c.n/max,a=.18+.52*c.n/max;return `<div class="heat2" style="left:${c.x}%;top:${c.y}%;width:${sz}px;height:${sz}px;background:rgba(231,87,61,${a})">${c.n}</div>`}).join('')}</div>`}document.querySelectorAll('[data-heat]').forEach(b=>b.onclick=()=>{heatFilter=b.dataset.heat;document.querySelectorAll('[data-heat]').forEach(x=>x.classList.toggle('active',x===b));const abs=gamesForPlayer().filter(g=>g.mode!=='summary').flatMap(g=>g.atbats||[]);renderHeatmap(abs)});
 
 $('exportBtn').onclick=()=>{
  const blob=new Blob([JSON.stringify({app:'Baseball Growth',version:3,exportedAt:new Date().toISOString(),data:db},null,2)],{type:'application/json'});
