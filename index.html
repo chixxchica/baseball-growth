@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.json">
-<title>Baseball Growth Ver.3.3</title>
+<title>Baseball Growth Ver.3.4</title>
 <style>
 :root{--navy:#0c386f;--navy2:#092b57;--blue:#1967d2;--bg:#f5f7fa;--card:#fff;--text:#17212c;--muted:#6c7684;--line:#dfe5ec;--green:#e4f7e9;--greenb:#57a96f;--yellow:#fff4cf;--yellowb:#d6a92f;--red:#fee9e6;--redb:#e1786b;--purple:#f0e9ff;--purpleb:#9b78d0}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;color:var(--text)}
@@ -41,14 +41,14 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 .heatField{position:relative;height:300px;max-width:470px;margin:8px auto 12px;background:linear-gradient(180deg,#75b968 0 58%,#c8a06b 58%);clip-path:polygon(50% 100%,0 34%,7% 7%,93% 7%,100% 34%);border-radius:8px}.heatField:after{content:"";position:absolute;left:35%;top:51%;width:30%;height:30%;border:2px solid rgba(255,255,255,.78);transform:rotate(45deg);background:rgba(205,174,119,.32)}
 .heatDot{position:absolute;z-index:3;transform:translate(-50%,-50%);border-radius:50%;border:1px solid rgba(190,44,33,.25);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;color:#7c241e;min-width:28px;min-height:28px}.heatControls{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:8px}.heatCtl{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 10px;font-size:11px;font-weight:850}.heatCtl.active{background:var(--navy);color:#fff;border-color:var(--navy)}.help{font-size:9px;color:#66717d;display:block;margin-top:2px;font-weight:600}
 
-.realField{position:relative;width:100%;max-width:500px;aspect-ratio:1.25/1;margin:10px auto 14px;overflow:hidden;border-radius:16px}.realField svg{width:100%;height:100%;display:block}.tapLayer{position:absolute;inset:0;z-index:8;touch-action:manipulation}.mark{position:absolute;z-index:10;width:26px;height:26px;border-radius:50%;transform:translate(-50%,-50%);background:#fff;border:4px solid #58bce8;box-shadow:0 2px 7px #0004;pointer-events:none}.mark:after{content:"";position:absolute;inset:5px;border-radius:50%;background:#58bce8}.heat2{position:absolute;z-index:9;transform:translate(-50%,-50%);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#76251f;border:1px solid #8b332f55}.fieldNames{display:flex;justify-content:space-around;font-size:11px;font-weight:800;color:#506170;margin-top:-7px}@media(max-width:480px){.grid2{grid-template-columns:1fr}.result-grid{grid-template-columns:repeat(3,1fr)}.v{font-size:21px}.fieldWrap{height:220px}}
+.realField{position:relative;width:100%;max-width:500px;aspect-ratio:1.25/1;margin:10px auto 14px;overflow:hidden;border-radius:16px}.realField svg{width:100%;height:100%;display:block}.tapLayer{position:absolute;inset:0;z-index:8;touch-action:manipulation}.mark{position:absolute;z-index:10;width:26px;height:26px;border-radius:50%;transform:translate(-50%,-50%);background:#fff;border:4px solid #58bce8;box-shadow:0 2px 7px #0004;pointer-events:none}.mark:after{content:"";position:absolute;inset:5px;border-radius:50%;background:#58bce8}.heat2{position:absolute;z-index:9;transform:translate(-50%,-50%);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#76251f;border:1px solid #8b332f55}.fieldNames{display:flex;justify-content:space-around;font-size:11px;font-weight:800;color:#506170;margin-top:-7px}.summaryDirBox{margin-top:14px;padding-top:14px;border-top:1px dashed var(--line)}.summaryDirHead{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:6px}.summaryDirList{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}.summaryDirChip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 8px;font-size:11px;font-weight:800}.summaryDirChip button{border:0;background:transparent;font-size:13px;line-height:1;color:#a52c25;padding:0}.summaryDirCount{font-size:11px;color:#687582;margin-top:6px}@media(max-width:480px){.grid2{grid-template-columns:1fr}.result-grid{grid-template-columns:repeat(3,1fr)}.v{font-size:21px}.fieldWrap{height:220px}}
 </style>
 </head>
 <body>
 <div class="app">
 <header>
 <div class="top">
-<div><div class="brand">⚾ Baseball Growth</div><div class="sub">野球成長記録・Ver.3.3</div></div>
+<div><div class="brand">⚾ Baseball Growth</div><div class="sub">野球成長記録・Ver.3.4</div></div>
 <select id="playerSelect" class="playerSelect"></select>
 </div>
 </header>
@@ -194,7 +194,7 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 <label>四球<input id="sBB" type="number" min="0" value="0"></label><label>死球<input id="sHBP" type="number" min="0" value="0"></label><label>三振<input id="sSO" type="number" min="0" value="0"></label>
 <label>打点<input id="sRBI" type="number" min="0" value="0"></label><label>得点<input id="sR" type="number" min="0" value="0"></label><label>盗塁<input id="sSB" type="number" min="0" value="0"></label>
 </div>
-<label style="display:block;margin-top:12px">メモ<textarea id="sMemo" placeholder="分かる範囲でOK"></textarea></label>
+<div class="summaryDirBox"><div class="summaryDirHead"><div><b>打球方向を追加（任意）</b><div class="tiny">分かる打球だけ、飛んだ場所をタップ</div></div><button type="button" id="clearSummaryDirs" class="btn outline mini">クリア</button></div><div class="realField" id="summaryField"></div><div class="fieldNames"><span>レフト</span><span>センター</span><span>ライト</span></div><div class="summaryDirCount" id="summaryDirCount">0球登録</div><div class="summaryDirList" id="summaryDirList"></div></div><label style="display:block;margin-top:12px">メモ<textarea id="sMemo" placeholder="分かる範囲でOK"></textarea></label>
 </div>
 <button id="saveSummary" class="btn primary">この成績を保存</button>
 </div></div>
@@ -232,7 +232,7 @@ if(!db || !Array.isArray(db.players)){
  db={players:[{id:'p1',name:'長男',grade:'小学4年生'},{id:'p2',name:'次男',grade:'小学2年生'}],currentPlayerId:'p1',games:[]};
 }
 db.games=db.games||[];
-let draft=null, paDraft=null, paEditIndex=null, inputMode='detail', counters={runs:0,sb:0,cs:0,errors:0}, editingPlayer=null, editingGameId=null, selectedPositions=[], heatFilter='all';
+let draft=null, paDraft=null, paEditIndex=null, inputMode='detail', counters={runs:0,sb:0,cs:0,errors:0}, editingPlayer=null, editingGameId=null, selectedPositions=[], heatFilter='all', summaryDirs=[];
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
@@ -284,7 +284,7 @@ function render(){
  $('statsGrid').innerHTML=stats.map(([k,v])=>`<div class="stat"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');
  const orders=[1,2,3,4,5,6,7,8,9].map(o=>[o,games.filter(g=>+g.batOrder===o)]).filter(x=>x[1].length);
  $('orderAnalysis').innerHTML=orders.length?orders.map(([o,gs])=>{const x=calc(gs);return `<div class="row"><div><b>${o}番</b><div class="meta">${gs.length}試合・${x.PA}打席</div></div><div style="text-align:right"><b>打率 ${rate(x.AVG)}</b><div class="meta">出塁率 ${rate(x.OBP)} / OPS ${rate(x.OPS)}</div></div></div>`}).join(''):`<div class="empty">打順を記録すると表示されます。</div>`;
- const abs=games.filter(g=>g.mode!=='summary').flatMap(g=>g.atbats||[]);
+ const abs=games.flatMap(g=>g.mode==='summary'?(g.summaryDirections||[]):(g.atbats||[]));
  renderHeatmap(abs);renderBars($('dirAnalysis'),['左','左中間','中','右中間','右'].map(d=>[d,abs.filter(a=>a.direction===d).length]));
  renderBars($('contactAnalysis'),CONTACTS.map(d=>[d,abs.filter(a=>a.contact===d).length]));
  $('discAnalysis').innerHTML=`<div class="analysis-row"><div>三振率</div><div class="bar"><div style="width:${Number.isFinite(s.Kpct)?s.Kpct*100:0}%"></div></div><div>${Number.isFinite(s.Kpct)?Math.round(s.Kpct*100):0}%</div></div><div class="analysis-row"><div>四球率</div><div class="bar"><div style="width:${Number.isFinite(s.BBpct)?s.BBpct*100:0}%"></div></div><div>${Number.isFinite(s.BBpct)?Math.round(s.BBpct*100):0}%</div></div><div class="row"><b>得点圏打率</b><b>${rate(s.RISPAVG)}</b></div>`;
@@ -313,7 +313,7 @@ $('startGame').onclick=()=>{
  const existing=editingGameId?db.games.find(g=>g.id===editingGameId):null;draft={...(existing||{}),id:existing?.id||crypto.randomUUID(),playerId:existing?.playerId||currentPlayer().id,date:$('gDate').value,opponent:$('gOpp').value.trim(),grade:$('gGrade').value,type:$('gType').value,batOrder:$('gOrder').value,positions:[...selectedPositions],mode:inputMode};
  closeModal($('gameModal'));
  if(inputMode==='summary'){
-   const q=draft.summary||{};const mp={sPA:'PA',sAB:'AB',sH:'H',s2B:'B2',s3B:'B3',sHR:'HR',sBB:'BB',sHBP:'HBP',sSO:'SO',sRBI:'RBI',sR:'R',sSB:'SB'};Object.entries(mp).forEach(([id,k])=>$(id).value=+q[k]||0);$('sMemo').value=draft.memo||'';openModal($('summaryModal'));
+   const q=draft.summary||{};const mp={sPA:'PA',sAB:'AB',sH:'H',s2B:'B2',s3B:'B3',sHR:'HR',sBB:'BB',sHBP:'HBP',sSO:'SO',sRBI:'RBI',sR:'R',sSB:'SB'};Object.entries(mp).forEach(([id,k])=>$(id).value=+q[k]||0);$('sMemo').value=draft.memo||'';summaryDirs=(draft.summaryDirections||[]).map(d=>({...d,id:d.id||crypto.randomUUID()}));openModal($('summaryModal'));drawSummaryField();renderSummaryDirList();
  }else{
    draft.atbats=draft.atbats||[];draft.runs=+draft.runs||0;draft.sb=+draft.sb||0;draft.cs=+draft.cs||0;draft.errors=+draft.errors||0;draft.memo=draft.memo||'';counters={runs:draft.runs,sb:draft.sb,cs:draft.cs,errors:draft.errors};$('gMemo').value=draft.memo;syncCounters();renderDraft();openModal($('detailModal'));
  }
@@ -339,6 +339,9 @@ function baseballFieldSVG(){return `<svg viewBox="0 0 600 480"><defs><radialGrad
 function fieldXYForDir(d){return ({左:[20,34],左中間:[35,22],中:[50,14],右中間:[65,22],右:[80,34]})[d]||[50,25]}
 function dirForX(x){return x<28?'左':x<43?'左中間':x<57?'中':x<72?'右中間':'右'}
 function drawInputField(){const f=$('fieldWrap');if(!f)return;f.innerHTML=baseballFieldSVG()+`<div class="tapLayer"></div>`+(paDraft?.fieldX!=null?`<div class="mark" style="left:${paDraft.fieldX}%;top:${paDraft.fieldY}%"></div>`:'');f.querySelector('.tapLayer').onclick=e=>{const r=e.currentTarget.getBoundingClientRect(),x=Math.max(8,Math.min(92,(e.clientX-r.left)/r.width*100)),y=Math.max(7,Math.min(88,(e.clientY-r.top)/r.height*100));paDraft.fieldX=+x.toFixed(1);paDraft.fieldY=+y.toFixed(1);paDraft.direction=dirForX(x);drawInputField()}}
+function drawSummaryField(){const f=$('summaryField');if(!f)return;f.innerHTML=baseballFieldSVG()+`<div class="tapLayer"></div>`+summaryDirs.map((d,i)=>`<div class="mark" style="left:${d.fieldX}%;top:${d.fieldY}%"><span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:8px;font-weight:900;color:#fff;z-index:2">${i+1}</span></div>`).join('');f.querySelector('.tapLayer').onclick=e=>{const r=e.currentTarget.getBoundingClientRect(),x=Math.max(8,Math.min(92,(e.clientX-r.left)/r.width*100)),y=Math.max(7,Math.min(88,(e.clientY-r.top)/r.height*100));summaryDirs.push({id:crypto.randomUUID(),fieldX:+x.toFixed(1),fieldY:+y.toFixed(1),direction:dirForX(x)});drawSummaryField();renderSummaryDirList()}}
+function renderSummaryDirList(){if(!$('summaryDirList'))return;$('summaryDirCount').textContent=`${summaryDirs.length}球登録`;$('summaryDirList').innerHTML=summaryDirs.map((d,i)=>`<span class="summaryDirChip">${i+1}球目・${d.direction}<button type="button" onclick="removeSummaryDir('${d.id}')">×</button></span>`).join('')}
+window.removeSummaryDir=id=>{summaryDirs=summaryDirs.filter(d=>d.id!==id);drawSummaryField();renderSummaryDirList()};
 function openPA(index=null){
  paEditIndex=index;paDraft=index===null?{result:'',direction:'',fieldX:null,fieldY:null,contact:'',rbi:0,outs:'',risp:false,base:'',sb:false}:{...draft.atbats[index]};
  $('paTitle').textContent=`第${index===null?draft.atbats.length+1:index+1}打席`;
@@ -375,9 +378,10 @@ function showConfirm(){
 $('backEdit').onclick=()=>{closeModal($('confirmModal'));openModal($('detailModal'))};
 $('confirmSave').onclick=()=>{const i=db.games.findIndex(g=>g.id===draft.id);if(i>=0)db.games[i]=draft;else db.games.push(draft);editingGameId=null;draft=null;persist();closeModal($('confirmModal'));alert('試合を保存しました⚾️')};
 
+$('clearSummaryDirs').onclick=()=>{if(summaryDirs.length&&!confirm('登録した打球方向をすべて消しますか？'))return;summaryDirs=[];drawSummaryField();renderSummaryDirList()};
 $('saveSummary').onclick=()=>{
  draft.summary={PA:+$('sPA').value||0,AB:+$('sAB').value||0,H:+$('sH').value||0,B2:+$('s2B').value||0,B3:+$('s3B').value||0,HR:+$('sHR').value||0,BB:+$('sBB').value||0,HBP:+$('sHBP').value||0,SO:+$('sSO').value||0,RBI:+$('sRBI').value||0,R:+$('sR').value||0,SB:+$('sSB').value||0};
- draft.memo=$('sMemo').value.trim();const i=db.games.findIndex(g=>g.id===draft.id);if(i>=0)db.games[i]=draft;else db.games.push(draft);editingGameId=null;draft=null;persist();closeModal($('summaryModal'));alert('成績を保存しました⚾️')
+ draft.memo=$('sMemo').value.trim();draft.summaryDirections=summaryDirs.map(d=>({id:d.id,fieldX:d.fieldX,fieldY:d.fieldY,direction:d.direction}));const i=db.games.findIndex(g=>g.id===draft.id);if(i>=0)db.games[i]=draft;else db.games.push(draft);editingGameId=null;draft=null;persist();closeModal($('summaryModal'));alert('成績を保存しました⚾️')
 };
 
 $('addPlayerBtn').onclick=()=>{editingPlayer=null;$('playerModalTitle').textContent='選手を追加';$('playerName').value='';$('playerGrade').value='小学2年生';openModal($('playerModal'))};
@@ -387,7 +391,7 @@ $('savePlayer').onclick=()=>{const name=$('playerName').value.trim();if(!name){a
 
 window.editGame=id=>{const g=db.games.find(x=>x.id===id);if(!g)return;editingGameId=id;selectedPositions=[...(g.positions||[])];$('gDate').value=g.date||'';$('gOpp').value=g.opponent||'';$('gGrade').value=g.grade||currentPlayer().grade;$('gType').value=g.type||'練習試合';$('gOrder').value=g.batOrder||'';setMode(g.mode||'detail');document.querySelectorAll('[data-pos]').forEach(z=>z.classList.toggle('active',selectedPositions.includes(z.dataset.pos)));openModal($('gameModal'))};
 window.deleteGame=id=>{const g=db.games.find(x=>x.id===id);if(!g)return;if(!confirm(`${g.date||''} ${g.opponent?'vs '+g.opponent:''} の記録を削除しますか？`))return;db.games=db.games.filter(x=>x.id!==id);persist()};
-function renderHeatmap(abs){const src=(heatFilter==='hits'?abs.filter(a=>['1B','2B','3B','HR','ITPHR'].includes(a.result)):abs).filter(a=>a.direction);if(!src.length){$('heatmap').innerHTML='<div class="empty">対象の打球データがありません。</div>';return}const cells={};src.forEach(a=>{const q=(a.fieldX!=null&&a.fieldY!=null)?[+a.fieldX,+a.fieldY]:fieldXYForDir(a.direction),x=Math.round(q[0]/6)*6,y=Math.round(q[1]/6)*6,k=x+'_'+y;cells[k]=cells[k]||{x,y,n:0};cells[k].n++});const max=Math.max(...Object.values(cells).map(c=>c.n),1);$('heatmap').innerHTML=`<div class="realField">${baseballFieldSVG()}${Object.values(cells).map(c=>{const sz=25+35*c.n/max,a=.18+.52*c.n/max;return `<div class="heat2" style="left:${c.x}%;top:${c.y}%;width:${sz}px;height:${sz}px;background:rgba(231,87,61,${a})">${c.n}</div>`}).join('')}</div>`}document.querySelectorAll('[data-heat]').forEach(b=>b.onclick=()=>{heatFilter=b.dataset.heat;document.querySelectorAll('[data-heat]').forEach(x=>x.classList.toggle('active',x===b));const abs=gamesForPlayer().filter(g=>g.mode!=='summary').flatMap(g=>g.atbats||[]);renderHeatmap(abs)});
+function renderHeatmap(abs){const src=(heatFilter==='hits'?abs.filter(a=>['1B','2B','3B','HR','ITPHR'].includes(a.result)):abs).filter(a=>a.direction);if(!src.length){$('heatmap').innerHTML='<div class="empty">対象の打球データがありません。</div>';return}const cells={};src.forEach(a=>{const q=(a.fieldX!=null&&a.fieldY!=null)?[+a.fieldX,+a.fieldY]:fieldXYForDir(a.direction),x=Math.round(q[0]/6)*6,y=Math.round(q[1]/6)*6,k=x+'_'+y;cells[k]=cells[k]||{x,y,n:0};cells[k].n++});const max=Math.max(...Object.values(cells).map(c=>c.n),1);$('heatmap').innerHTML=`<div class="realField">${baseballFieldSVG()}${Object.values(cells).map(c=>{const sz=25+35*c.n/max,a=.18+.52*c.n/max;return `<div class="heat2" style="left:${c.x}%;top:${c.y}%;width:${sz}px;height:${sz}px;background:rgba(231,87,61,${a})">${c.n}</div>`}).join('')}</div>`}document.querySelectorAll('[data-heat]').forEach(b=>b.onclick=()=>{heatFilter=b.dataset.heat;document.querySelectorAll('[data-heat]').forEach(x=>x.classList.toggle('active',x===b));const abs=gamesForPlayer().flatMap(g=>g.mode==='summary'?(g.summaryDirections||[]):(g.atbats||[]));renderHeatmap(abs)});
 
 $('exportBtn').onclick=()=>{
  const blob=new Blob([JSON.stringify({app:'Baseball Growth',version:3,exportedAt:new Date().toISOString(),data:db},null,2)],{type:'application/json'});
