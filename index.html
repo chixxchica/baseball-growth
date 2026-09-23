@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.json">
-<title>Baseball Growth Ver.3.6</title>
+<title>Baseball Growth Ver.3.7</title>
 <style>
 :root{--navy:#0c386f;--navy2:#092b57;--blue:#1967d2;--bg:#f5f7fa;--card:#fff;--text:#17212c;--muted:#6c7684;--line:#dfe5ec;--green:#e4f7e9;--greenb:#57a96f;--yellow:#fff4cf;--yellowb:#d6a92f;--red:#fee9e6;--redb:#e1786b;--purple:#f0e9ff;--purpleb:#9b78d0}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;color:var(--text)}
@@ -61,7 +61,7 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 <div class="app">
 <header>
 <div class="top">
-<div><div class="brand">⚾ Baseball Growth</div><div class="sub">野球成長記録・Ver.3.6</div></div>
+<div><div class="brand">⚾ Baseball Growth</div><div class="sub">野球成長記録・Ver.3.7</div></div>
 <select id="playerSelect" class="playerSelect"></select>
 </div>
 </header>
@@ -109,6 +109,11 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 <input id="bulkCsvFile" class="fileInput" type="file" accept=".csv,text/csv">
 </div>
 <div class="card">
+<div class="section">重複チェック</div>
+<div class="modeNote">同じ日・同じ相手でも別試合は残します。打順・守備・打数・安打・打点・盗塁・打席内容まで比べ、ほぼ同じ記録だけを「重複候補」として表示します。</div>
+<div class="toolbar" style="margin-top:10px"><button id="dupCheckBtn" class="btn outline">重複候補をチェック</button></div>
+</div>
+<div class="card">
 <div class="section">バックアップ</div>
 <div class="modeNote">記録はこの端末内に保存されます。ときどきバックアップを書き出しておくと安心です。</div>
 <div class="toolbar" style="margin-top:10px">
@@ -135,6 +140,7 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 <div class="card"><div class="grid2">
 <label>日付<input id="gDate" type="date"></label>
 <label>対戦相手<input id="gOpp" placeholder="例：○○クラブ"></label>
+<label>同日カード（任意）<select id="gGameNo"><option value="">未設定</option><option value="1">第1試合</option><option value="2">第2試合</option><option value="3">第3試合</option></select></label>
 <label>試合時点の学年<select id="gGrade"></select></label>
 <label>大会・試合種別<select id="gType"><option>練習試合</option><option>公式戦</option><option>大会</option><option>紅白戦</option><option>その他</option></select></label>
 <label>打順<select id="gOrder"><option value="">未設定</option><option value="1">1番</option><option value="2">2番</option><option value="3">3番</option><option value="4">4番</option><option value="5">5番</option><option value="6">6番</option><option value="7">7番</option><option value="8">8番</option><option value="9">9番</option></select></label>
@@ -240,8 +246,14 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 <!-- 過去CSV一括取込 -->
 <div id="bulkModal" class="modal"><div class="sheet">
 <div class="sheethead"><div><b style="font-size:18px">過去データ一括取込</b><div id="bulkMeta" class="tiny"></div></div><button class="close" onclick="closeModal(bulkModal)">×</button></div>
-<div class="card"><div class="modeNote">赤い「要確認」がある行は、元の表記を確認してから取り込めます。既に同じ日付・対戦相手の試合がある場合は重複として外します。</div><div id="bulkPreview" style="margin-top:10px"></div></div>
+<div class="card"><div class="modeNote">赤い「要確認」がある行は、元の表記を確認してから取り込めます。同じ日付・対戦相手だけでは重複扱いにしません。内容がほぼ同じ場合だけ「重複候補」と表示します。</div><div id="bulkPreview" style="margin-top:10px"></div></div>
 <button id="bulkImportConfirm" class="btn primary">チェックした試合をまとめて登録</button>
+</div></div>
+
+<!-- 重複チェック -->
+<div id="dupModal" class="modal"><div class="sheet">
+<div class="sheethead"><div><b style="font-size:18px">重複候補チェック</b><div id="dupMeta" class="tiny"></div></div><button class="close" onclick="closeModal(dupModal)">×</button></div>
+<div class="card"><div class="modeNote">自動削除はしません。2試合行った記録はそのまま残し、本当に同じ記録だけ片方を削除してください。</div><div id="dupPreview" style="margin-top:10px"></div></div>
 </div></div>
 
 <!-- 選手 -->
@@ -328,7 +340,7 @@ function render(){
  $('gradeGrowth').innerHTML=grades.length?grades.map(gr=>{const x=calc(games.filter(g=>g.grade===gr));return `<div class="growcard"><b>${gr}</b><div class="meta">${games.filter(g=>g.grade===gr).length}試合</div><div style="margin-top:7px">打率 <b>${rate(x.AVG)}</b></div><div>出塁率 <b>${rate(x.OBP)}</b></div><div>OPS <b>${rate(x.OPS)}</b></div></div>`}).join(''):`<div class="empty">試合を記録すると学年別に残ります。</div>`;
  $('playerList').innerHTML=db.players.map(x=>`<div class="row"><div><b>${esc(x.name)}</b><div class="meta">${x.grade} / ${db.games.filter(g=>g.playerId===x.id).length}試合</div></div><button class="btn outline" style="padding:7px 11px" onclick="editPlayer('${x.id}')">編集</button></div>`).join('');
 }
-function gameRow(g){const x=statOfGame(g),dc=(g.defenseChanges||[]).filter(c=>c.inning&&c.position);const dct=dc.length?`<div class="meta">守備変更：${dc.map(c=>`${c.inning}回〜${c.position}`).join(' → ')}</div>`:'';return `<div class="row"><div><b>${esc(g.date||'')} vs ${esc(g.opponent||'未入力')}</b><div class="meta">${g.grade||''}${g.batOrder?'・'+g.batOrder+'番':''}${(g.positions||[]).length?'・'+g.positions.join('／'):''}・${g.mode==='summary'?'成績入力':'詳細入力'}</div>${dct}<div class="gameActions"><button class="miniBtn" onclick="editGame('${g.id}')">修正</button><button class="miniBtn del" onclick="deleteGame('${g.id}')">削除</button></div></div><div style="text-align:right;white-space:nowrap"><b>${x.H}安打 ${x.RBI}打点</b><div class="meta">${x.AB}打数</div></div></div>`}
+function gameRow(g){const x=statOfGame(g),dc=(g.defenseChanges||[]).filter(c=>c.inning&&c.position);const dct=dc.length?`<div class="meta">守備変更：${dc.map(c=>`${c.inning}回〜${c.position}`).join(' → ')}</div>`:'';return `<div class="row"><div><b>${esc(g.date||'')} vs ${esc(g.opponent||'未入力')}${g.gameNo?'（第'+esc(g.gameNo)+'試合）':''}</b><div class="meta">${g.grade||''}${g.batOrder?'・'+g.batOrder+'番':''}${(g.positions||[]).length?'・'+g.positions.join('／'):''}・${g.mode==='summary'?'成績入力':'詳細入力'}</div>${dct}<div class="gameActions"><button class="miniBtn" onclick="editGame('${g.id}')">修正</button><button class="miniBtn del" onclick="deleteGame('${g.id}')">削除</button></div></div><div style="text-align:right;white-space:nowrap"><b>${x.H}安打 ${x.RBI}打点</b><div class="meta">${x.AB}打数</div></div></div>`}
 function renderBars(el,pairs){const t=pairs.reduce((s,x)=>s+x[1],0);el.innerHTML=t?pairs.map(([k,v])=>{const p=Math.round(v/t*100);return `<div class="analysis-row"><div>${k}</div><div class="bar"><div style="width:${p}%"></div></div><div>${p}%</div></div>`}).join(''):`<div class="empty">詳しく入力した試合がたまると表示されます。</div>`}
 
 $('playerSelect').onchange=()=>{db.currentPlayerId=$('playerSelect').value;persist()};
@@ -378,7 +390,7 @@ function setMode(m){inputMode=m;$('modeDetail').classList.toggle('active',m==='d
 $('modeDetail').onclick=()=>setMode('detail');$('modeSummary').onclick=()=>setMode('summary');
 
 $('startGame').onclick=()=>{
- const existing=editingGameId?db.games.find(g=>g.id===editingGameId):null;draft={...(existing||{}),id:existing?.id||crypto.randomUUID(),playerId:existing?.playerId||currentPlayer().id,date:$('gDate').value,opponent:$('gOpp').value.trim(),grade:$('gGrade').value,type:$('gType').value,batOrder:$('gOrder').value,positions:[...selectedPositions],defenseChanges:defenseChanges.filter(c=>c.inning&&c.position).map(c=>({inning:String(c.inning),position:c.position})),mode:inputMode};
+ const existing=editingGameId?db.games.find(g=>g.id===editingGameId):null;draft={...(existing||{}),id:existing?.id||crypto.randomUUID(),playerId:existing?.playerId||currentPlayer().id,date:$('gDate').value,opponent:$('gOpp').value.trim(),gameNo:$('gGameNo').value,grade:$('gGrade').value,type:$('gType').value,batOrder:$('gOrder').value,positions:[...selectedPositions],defenseChanges:defenseChanges.filter(c=>c.inning&&c.position).map(c=>({inning:String(c.inning),position:c.position})),mode:inputMode};
  closeModal($('gameModal'));
  if(inputMode==='summary'){
    const q=draft.summary||{};const mp={sPA:'PA',sAB:'AB',sH:'H',s2B:'B2',s3B:'B3',sHR:'HR',sBB:'BB',sHBP:'HBP',sSO:'SO',sRBI:'RBI',sR:'R',sSB:'SB'};Object.entries(mp).forEach(([id,k])=>$(id).value=+q[k]||0);$('sMemo').value=draft.memo||'';summaryDirs=(draft.summaryDirections||[]).map(d=>({...d,id:d.id||crypto.randomUUID()}));openModal($('summaryModal'));drawSummaryField();renderSummaryDirList();
@@ -437,7 +449,7 @@ $('finishDetail').onclick=()=>{
  showConfirm();
 };
 function showConfirm(){
- const x=detailStats(draft);$('confirmMeta').textContent=`${draft.date} vs ${draft.opponent||'未入力'}・${draft.grade}${draft.batOrder?'・'+draft.batOrder+'番':''}`;
+ const x=detailStats(draft);$('confirmMeta').textContent=`${draft.date} vs ${draft.opponent||'未入力'}${draft.gameNo?'（第'+draft.gameNo+'試合）':''}・${draft.grade}${draft.batOrder?'・'+draft.batOrder+'番':''}`;
  const items=[['打席',x.PA],['打数',x.AB],['安打',x.H],['打点',x.RBI],['打率',x.AB?rate(x.H/x.AB):'.---'],['盗塁',x.SB]];
  $('confirmStats').innerHTML=items.map(([k,v])=>`<div class="stat"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');
  $('confirmPA').innerHTML=draft.atbats.map((a,i)=>`<div class="row"><div><b>第${i+1}打席 ${resultName(a.result)}</b><div class="meta">${a.direction?dirLabel(a):''}${a.contact?'・'+a.contact:''}${a.rbi?'・'+a.rbi+'打点':''}</div></div></div>`).join('');
@@ -457,7 +469,7 @@ window.editPlayer=id=>{const p=db.players.find(x=>x.id===id);editingPlayer=id;$(
 $('savePlayer').onclick=()=>{const name=$('playerName').value.trim();if(!name){alert('表示名を入力してください');return}if(editingPlayer){const p=db.players.find(x=>x.id===editingPlayer);p.name=name;p.grade=$('playerGrade').value}else{const id=crypto.randomUUID();db.players.push({id,name,grade:$('playerGrade').value});db.currentPlayerId=id}persist();closeModal($('playerModal'))};
 
 
-window.editGame=id=>{const g=db.games.find(x=>x.id===id);if(!g)return;editingGameId=id;selectedPositions=[...(g.positions||[])];defenseChanges=(g.defenseChanges||[]).map(c=>({...c}));$('gDate').value=g.date||'';$('gOpp').value=g.opponent||'';$('gGrade').value=g.grade||currentPlayer().grade;$('gType').value=g.type||'練習試合';$('gOrder').value=g.batOrder||'';setMode(g.mode||'detail');document.querySelectorAll('[data-pos]').forEach(z=>z.classList.toggle('active',selectedPositions.includes(z.dataset.pos)));renderDefenseChanges();openModal($('gameModal'))};
+window.editGame=id=>{const g=db.games.find(x=>x.id===id);if(!g)return;editingGameId=id;selectedPositions=[...(g.positions||[])];defenseChanges=(g.defenseChanges||[]).map(c=>({...c}));$('gDate').value=g.date||'';$('gOpp').value=g.opponent||'';$('gGameNo').value=g.gameNo||'';$('gGrade').value=g.grade||currentPlayer().grade;$('gType').value=g.type||'練習試合';$('gOrder').value=g.batOrder||'';setMode(g.mode||'detail');document.querySelectorAll('[data-pos]').forEach(z=>z.classList.toggle('active',selectedPositions.includes(z.dataset.pos)));renderDefenseChanges();openModal($('gameModal'))};
 window.deleteGame=id=>{const g=db.games.find(x=>x.id===id);if(!g)return;if(!confirm(`${g.date||''} ${g.opponent?'vs '+g.opponent:''} の記録を削除しますか？`))return;db.games=db.games.filter(x=>x.id!==id);persist()};
 function renderHeatmap(abs){const src=(heatFilter==='hits'?abs.filter(a=>['1B','2B','3B','HR','ITPHR'].includes(a.result)):abs).filter(a=>a.direction);if(!src.length){$('heatmap').innerHTML='<div class="empty">対象の打球データがありません。</div>';return}const cells={};src.forEach(a=>{const q=(a.fieldX!=null&&a.fieldY!=null)?[+a.fieldX,+a.fieldY]:fieldXYForDir(a.direction),x=Math.round(q[0]/6)*6,y=Math.round(q[1]/6)*6,k=x+'_'+y;cells[k]=cells[k]||{x,y,n:0};cells[k].n++});const max=Math.max(...Object.values(cells).map(c=>c.n),1);$('heatmap').innerHTML=`<div class="realField">${baseballFieldSVG()}${Object.values(cells).map(c=>{const sz=25+35*c.n/max,a=.18+.52*c.n/max;return `<div class="heat2" style="left:${c.x}%;top:${c.y}%;width:${sz}px;height:${sz}px;background:rgba(231,87,61,${a})">${c.n}</div>`}).join('')}</div>`}document.querySelectorAll('[data-heat]').forEach(b=>b.onclick=()=>{heatFilter=b.dataset.heat;document.querySelectorAll('[data-heat]').forEach(x=>x.classList.toggle('active',x===b));const abs=gamesForPlayer().flatMap(g=>g.mode==='summary'?(g.summaryDirections||[]):(g.atbats||[]));renderHeatmap(abs)});
 
@@ -489,10 +501,19 @@ function buildBulk(rows){let year=new Date().getFullYear(),header=-1;for(let i=0
  const directions=atbats.filter(a=>a.direction).map(a=>({id:crypto.randomUUID(),direction:a.direction,fieldX:a.fieldX,fieldY:a.fieldY}));out.push({checked:true,date,opponent:opp,grade:'小学4年生',type:opp.includes('リーグ')?'公式戦':'練習試合',batOrder:order,positions,mode:'summary',summary:{PA:AB+BB+HBP,AB,H,B2,B3,HR,BB,HBP,SO,RBI,R:0,SB},summaryDirections:directions,memo:`CSV一括取込 / 打席: ${paTexts.join('・')}`,rawPAs:paTexts,warnings});}
  return out;
 }
-function renderBulk(){const dup=g=>db.games.some(x=>x.playerId===currentPlayer().id&&x.date===g.date&&x.opponent===g.opponent);$('bulkMeta').textContent=`${bulkGames.length}試合を検出 / ${currentPlayer().name} に登録`; $('bulkPreview').innerHTML=bulkGames.map((g,i)=>{const d=dup(g);if(d)g.checked=false;return`<div class="bulkRow"><div class="bulkTop"><input type="checkbox" data-bulk="${i}" ${g.checked&&!d?'checked':''} ${d?'disabled':''}><div><div class="bulkTitle">${esc(g.date)}　vs ${esc(g.opponent)} ${d?'<span class="bulkWarn">登録済み</span>':g.warnings.length?'<span class="bulkWarn">要確認</span>':'<span class="bulkOk">OK</span>'}</div><div class="meta">${g.batOrder?g.batOrder+'番・':''}${g.positions.join('／')||'守備未設定'} / ${g.summary.AB}打数 ${g.summary.H}安打 ${g.summary.RBI}打点 ${g.summary.SB}盗塁</div><div class="bulkPAs">${g.rawPAs.map((x,n)=>`${n+1}. ${esc(x)}`).join('　')}</div>${g.warnings.length?`<div class="bulkPAs" style="color:#a52c25">${g.warnings.map(esc).join('<br>')}</div>`:''}</div></div></div>`}).join('');document.querySelectorAll('[data-bulk]').forEach(x=>x.onchange=()=>bulkGames[+x.dataset.bulk].checked=x.checked)}
+function rawPAsOf(g){if(Array.isArray(g.rawPAs))return g.rawPAs;const m=String(g.memo||'').match(/打席:\s*(.*)$/);return m?m[1].split('・').map(normJP).filter(Boolean):[]}
+function summaryOf(g){return g.summary||statOfGame(g)}
+function duplicateScore(a,b){if(a.playerId&&b.playerId&&a.playerId!==b.playerId)return 0;if(a.date!==b.date||normJP(a.opponent)!==normJP(b.opponent))return 0;let score=2,possible=2;const fields=[['batOrder',1],['positions',1]];if(a.batOrder||b.batOrder){possible+=1;if(String(a.batOrder||'')===String(b.batOrder||''))score+=1}const ap=(a.positions||[]).slice().sort().join(','),bp=(b.positions||[]).slice().sort().join(',');if(ap||bp){possible+=1;if(ap===bp)score+=1}const sa=summaryOf(a),sb=summaryOf(b);['AB','H','RBI','SB'].forEach(k=>{possible+=1;if(Number(sa[k]||0)===Number(sb[k]||0))score+=1});const ra=rawPAsOf(a),rb=rawPAsOf(b);if(ra.length||rb.length){possible+=2;if(ra.length===rb.length&&ra.every((x,i)=>normJP(x)===normJP(rb[i])))score+=2}return score/possible}
+function likelyDup(g){const probe={...g,playerId:currentPlayer().id};return db.games.find(x=>duplicateScore(probe,x)>=.9)}
+function renderBulk(){$('bulkMeta').textContent=`${bulkGames.length}試合を検出 / ${currentPlayer().name} に登録`; $('bulkPreview').innerHTML=bulkGames.map((g,i)=>{const d=likelyDup(g);if(d)g.checked=false;return`<div class="bulkRow"><div class="bulkTop"><input type="checkbox" data-bulk="${i}" ${g.checked?'checked':''}><div><div class="bulkTitle">${esc(g.date)}　vs ${esc(g.opponent)} ${d?'<span class="bulkWarn">重複候補</span>':g.warnings.length?'<span class="bulkWarn">要確認</span>':'<span class="bulkOk">OK</span>'}</div><div class="meta">${g.batOrder?g.batOrder+'番・':''}${g.positions.join('／')||'守備未設定'} / ${g.summary.AB}打数 ${g.summary.H}安打 ${g.summary.RBI}打点 ${g.summary.SB}盗塁</div><div class="bulkPAs">${g.rawPAs.map((x,n)=>`${n+1}. ${esc(x)}`).join('　')}</div>${d?'<div class="bulkPAs" style="color:#a52c25">同日同カードの中に、成績・打席内容がほぼ同じ記録があります。別試合ならチェックして取込できます。</div>':''}${g.warnings.length?`<div class="bulkPAs" style="color:#a52c25">${g.warnings.map(esc).join('<br>')}</div>`:''}</div></div></div>`}).join('');document.querySelectorAll('[data-bulk]').forEach(x=>x.onchange=()=>bulkGames[+x.dataset.bulk].checked=x.checked)}
+function findDuplicatePairs(){const gs=db.games.filter(g=>g.playerId===currentPlayer().id),out=[];for(let i=0;i<gs.length;i++)for(let j=i+1;j<gs.length;j++){const score=duplicateScore(gs[i],gs[j]);if(score>=.9)out.push({a:gs[i],b:gs[j],score})}return out}
+function dupLabel(g){const x=summaryOf(g);return `${esc(g.date)} vs ${esc(g.opponent||'未入力')}${g.gameNo?'（第'+esc(g.gameNo)+'試合）':''}<div class="meta">${g.batOrder?g.batOrder+'番・':''}${(g.positions||[]).join('／')||'守備未設定'} / ${x.AB||0}打数 ${x.H||0}安打 ${x.RBI||0}打点 ${x.SB||0}盗塁</div>`}
+function renderDupCheck(){const pairs=findDuplicatePairs();$('dupMeta').textContent=pairs.length?`${pairs.length}組の候補`:'重複候補なし';$('dupPreview').innerHTML=pairs.length?pairs.map((p,i)=>`<div class="bulkRow"><div class="bulkTitle">重複候補 ${i+1}</div><div style="margin-top:8px">① ${dupLabel(p.a)}<div class="gameActions"><button class="miniBtn del" onclick="deleteDupCandidate('${p.a.id}')">①を削除</button></div></div><div style="margin-top:12px">② ${dupLabel(p.b)}<div class="gameActions"><button class="miniBtn del" onclick="deleteDupCandidate('${p.b.id}')">②を削除</button></div></div><div class="tiny" style="margin-top:10px">※ 同日に同じ相手と2試合した記録なら、どちらも削除しなくてOKです。</div></div>`).join(''):`<div class="empty">ほぼ同じ内容の重複候補は見つかりませんでした⚾️</div>`}
+window.deleteDupCandidate=id=>{const g=db.games.find(x=>x.id===id);if(!g)return;if(!confirm(`${g.date} vs ${g.opponent||''} のこの記録だけを削除しますか？`))return;db.games=db.games.filter(x=>x.id!==id);persist();renderDupCheck()};
+$('dupCheckBtn').onclick=()=>{renderDupCheck();openModal($('dupModal'))};
 $('bulkCsvBtn').onclick=()=>$('bulkCsvFile').click();
 $('bulkCsvFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{bulkGames=buildBulk(parseCSV(r.result));if(!bulkGames.length)throw new Error();renderBulk();openModal($('bulkModal'))}catch(err){alert('このCSVから試合データを見つけられませんでした。Excelで「CSV UTF-8」として保存してから選んでください。')}};r.readAsText(f,'UTF-8');e.target.value=''};
-$('bulkImportConfirm').onclick=()=>{const chosen=bulkGames.filter(g=>g.checked);if(!chosen.length){alert('登録する試合にチェックを入れてください');return}if(!confirm(`${chosen.length}試合を ${currentPlayer().name} に登録しますか？`))return;chosen.forEach(g=>db.games.push({id:crypto.randomUUID(),playerId:currentPlayer().id,date:g.date,opponent:g.opponent,grade:g.grade,type:g.type,batOrder:g.batOrder,positions:g.positions,defenseChanges:[],mode:'summary',summary:g.summary,summaryDirections:g.summaryDirections,memo:g.memo}));persist();closeModal($('bulkModal'));alert(`${chosen.length}試合をまとめて登録しました⚾️`)};
+$('bulkImportConfirm').onclick=()=>{const chosen=bulkGames.filter(g=>g.checked);if(!chosen.length){alert('登録する試合にチェックを入れてください');return}if(!confirm(`${chosen.length}試合を ${currentPlayer().name} に登録しますか？`))return;chosen.forEach(g=>db.games.push({id:crypto.randomUUID(),playerId:currentPlayer().id,date:g.date,opponent:g.opponent,gameNo:g.gameNo||'',grade:g.grade,type:g.type,batOrder:g.batOrder,positions:g.positions,defenseChanges:[],mode:'summary',summary:g.summary,summaryDirections:g.summaryDirections,rawPAs:g.rawPAs,memo:g.memo}));persist();closeModal($('bulkModal'));alert(`${chosen.length}試合をまとめて登録しました⚾️`)};
 
 $('exportBtn').onclick=()=>{
  const blob=new Blob([JSON.stringify({app:'Baseball Growth',version:3,exportedAt:new Date().toISOString(),data:db},null,2)],{type:'application/json'});
