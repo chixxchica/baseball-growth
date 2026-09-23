@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.json">
-<title>Baseball Growth Ver.3.5</title>
+<title>Baseball Growth Ver.3.6</title>
 <style>
 :root{--navy:#0c386f;--navy2:#092b57;--blue:#1967d2;--bg:#f5f7fa;--card:#fff;--text:#17212c;--muted:#6c7684;--line:#dfe5ec;--green:#e4f7e9;--greenb:#57a96f;--yellow:#fff4cf;--yellowb:#d6a92f;--red:#fee9e6;--redb:#e1786b;--purple:#f0e9ff;--purpleb:#9b78d0}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;color:var(--text)}
@@ -51,6 +51,9 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 .defenseRemove{width:38px;height:38px;border:1px solid #edc9c5;border-radius:9px;background:#fff6f5;color:#a52c25;font-size:18px;font-weight:900}
 .defenseSummary{font-size:11px;color:var(--muted);margin-top:7px}
 
+
+.bulkRow{border:1px solid var(--line);border-radius:12px;padding:10px;margin:8px 0;background:#fff}.bulkTop{display:flex;gap:8px;align-items:flex-start}.bulkTop input{width:20px;height:20px;margin-top:2px}.bulkTitle{font-weight:900}.bulkPAs{font-size:11px;line-height:1.55;margin-top:5px;color:#53606d}.bulkWarn{display:inline-block;background:#fff0ed;color:#a52c25;border-radius:999px;padding:2px 7px;font-size:10px;font-weight:900;margin-left:5px}.bulkOk{display:inline-block;background:#edf8ef;color:#28783b;border-radius:999px;padding:2px 7px;font-size:10px;font-weight:900;margin-left:5px}
+
 @media(max-width:480px){.grid2{grid-template-columns:1fr}.result-grid{grid-template-columns:repeat(3,1fr)}.v{font-size:21px}.fieldWrap{height:220px}}
 </style>
 </head>
@@ -58,7 +61,7 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 <div class="app">
 <header>
 <div class="top">
-<div><div class="brand">⚾ Baseball Growth</div><div class="sub">野球成長記録・Ver.3.5</div></div>
+<div><div class="brand">⚾ Baseball Growth</div><div class="sub">野球成長記録・Ver.3.6</div></div>
 <select id="playerSelect" class="playerSelect"></select>
 </div>
 </header>
@@ -99,6 +102,12 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 <div class="title">成長</div>
 <div class="card"><div class="section">学年別</div><div id="gradeGrowth" class="grow"></div></div>
 <div class="card"><div class="section">選手管理</div><div id="playerList"></div><button id="addPlayerBtn" class="btn outline" style="width:100%;margin-top:8px">＋ 選手を追加</button></div>
+<div class="card">
+<div class="section">過去データ一括取込</div>
+<div class="modeNote">「れいと成績」のExcelをCSVで保存すると、複数試合をまとめて取り込めます。取込前に内容を確認できます。</div>
+<div class="toolbar" style="margin-top:10px"><button id="bulkCsvBtn" class="btn primary">CSVを選んで一括取込</button></div>
+<input id="bulkCsvFile" class="fileInput" type="file" accept=".csv,text/csv">
+</div>
 <div class="card">
 <div class="section">バックアップ</div>
 <div class="modeNote">記録はこの端末内に保存されます。ときどきバックアップを書き出しておくと安心です。</div>
@@ -226,6 +235,13 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 <div class="card"><div class="section">打席</div><div id="confirmPA"></div></div>
 <button id="confirmSave" class="btn primary">この内容で保存する</button>
 <button id="backEdit" class="btn outline" style="width:100%;margin-top:8px">編集に戻る</button>
+</div></div>
+
+<!-- 過去CSV一括取込 -->
+<div id="bulkModal" class="modal"><div class="sheet">
+<div class="sheethead"><div><b style="font-size:18px">過去データ一括取込</b><div id="bulkMeta" class="tiny"></div></div><button class="close" onclick="closeModal(bulkModal)">×</button></div>
+<div class="card"><div class="modeNote">赤い「要確認」がある行は、元の表記を確認してから取り込めます。既に同じ日付・対戦相手の試合がある場合は重複として外します。</div><div id="bulkPreview" style="margin-top:10px"></div></div>
+<button id="bulkImportConfirm" class="btn primary">チェックした試合をまとめて登録</button>
 </div></div>
 
 <!-- 選手 -->
@@ -444,6 +460,39 @@ $('savePlayer').onclick=()=>{const name=$('playerName').value.trim();if(!name){a
 window.editGame=id=>{const g=db.games.find(x=>x.id===id);if(!g)return;editingGameId=id;selectedPositions=[...(g.positions||[])];defenseChanges=(g.defenseChanges||[]).map(c=>({...c}));$('gDate').value=g.date||'';$('gOpp').value=g.opponent||'';$('gGrade').value=g.grade||currentPlayer().grade;$('gType').value=g.type||'練習試合';$('gOrder').value=g.batOrder||'';setMode(g.mode||'detail');document.querySelectorAll('[data-pos]').forEach(z=>z.classList.toggle('active',selectedPositions.includes(z.dataset.pos)));renderDefenseChanges();openModal($('gameModal'))};
 window.deleteGame=id=>{const g=db.games.find(x=>x.id===id);if(!g)return;if(!confirm(`${g.date||''} ${g.opponent?'vs '+g.opponent:''} の記録を削除しますか？`))return;db.games=db.games.filter(x=>x.id!==id);persist()};
 function renderHeatmap(abs){const src=(heatFilter==='hits'?abs.filter(a=>['1B','2B','3B','HR','ITPHR'].includes(a.result)):abs).filter(a=>a.direction);if(!src.length){$('heatmap').innerHTML='<div class="empty">対象の打球データがありません。</div>';return}const cells={};src.forEach(a=>{const q=(a.fieldX!=null&&a.fieldY!=null)?[+a.fieldX,+a.fieldY]:fieldXYForDir(a.direction),x=Math.round(q[0]/6)*6,y=Math.round(q[1]/6)*6,k=x+'_'+y;cells[k]=cells[k]||{x,y,n:0};cells[k].n++});const max=Math.max(...Object.values(cells).map(c=>c.n),1);$('heatmap').innerHTML=`<div class="realField">${baseballFieldSVG()}${Object.values(cells).map(c=>{const sz=25+35*c.n/max,a=.18+.52*c.n/max;return `<div class="heat2" style="left:${c.x}%;top:${c.y}%;width:${sz}px;height:${sz}px;background:rgba(231,87,61,${a})">${c.n}</div>`}).join('')}</div>`}document.querySelectorAll('[data-heat]').forEach(b=>b.onclick=()=>{heatFilter=b.dataset.heat;document.querySelectorAll('[data-heat]').forEach(x=>x.classList.toggle('active',x===b));const abs=gamesForPlayer().flatMap(g=>g.mode==='summary'?(g.summaryDirections||[]):(g.atbats||[]));renderHeatmap(abs)});
+
+
+let bulkGames=[];
+function parseCSV(txt){
+ const rows=[];let row=[],cell='',q=false;
+ for(let i=0;i<txt.length;i++){const c=txt[i];if(q){if(c==='"'&&txt[i+1]==='"'){cell+='"';i++}else if(c==='"')q=false;else cell+=c}else{if(c==='"')q=true;else if(c===','){row.push(cell);cell=''}else if(c==='\n'){row.push(cell.replace(/\r$/,''));rows.push(row);row=[];cell=''}else cell+=c}}
+ if(cell||row.length){row.push(cell.replace(/\r$/,''));rows.push(row)}return rows;
+}
+function normJP(x){return String(x||'').trim().replace(/ファア/g,'フォア').replace(/１/g,'1').replace(/２/g,'2').replace(/３/g,'3').replace(/４/g,'4').replace(/５/g,'5').replace(/６/g,'6').replace(/７/g,'7').replace(/８/g,'8').replace(/９/g,'9')}
+function csvDate(v,yearHint){v=normJP(v);if(!v)return'';let m=v.match(/(\d{4})[年\/\-](\d{1,2})[月\/\-](\d{1,2})/);if(m)return`${m[1]}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}`;m=v.match(/(\d{1,2})月(\d{1,2})日/);if(m)return`${yearHint||new Date().getFullYear()}-${m[1].padStart(2,'0')}-${m[2].padStart(2,'0')}`;m=v.match(/(\d{1,2})[\/\-](\d{1,2})/);if(m)return`${yearHint||new Date().getFullYear()}-${m[1].padStart(2,'0')}-${m[2].padStart(2,'0')}`;return''}
+function parseOrderPos(v){v=normJP(v).replace(/播/g,'番');const om=v.match(/([1-9])番/);const map={'ピッチャー':'投','投手':'投','キャッチャー':'捕','捕手':'捕','ファースト':'一','一塁':'一','セカンド':'二','二塁':'二','サード':'三','三塁':'三','ショート':'遊','遊撃':'遊','レフト':'左','左翼':'左','センター':'中','中堅':'中','ライト':'右','右翼':'右','DH':'DH'};const pos=Object.keys(map).find(k=>v.includes(k));return{order:om?om[1]:'',positions:pos?[map[pos]]:[]}}
+function paFromText(raw){let t=normJP(raw);if(!t)return null;let result='',contact='',direction='',warn='';
+ if(t.includes('振り逃げ'))result='KWP';else if(t.includes('三振'))result='SO';else if(t.includes('フォアボール')||t.includes('四球'))result='BB';else if(t.includes('死球')||t.includes('デッドボール'))result='HBP';else if(t.includes('ランニングホームラン'))result='ITPHR';else if(t.includes('ホームラン'))result='HR';else if(t.includes('三塁打'))result='3B';else if(t.includes('二塁打'))result='2B';else if(t.includes('内野安打')||t.includes('前ヒット')||t==='ヒット'||t.includes('安打'))result='1B';else if(t.includes('エラー'))result='E';else if(t.includes('ライナー'))result='LO';else if(t.includes('フライ'))result='FO';else if(t.includes('ゴロ'))result='GO';else warn='結果を自動判定できません';
+ if(t.includes('ゴロ')||t.includes('内野安打'))contact='ゴロ';else if(t.includes('ライナー'))contact='ライナー';else if(t.includes('フライ'))contact='フライ';
+ if(t.includes('レフト'))direction='左';else if(t.includes('センター'))direction='中';else if(t.includes('ライト'))direction='右';
+ // 内野手名だけの打球は正確な落下位置が分からないため、ヒートマップ方向は付けない
+ const xy=direction?fieldXYForDir(direction):[null,null];return{id:crypto.randomUUID(),result,contact,direction,fieldX:xy[0],fieldY:xy[1],rbi:0,risp:false,sb:false,raw,warn};
+}
+function buildBulk(rows){let year=new Date().getFullYear(),header=-1;for(let i=0;i<rows.length;i++){const joined=rows[i].join(' ');const ym=joined.match(/(20\d{2})年/);if(ym)year=+ym[1];if(rows[i].some(x=>normJP(x)==='打数')){header=i;break}}
+ const out=[];for(let i=Math.max(0,header+1);i<rows.length;i++){const r=rows[i].map(normJP);if(!r.some(Boolean))continue;let statIdx=r.findIndex(x=>x==='打数'); // usually header only, so infer last five numeric columns below
+ let nums=[];for(let j=r.length-1;j>=0;j--){if(r[j]!==''&&!isNaN(Number(r[j]))){nums.unshift({j,v:Number(r[j])});if(nums.length===5)break}}if(nums.length<4)continue;const firstStat=nums[0].j;
+ let dateIdx=-1,date='';for(let j=0;j<Math.min(5,r.length);j++){const d=csvDate(r[j],year);if(d){dateIdx=j;date=d;break}}if(!date)continue;const opp=r[dateIdx+1]||'';const op=r[dateIdx+2]||'';if(!opp||opp==='合計')continue;const {order,positions}=parseOrderPos(op);
+ const paTexts=[];for(let j=dateIdx+3;j<firstStat;j++){if(/^①$|^②$|^③$|^④$|^⑤$|^⑥$/.test(r[j])){if(r[j+1])paTexts.push(r[j+1]);j++}}
+ if(!paTexts.length){for(let j=dateIdx+3;j<firstStat;j++)if(r[j]&&!/^①$|^②$|^③$|^④$/.test(r[j]))paTexts.push(r[j])}
+ const atbats=paTexts.map(paFromText).filter(Boolean);const AB=nums[0]?.v||0,H=nums[1]?.v||0,RBI=nums[2]?.v||0,SB=nums[3]?.v||0;let BB=atbats.filter(a=>a.result==='BB').length,HBP=atbats.filter(a=>a.result==='HBP').length,SO=atbats.filter(a=>a.result==='SO'||a.result==='KWP').length,B2=atbats.filter(a=>a.result==='2B').length,B3=atbats.filter(a=>a.result==='3B').length,HR=atbats.filter(a=>a.result==='HR'||a.result==='ITPHR').length;
+ const autoAB=atbats.filter(a=>['1B','2B','3B','HR','ITPHR','SO','KWP','GO','FO','LO','E'].includes(a.result)).length,autoH=atbats.filter(a=>['1B','2B','3B','HR','ITPHR'].includes(a.result)).length;let warnings=atbats.filter(a=>a.warn).map(a=>`${a.raw}: ${a.warn}`);if(autoAB!==AB)warnings.push(`打数: 表${AB} / 自動判定${autoAB}`);if(autoH!==H)warnings.push(`安打: 表${H} / 自動判定${autoH}`);
+ const directions=atbats.filter(a=>a.direction).map(a=>({id:crypto.randomUUID(),direction:a.direction,fieldX:a.fieldX,fieldY:a.fieldY}));out.push({checked:true,date,opponent:opp,grade:'小学4年生',type:opp.includes('リーグ')?'公式戦':'練習試合',batOrder:order,positions,mode:'summary',summary:{PA:AB+BB+HBP,AB,H,B2,B3,HR,BB,HBP,SO,RBI,R:0,SB},summaryDirections:directions,memo:`CSV一括取込 / 打席: ${paTexts.join('・')}`,rawPAs:paTexts,warnings});}
+ return out;
+}
+function renderBulk(){const dup=g=>db.games.some(x=>x.playerId===currentPlayer().id&&x.date===g.date&&x.opponent===g.opponent);$('bulkMeta').textContent=`${bulkGames.length}試合を検出 / ${currentPlayer().name} に登録`; $('bulkPreview').innerHTML=bulkGames.map((g,i)=>{const d=dup(g);if(d)g.checked=false;return`<div class="bulkRow"><div class="bulkTop"><input type="checkbox" data-bulk="${i}" ${g.checked&&!d?'checked':''} ${d?'disabled':''}><div><div class="bulkTitle">${esc(g.date)}　vs ${esc(g.opponent)} ${d?'<span class="bulkWarn">登録済み</span>':g.warnings.length?'<span class="bulkWarn">要確認</span>':'<span class="bulkOk">OK</span>'}</div><div class="meta">${g.batOrder?g.batOrder+'番・':''}${g.positions.join('／')||'守備未設定'} / ${g.summary.AB}打数 ${g.summary.H}安打 ${g.summary.RBI}打点 ${g.summary.SB}盗塁</div><div class="bulkPAs">${g.rawPAs.map((x,n)=>`${n+1}. ${esc(x)}`).join('　')}</div>${g.warnings.length?`<div class="bulkPAs" style="color:#a52c25">${g.warnings.map(esc).join('<br>')}</div>`:''}</div></div></div>`}).join('');document.querySelectorAll('[data-bulk]').forEach(x=>x.onchange=()=>bulkGames[+x.dataset.bulk].checked=x.checked)}
+$('bulkCsvBtn').onclick=()=>$('bulkCsvFile').click();
+$('bulkCsvFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{bulkGames=buildBulk(parseCSV(r.result));if(!bulkGames.length)throw new Error();renderBulk();openModal($('bulkModal'))}catch(err){alert('このCSVから試合データを見つけられませんでした。Excelで「CSV UTF-8」として保存してから選んでください。')}};r.readAsText(f,'UTF-8');e.target.value=''};
+$('bulkImportConfirm').onclick=()=>{const chosen=bulkGames.filter(g=>g.checked);if(!chosen.length){alert('登録する試合にチェックを入れてください');return}if(!confirm(`${chosen.length}試合を ${currentPlayer().name} に登録しますか？`))return;chosen.forEach(g=>db.games.push({id:crypto.randomUUID(),playerId:currentPlayer().id,date:g.date,opponent:g.opponent,grade:g.grade,type:g.type,batOrder:g.batOrder,positions:g.positions,defenseChanges:[],mode:'summary',summary:g.summary,summaryDirections:g.summaryDirections,memo:g.memo}));persist();closeModal($('bulkModal'));alert(`${chosen.length}試合をまとめて登録しました⚾️`)};
 
 $('exportBtn').onclick=()=>{
  const blob=new Blob([JSON.stringify({app:'Baseball Growth',version:3,exportedAt:new Date().toISOString(),data:db},null,2)],{type:'application/json'});
