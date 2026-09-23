@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.json">
-<title>Baseball Growth Ver.3.9</title>
+<title>Baseball Growth Ver.4.0</title>
 <style>
 :root{--navy:#0c386f;--navy2:#092b57;--blue:#1967d2;--bg:#f5f7fa;--card:#fff;--text:#17212c;--muted:#6c7684;--line:#dfe5ec;--green:#e4f7e9;--greenb:#57a96f;--yellow:#fff4cf;--yellowb:#d6a92f;--red:#fee9e6;--redb:#e1786b;--purple:#f0e9ff;--purpleb:#9b78d0}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;color:var(--text)}
@@ -59,13 +59,31 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 .trendChart{width:100%;overflow:hidden}.trendChart svg{display:block;width:100%;height:auto}.trendLegend{display:flex;justify-content:space-between;gap:8px;font-size:10px;color:var(--muted);margin-top:4px}.trendSummary{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}.trendMini{border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center}.trendMini .n{font-size:17px;font-weight:900;margin-top:2px}.trendEmpty{text-align:center;color:var(--muted);padding:28px 8px}.trendNote{font-size:11px;color:var(--muted);line-height:1.55;margin-top:8px}.monthDetail{margin-top:12px;border:1px solid var(--line);border-radius:14px;padding:12px;background:#fbfdff}.monthDetailHead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}.monthDetailHead b{font-size:16px}.monthNav{border:1px solid var(--line);background:#fff;border-radius:9px;padding:6px 9px;font-weight:900;color:var(--navy)}.monthGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.monthCell{border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center;background:#fff}.monthCell .v{font-size:17px;font-weight:900;margin-top:2px}.monthHint{font-size:10px;color:var(--muted);margin-top:8px;text-align:center}.trendDot{cursor:pointer}
 
 @media(max-width:480px){.grid2{grid-template-columns:1fr}.result-grid{grid-template-columns:repeat(3,1fr)}.v{font-size:21px}.fieldWrap{height:220px}}
+
+/* Firebase login / sync */
+#authGate{position:fixed;inset:0;z-index:9999;background:linear-gradient(145deg,#07366d,#0f5da8);display:flex;align-items:center;justify-content:center;padding:24px}
+#authGate.hidden{display:none}.authBox{background:#fff;border-radius:24px;padding:26px 20px;width:min(420px,100%);box-shadow:0 20px 50px #001b3b55}.authLogo{font-size:28px;font-weight:900;color:#12365e;margin-bottom:4px}.authSub{color:#697887;margin-bottom:22px}.authBox label{display:block;margin:12px 0 5px;color:#526171;font-weight:700}.authBox input{width:100%;box-sizing:border-box;border:1px solid #cad3df;border-radius:12px;padding:13px;font-size:16px}.authErr{color:#b3261e;min-height:22px;margin-top:10px;font-size:13px}.syncPill{position:fixed;right:10px;top:82px;z-index:120;background:#fff;border:1px solid #d9e1eb;border-radius:999px;padding:5px 9px;font-size:11px;color:#536273;box-shadow:0 2px 8px #0001}.syncPill.ok{color:#16743b}.syncPill.err{color:#b3261e}
+
+.runnerState{margin-top:10px}.runnerBtns{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:7px}
+.runnerBtn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 4px;font-weight:850;font-size:12px}
+.runnerBtn.active{background:#e8f2ff;border-color:#6da2df;color:#0b4e94}
+.runnerUnknown{margin-top:8px;font-size:11px;color:var(--muted)}
+
+
+.conditionalFields{display:none;grid-column:1/-1}.conditionalFields.show{display:grid}
+.inputHint{font-size:10px;color:var(--muted);margin-top:3px}
+.scoreLine{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:end}
+.scoreDash{padding-bottom:11px;font-weight:900;color:var(--muted)}
 </style>
 </head>
 <body>
+<div id="authGate"><div class="authBox"><div class="authLogo">⚾ Baseball Growth</div><div class="authSub">家族で同じ記録を共有</div><label>メールアドレス</label><input id="loginEmail" type="email" autocomplete="username"><label>パスワード</label><input id="loginPassword" type="password" autocomplete="current-password"><button id="loginBtn" class="btn primary" style="margin-top:18px;width:100%">ログイン</button><div id="authErr" class="authErr"></div><div class="tiny">※ アカウントはFirebaseで登録したものを使用します。</div></div></div>
+<div id="syncPill" class="syncPill">☁️ 未接続</div>
+
 <div class="app">
 <header>
 <div class="top">
-<div><div class="brand">⚾ Baseball Growth</div><div class="sub">野球成長記録・Ver.3.9</div></div>
+<div><div class="brand">⚾ Baseball Growth</div><div class="sub">野球成長記録・Ver.4.0</div></div>
 <select id="playerSelect" class="playerSelect"></select>
 </div>
 </header>
@@ -157,10 +175,15 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 <div class="sheethead"><div><b style="font-size:18px">試合を記録する</b><div class="tiny">過去の日付も選べます</div></div><button class="close" onclick="closeModal(gameModal)">×</button></div>
 <div class="card"><div class="grid2">
 <label>日付<input id="gDate" type="date"></label>
-<label>対戦相手<input id="gOpp" placeholder="例：○○クラブ"></label>
+<label>対戦相手<input id="gOpp" list="oppHistory" placeholder="例：○○クラブ" autocomplete="off"><datalist id="oppHistory"></datalist><span class="inputHint">過去の相手は候補から選べます</span></label>
 <label>同日カード（任意）<select id="gGameNo"><option value="">未設定</option><option value="1">第1試合</option><option value="2">第2試合</option><option value="3">第3試合</option></select></label>
 <label>試合時点の学年<select id="gGrade"></select></label>
-<label>大会・試合種別<select id="gType"><option>練習試合</option><option>公式戦</option><option>大会</option><option>紅白戦</option><option>その他</option></select></label>
+<label>試合区分<select id="gType"><option>練習試合</option><option>公式戦</option><option>紅白戦</option><option>その他</option></select></label>
+<div id="officialFields" class="conditionalFields grid2">
+<label>大会名（任意）<input id="gTournament" list="tournamentHistory" placeholder="例：新人戦" autocomplete="off"><datalist id="tournamentHistory"></datalist></label>
+<label>何回戦（任意）<input id="gRound" list="roundHistory" placeholder="例：2回戦 / 準決勝" autocomplete="off"><datalist id="roundHistory"></datalist></label>
+</div>
+<div id="otherFields" class="conditionalFields"><label>試合名（任意）<input id="gEvent" list="eventHistory" placeholder="例：交流戦" autocomplete="off"><datalist id="eventHistory"></datalist></label></div>
 <label>打順<select id="gOrder"><option value="">未設定</option><option value="1">1番</option><option value="2">2番</option><option value="3">3番</option><option value="4">4番</option><option value="5">5番</option><option value="6">6番</option><option value="7">7番</option><option value="8">8番</option><option value="9">9番</option></select></label>
 <div style="grid-column:1/-1">
 <label>守備位置（出場した位置を選択）</label><div id="gPosGrid" class="posGrid"></div>
@@ -196,7 +219,9 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 <div><label>盗塁死</label><div class="stepper"><button data-step="cs" data-d="-1">−</button><span id="csVal">0</span><button data-step="cs" data-d="1">＋</button></div></div>
 <div><label>失策</label><div class="stepper"><button data-step="errors" data-d="-1">−</button><span id="errorsVal">0</span><button data-step="errors" data-d="1">＋</button></div></div>
 </div>
-<label style="display:block;margin-top:12px">試合メモ<textarea id="gMemo" placeholder="今日の良かったところ、課題など"></textarea></label>
+<div style="margin-top:12px"><div class="section">試合結果 <span class="tiny">（任意）</span></div>
+<div class="scoreLine"><label>自チーム<input id="gTeamScore" type="number" min="0" inputmode="numeric" placeholder="-"></label><div class="scoreDash">－</div><label>相手<input id="gOppScore" type="number" min="0" inputmode="numeric" placeholder="-"></label></div>
+<div id="gResultAuto" class="tiny">スコアを入れると勝敗を自動判定します</div></div><label style="display:block;margin-top:12px">試合メモ<textarea id="gMemo" placeholder="今日の良かったところ、課題など"></textarea></label>
 </div>
 <button id="finishDetail" class="btn primary">試合を終了して確認</button>
 </div></div>
@@ -221,7 +246,17 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 <label>打点<input id="paRBI" type="number" min="0" max="4" value="0"></label>
 <label>アウト数<select id="paOuts"><option value="">未入力</option><option value="0">0アウト</option><option value="1">1アウト</option><option value="2">2アウト</option></select></label>
 </div>
-<label style="display:flex;gap:8px;align-items:center;margin-top:12px"><input id="paRisp" type="checkbox" style="width:auto;margin:0">得点圏にランナーがいた</label>
+<div class="runnerState">
+<div class="section" style="margin-top:12px">打席開始時の走者 <span class="tiny">（任意）</span></div>
+<div class="tiny">分かる場合だけ選択。2塁・3塁に走者がいれば得点圏として自動集計します。</div>
+<div class="runnerBtns">
+<button type="button" class="runnerBtn" id="runnerNone">走者なし</button>
+<button type="button" class="runnerBtn" data-runner="1B">1塁</button>
+<button type="button" class="runnerBtn" data-runner="2B">2塁</button>
+<button type="button" class="runnerBtn" data-runner="3B">3塁</button>
+</div>
+<div id="runnerUnknown" class="runnerUnknown">現在：不明（得点圏打率の集計対象外）</div>
+</div>
 </div>
 <div class="card">
 <div class="section">走塁・進塁</div>
@@ -247,7 +282,9 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 <label>四球<input id="sBB" type="number" min="0" value="0"></label><label>死球<input id="sHBP" type="number" min="0" value="0"></label><label>三振<input id="sSO" type="number" min="0" value="0"></label>
 <label>打点<input id="sRBI" type="number" min="0" value="0"></label><label>得点<input id="sR" type="number" min="0" value="0"></label><label>盗塁<input id="sSB" type="number" min="0" value="0"></label>
 </div>
-<div class="summaryDirBox"><div class="summaryDirHead"><div><b>打球方向を追加（任意）</b><div class="tiny">分かる打球だけ、飛んだ場所をタップ</div></div><button type="button" id="clearSummaryDirs" class="btn outline mini">クリア</button></div><div class="realField" id="summaryField"></div><div class="fieldNames"><span>レフト</span><span>センター</span><span>ライト</span></div><div class="summaryDirCount" id="summaryDirCount">0球登録</div><div class="summaryDirList" id="summaryDirList"></div></div><label style="display:block;margin-top:12px">メモ<textarea id="sMemo" placeholder="分かる範囲でOK"></textarea></label>
+<div class="summaryDirBox"><div class="summaryDirHead"><div><b>打球方向を追加（任意）</b><div class="tiny">分かる打球だけ、飛んだ場所をタップ</div></div><button type="button" id="clearSummaryDirs" class="btn outline mini">クリア</button></div><div class="realField" id="summaryField"></div><div class="fieldNames"><span>レフト</span><span>センター</span><span>ライト</span></div><div class="summaryDirCount" id="summaryDirCount">0球登録</div><div class="summaryDirList" id="summaryDirList"></div></div><div style="margin-top:12px"><div class="section">試合結果 <span class="tiny">（任意）</span></div>
+<div class="scoreLine"><label>自チーム<input id="sTeamScore" type="number" min="0" inputmode="numeric" placeholder="-"></label><div class="scoreDash">－</div><label>相手<input id="sOppScore" type="number" min="0" inputmode="numeric" placeholder="-"></label></div>
+<div id="sResultAuto" class="tiny">スコアを入れると勝敗を自動判定します</div></div><label style="display:block;margin-top:12px">メモ<textarea id="sMemo" placeholder="分かる範囲でOK"></textarea></label>
 </div>
 <button id="saveSummary" class="btn primary">この成績を保存</button>
 </div></div>
@@ -334,7 +371,7 @@ function calc(gs){
  gs.forEach(g=>{const x=statOfGame(g);Object.keys(t).forEach(k=>t[k]+=+x[k]||0)});
  t.AVG=t.AB?t.H/t.AB:NaN;t.OBP=(t.AB+t.BB+t.HBP+t.SF)?(t.H+t.BB+t.HBP)/(t.AB+t.BB+t.HBP+t.SF):NaN;t.SLG=t.AB?t.TB/t.AB:NaN;t.OPS=Number.isFinite(t.OBP)&&Number.isFinite(t.SLG)?t.OBP+t.SLG:NaN;
  const detailed=gs.filter(g=>g.mode!=='summary').flatMap(g=>g.atbats||[]);
- const risp=detailed.filter(a=>a.risp),rispAB=risp.filter(a=>['1B','2B','3B','HR','ITPHR','SO','GO','FO','LO','E','FC','KWP'].includes(a.result)).length,rispH=risp.filter(a=>['1B','2B','3B','HR','ITPHR'].includes(a.result)).length;
+ const risp=detailed.filter(a=>(a.runnersKnown===true&&Array.isArray(a.runners)&&(a.runners.includes('2B')||a.runners.includes('3B')))||(a.runnersKnown!==true&&a.risp===true)),rispAB=risp.filter(a=>['1B','2B','3B','HR','ITPHR','SO','GO','FO','LO','E','FC','KWP'].includes(a.result)).length,rispH=risp.filter(a=>['1B','2B','3B','HR','ITPHR'].includes(a.result)).length;
  t.RISPAVG=rispAB?rispH/rispAB:NaN;t.Kpct=t.PA?t.SO/t.PA:NaN;t.BBpct=t.PA?t.BB/t.PA:NaN;return t;
 }
 let growthMetric='AVG',growthMode='monthly',selectedGrowthMonth=null;
@@ -369,9 +406,37 @@ function renderGrowthTrend(games){
  note.textContent=growthMode==='monthly'?'各月だけの成績です。試合がない月は表示せず、試合数が少ない月は数字が大きく動くことがあります。':'その月までの全試合を合算した推移です。下の月間カードでは、その月だけの成績を確認できます。';
  detail.innerHTML=monthDetailHtml(months,dated);
 }
-function persist(){localStorage.setItem(KEY,JSON.stringify(db));render()}
+
+function allGames(){return db.games||[]}
+function uniqueGameValues(key){return [...new Set(allGames().map(g=>String(g[key]||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ja'))}
+function fillList(id,vals){const e=$(id);if(e)e.innerHTML=vals.map(v=>`<option value="${esc(v)}"></option>`).join('')}
+function refreshGameChoices(){
+ fillList('oppHistory',uniqueGameValues('opponent'));
+ fillList('tournamentHistory',uniqueGameValues('tournamentName'));
+ fillList('roundHistory',uniqueGameValues('roundName'));
+ fillList('eventHistory',uniqueGameValues('eventName'));
+}
+function refreshGameTypeFields(){
+ const t=$('gType').value;
+ $('officialFields').classList.toggle('show',t==='公式戦');
+ $('otherFields').classList.toggle('show',t==='その他');
+}
+function resultFromScore(a,b){
+ if(a===''||b==='')return '';
+ a=+a;b=+b;return a>b?'勝':a<b?'負':'引分';
+}
+function refreshScore(prefix){
+ const a=$(prefix+'TeamScore').value,b=$(prefix+'OppScore').value,r=resultFromScore(a,b),e=$(prefix+'ResultAuto');
+ e.textContent=r?`${a}－${b}　${r}`:'スコアを入れると勝敗を自動判定します';
+ return r;
+}
+function loadScore(prefix,g){$(prefix+'TeamScore').value=g.teamScore??'';$(prefix+'OppScore').value=g.oppScore??'';refreshScore(prefix)}
+function saveScore(prefix,g){g.teamScore=$(prefix+'TeamScore').value===''?null:+$(prefix+'TeamScore').value;g.oppScore=$(prefix+'OppScore').value===''?null:+$(prefix+'OppScore').value;g.result=refreshScore(prefix)}
+
+function persist(){localStorage.setItem(KEY,JSON.stringify(db));render();cloudSave()}
 
 function render(){
+ refreshGameChoices();
  const p=currentPlayer(),games=[...gamesForPlayer()].sort((a,b)=>String(b.date).localeCompare(String(a.date))),s=calc(games);
  $('playerSelect').innerHTML=db.players.map(x=>`<option value="${x.id}" ${x.id===p.id?'selected':''}>${esc(x.name)}</option>`).join('');
  $('playerSummary').innerHTML=`<div class="row"><div><b style="font-size:18px">${esc(p.name)}</b><div class="meta">${p.grade} / ${games.length}試合記録</div></div><div class="tiny">選手を切替できます</div></div>`;
@@ -391,7 +456,7 @@ function render(){
  $('gradeGrowth').innerHTML=grades.length?grades.map(gr=>{const x=calc(games.filter(g=>g.grade===gr));return `<div class="growcard"><b>${gr}</b><div class="meta">${games.filter(g=>g.grade===gr).length}試合</div><div style="margin-top:7px">打率 <b>${rate(x.AVG)}</b></div><div>出塁率 <b>${rate(x.OBP)}</b></div><div>OPS <b>${rate(x.OPS)}</b></div></div>`}).join(''):`<div class="empty">試合を記録すると学年別に残ります。</div>`;
  $('playerList').innerHTML=db.players.map(x=>`<div class="row"><div><b>${esc(x.name)}</b><div class="meta">${x.grade} / ${db.games.filter(g=>g.playerId===x.id).length}試合</div></div><button class="btn outline" style="padding:7px 11px" onclick="editPlayer('${x.id}')">編集</button></div>`).join('');
 }
-function gameRow(g){const x=statOfGame(g),dc=(g.defenseChanges||[]).filter(c=>c.inning&&c.position);const dct=dc.length?`<div class="meta">守備変更：${dc.map(c=>`${c.inning}回〜${c.position}`).join(' → ')}</div>`:'';return `<div class="row"><div><b>${esc(g.date||'')} vs ${esc(g.opponent||'未入力')}${g.gameNo?'（第'+esc(g.gameNo)+'試合）':''}</b><div class="meta">${g.grade||''}${g.batOrder?'・'+g.batOrder+'番':''}${(g.positions||[]).length?'・'+g.positions.join('／'):''}・${g.mode==='summary'?'成績入力':'詳細入力'}</div>${dct}<div class="gameActions"><button class="miniBtn" onclick="editGame('${g.id}')">修正</button><button class="miniBtn del" onclick="deleteGame('${g.id}')">削除</button></div></div><div style="text-align:right;white-space:nowrap"><b>${x.H}安打 ${x.RBI}打点</b><div class="meta">${x.AB}打数</div></div></div>`}
+function gameRow(g){const x=statOfGame(g),eventMeta=g.tournamentName?`・${esc(g.tournamentName)}${g.roundName?' '+esc(g.roundName):''}`:(g.eventName?`・${esc(g.eventName)}`:''),scoreMeta=(g.teamScore!=null&&g.oppScore!=null)?`・${g.teamScore}-${g.oppScore}${g.result?' '+g.result:''}`:'',dc=(g.defenseChanges||[]).filter(c=>c.inning&&c.position);const dct=dc.length?`<div class="meta">守備変更：${dc.map(c=>`${c.inning}回〜${c.position}`).join(' → ')}</div>`:'';return `<div class="row"><div><b>${esc(g.date||'')} vs ${esc(g.opponent||'未入力')}${g.gameNo?'（第'+esc(g.gameNo)+'試合）':''}</b><div class="meta">${g.grade||''}${g.batOrder?'・'+g.batOrder+'番':''}${(g.positions||[]).length?'・'+g.positions.join('／'):''}・${g.mode==='summary'?'成績入力':'詳細入力'}${eventMeta}${scoreMeta}</div>${dct}<div class="gameActions"><button class="miniBtn" onclick="editGame('${g.id}')">修正</button><button class="miniBtn del" onclick="deleteGame('${g.id}')">削除</button></div></div><div style="text-align:right;white-space:nowrap"><b>${x.H}安打 ${x.RBI}打点</b><div class="meta">${x.AB}打数</div></div></div>`}
 function renderBars(el,pairs){const t=pairs.reduce((s,x)=>s+x[1],0);el.innerHTML=t?pairs.map(([k,v])=>{const p=Math.round(v/t*100);return `<div class="analysis-row"><div>${k}</div><div class="bar"><div style="width:${p}%"></div></div><div>${p}%</div></div>`}).join(''):`<div class="empty">詳しく入力した試合がたまると表示されます。</div>`}
 
 document.querySelectorAll('[data-growth-metric]').forEach(b=>b.onclick=()=>{growthMetric=b.dataset.growthMetric;document.querySelectorAll('[data-growth-metric]').forEach(x=>x.classList.toggle('active',x===b));renderGrowthTrend([...gamesForPlayer()].sort((a,b)=>String(a.date).localeCompare(String(b.date))))});
@@ -437,19 +502,19 @@ function renderDefenseSummary(){
 }
 
 function newGame(){
- editingGameId=null;selectedPositions=[];defenseChanges=[];renderDefenseChanges();document.querySelectorAll('[data-pos]').forEach(z=>z.classList.remove('active'));const p=currentPlayer();$('gDate').value=new Date().toISOString().slice(0,10);$('gOpp').value='';$('gGrade').value=p.grade;$('gType').value='練習試合';$('gOrder').value='';setMode('detail');openModal($('gameModal'));
+ editingGameId=null;selectedPositions=[];defenseChanges=[];renderDefenseChanges();document.querySelectorAll('[data-pos]').forEach(z=>z.classList.remove('active'));const p=currentPlayer();$('gDate').value=new Date().toISOString().slice(0,10);$('gOpp').value='';$('gGrade').value=p.grade;$('gType').value='練習試合';$('gTournament').value='';$('gRound').value='';$('gEvent').value='';$('gOrder').value='';refreshGameTypeFields();setMode('detail');openModal($('gameModal'));
 }
 $('newGame').onclick=newGame;$('newGame2').onclick=newGame;
 function setMode(m){inputMode=m;$('modeDetail').classList.toggle('active',m==='detail');$('modeSummary').classList.toggle('active',m==='summary')}
 $('modeDetail').onclick=()=>setMode('detail');$('modeSummary').onclick=()=>setMode('summary');
 
 $('startGame').onclick=()=>{
- const existing=editingGameId?db.games.find(g=>g.id===editingGameId):null;draft={...(existing||{}),id:existing?.id||crypto.randomUUID(),playerId:existing?.playerId||currentPlayer().id,date:$('gDate').value,opponent:$('gOpp').value.trim(),gameNo:$('gGameNo').value,grade:$('gGrade').value,type:$('gType').value,batOrder:$('gOrder').value,positions:[...selectedPositions],defenseChanges:defenseChanges.filter(c=>c.inning&&c.position).map(c=>({inning:String(c.inning),position:c.position})),mode:inputMode};
+ const existing=editingGameId?db.games.find(g=>g.id===editingGameId):null;draft={...(existing||{}),id:existing?.id||crypto.randomUUID(),playerId:existing?.playerId||currentPlayer().id,date:$('gDate').value,opponent:$('gOpp').value.trim(),gameNo:$('gGameNo').value,grade:$('gGrade').value,type:$('gType').value,tournamentName:$('gType').value==='公式戦'?$('gTournament').value.trim():'',roundName:$('gType').value==='公式戦'?$('gRound').value.trim():'',eventName:$('gType').value==='その他'?$('gEvent').value.trim():'',batOrder:$('gOrder').value,positions:[...selectedPositions],defenseChanges:defenseChanges.filter(c=>c.inning&&c.position).map(c=>({inning:String(c.inning),position:c.position})),mode:inputMode};
  closeModal($('gameModal'));
  if(inputMode==='summary'){
-   const q=draft.summary||{};const mp={sPA:'PA',sAB:'AB',sH:'H',s2B:'B2',s3B:'B3',sHR:'HR',sBB:'BB',sHBP:'HBP',sSO:'SO',sRBI:'RBI',sR:'R',sSB:'SB'};Object.entries(mp).forEach(([id,k])=>$(id).value=+q[k]||0);$('sMemo').value=draft.memo||'';summaryDirs=(draft.summaryDirections||[]).map(d=>({...d,id:d.id||crypto.randomUUID()}));openModal($('summaryModal'));drawSummaryField();renderSummaryDirList();
+   const q=draft.summary||{};const mp={sPA:'PA',sAB:'AB',sH:'H',s2B:'B2',s3B:'B3',sHR:'HR',sBB:'BB',sHBP:'HBP',sSO:'SO',sRBI:'RBI',sR:'R',sSB:'SB'};Object.entries(mp).forEach(([id,k])=>$(id).value=+q[k]||0);$('sMemo').value=draft.memo||'';loadScore('s',draft);summaryDirs=(draft.summaryDirections||[]).map(d=>({...d,id:d.id||crypto.randomUUID()}));openModal($('summaryModal'));drawSummaryField();renderSummaryDirList();
  }else{
-   draft.atbats=draft.atbats||[];draft.runs=+draft.runs||0;draft.sb=+draft.sb||0;draft.cs=+draft.cs||0;draft.errors=+draft.errors||0;draft.memo=draft.memo||'';counters={runs:draft.runs,sb:draft.sb,cs:draft.cs,errors:draft.errors};$('gMemo').value=draft.memo;syncCounters();renderDraft();openModal($('detailModal'));
+   draft.atbats=draft.atbats||[];draft.runs=+draft.runs||0;draft.sb=+draft.sb||0;draft.cs=+draft.cs||0;draft.errors=+draft.errors||0;draft.memo=draft.memo||'';counters={runs:draft.runs,sb:draft.sb,cs:draft.cs,errors:draft.errors};$('gMemo').value=draft.memo;loadScore('g',draft);syncCounters();renderDraft();openModal($('detailModal'));
  }
 };
 
@@ -476,6 +541,27 @@ function drawInputField(){const f=$('fieldWrap');if(!f)return;f.innerHTML=baseba
 function drawSummaryField(){const f=$('summaryField');if(!f)return;f.innerHTML=baseballFieldSVG()+`<div class="tapLayer"></div>`+summaryDirs.map((d,i)=>`<div class="mark" style="left:${d.fieldX}%;top:${d.fieldY}%"><span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:8px;font-weight:900;color:#fff;z-index:2">${i+1}</span></div>`).join('');f.querySelector('.tapLayer').onclick=e=>{const r=e.currentTarget.getBoundingClientRect(),x=Math.max(8,Math.min(92,(e.clientX-r.left)/r.width*100)),y=Math.max(7,Math.min(88,(e.clientY-r.top)/r.height*100));summaryDirs.push({id:crypto.randomUUID(),fieldX:+x.toFixed(1),fieldY:+y.toFixed(1),direction:dirForX(x)});drawSummaryField();renderSummaryDirList()}}
 function renderSummaryDirList(){if(!$('summaryDirList'))return;$('summaryDirCount').textContent=`${summaryDirs.length}球登録`;$('summaryDirList').innerHTML=summaryDirs.map((d,i)=>`<span class="summaryDirChip">${i+1}球目・${d.direction}<button type="button" onclick="removeSummaryDir('${d.id}')">×</button></span>`).join('')}
 window.removeSummaryDir=id=>{summaryDirs=summaryDirs.filter(d=>d.id!==id);drawSummaryField();renderSummaryDirList()};
+
+let runnerKnown=false,runnerSet=new Set();
+function renderRunnerState(){
+ document.querySelectorAll('[data-runner]').forEach(b=>b.classList.toggle('active',runnerKnown&&runnerSet.has(b.dataset.runner)));
+ const none=document.getElementById('runnerNone');
+ if(none) none.classList.toggle('active',runnerKnown&&runnerSet.size===0);
+ const note=document.getElementById('runnerUnknown');
+ if(note){
+   if(!runnerKnown) note.textContent='現在：不明（得点圏打率の集計対象外）';
+   else if(runnerSet.size===0) note.textContent='現在：走者なし';
+   else note.textContent='現在：'+[...runnerSet].map(x=>x.replace('B','塁')).join('・');
+ }
+}
+document.querySelectorAll('[data-runner]').forEach(b=>b.addEventListener('click',()=>{
+ runnerKnown=true;
+ const r=b.dataset.runner;
+ if(runnerSet.has(r)) runnerSet.delete(r); else runnerSet.add(r);
+ renderRunnerState();
+}));
+document.getElementById('runnerNone').addEventListener('click',()=>{runnerKnown=true;runnerSet.clear();renderRunnerState()});
+
 function openPA(index=null){
  paEditIndex=index;paDraft=index===null?{result:'',direction:'',fieldX:null,fieldY:null,contact:'',rbi:0,outs:'',risp:false,base:'',sb:false}:{...draft.atbats[index]};
  $('paTitle').textContent=`第${index===null?draft.atbats.length+1:index+1}打席`;
@@ -483,7 +569,11 @@ function openPA(index=null){
  if(paDraft.fieldX==null&&paDraft.direction){const q=fieldXYForDir(paDraft.direction);paDraft.fieldX=q[0];paDraft.fieldY=q[1]}drawInputField();
  document.querySelectorAll('[data-contact]').forEach(b=>b.classList.toggle('active',b.dataset.contact===paDraft.contact));
  document.querySelectorAll('[data-base]').forEach(b=>b.classList.toggle('active',b.dataset.base===paDraft.base));
- $('paRBI').value=paDraft.rbi||0;$('paOuts').value=paDraft.outs??'';$('paRisp').checked=!!paDraft.risp;$('paSB').checked=!!paDraft.sb;openModal($('paModal'));
+ $('paRBI').value=paDraft.rbi||0;$('paOuts').value=paDraft.outs??'';
+ if(paDraft.runnersKnown===true){runnerKnown=true;runnerSet=new Set(paDraft.runners||[])}
+ else if(paDraft.risp===true){runnerKnown=true;runnerSet=new Set(['2B'])}
+ else{runnerKnown=false;runnerSet=new Set()}
+ renderRunnerState();$('paSB').checked=!!paDraft.sb;openModal($('paModal'));
 }
 $('addPA').onclick=()=>openPA();window.editPA=i=>openPA(i);
 document.querySelectorAll('[data-result]').forEach(b=>b.onclick=()=>{paDraft.result=b.dataset.result;document.querySelectorAll('[data-result]').forEach(x=>x.classList.toggle('active',x===b))});
@@ -492,14 +582,16 @@ document.querySelectorAll('[data-contact]').forEach(b=>b.onclick=()=>{paDraft.co
 document.querySelectorAll('[data-base]').forEach(b=>b.onclick=()=>{paDraft.base=b.dataset.base;document.querySelectorAll('[data-base]').forEach(x=>x.classList.toggle('active',x===b))});
 $('savePA').onclick=()=>{
  if(!paDraft.result){alert('打席結果を選んでください');return}
- paDraft.rbi=+$('paRBI').value||0;paDraft.outs=$('paOuts').value;paDraft.risp=$('paRisp').checked;paDraft.sb=$('paSB').checked;
+ paDraft.rbi=+$('paRBI').value||0;paDraft.outs=$('paOuts').value;
+ paDraft.runnersKnown=runnerKnown;paDraft.runners=runnerKnown?[...runnerSet]:[];
+ paDraft.risp=runnerKnown&&(runnerSet.has('2B')||runnerSet.has('3B'));paDraft.sb=$('paSB').checked;
  if(paEditIndex===null)draft.atbats.push(paDraft);else draft.atbats[paEditIndex]=paDraft;
  closeModal($('paModal'));renderDraft();
 };
 
 $('finishDetail').onclick=()=>{
  if(!draft.atbats.length){alert('少なくとも1打席入力してください');return}
- draft.runs=counters.runs;draft.sb=counters.sb + draft.atbats.filter(a=>a.sb).length;draft.cs=counters.cs;draft.errors=counters.errors;draft.memo=$('gMemo').value.trim();
+ draft.runs=counters.runs;draft.sb=counters.sb + draft.atbats.filter(a=>a.sb).length;draft.cs=counters.cs;draft.errors=counters.errors;draft.memo=$('gMemo').value.trim();saveScore('g',draft);
  showConfirm();
 };
 function showConfirm(){
@@ -515,7 +607,7 @@ $('confirmSave').onclick=()=>{const i=db.games.findIndex(g=>g.id===draft.id);if(
 $('clearSummaryDirs').onclick=()=>{if(summaryDirs.length&&!confirm('登録した打球方向をすべて消しますか？'))return;summaryDirs=[];drawSummaryField();renderSummaryDirList()};
 $('saveSummary').onclick=()=>{
  draft.summary={PA:+$('sPA').value||0,AB:+$('sAB').value||0,H:+$('sH').value||0,B2:+$('s2B').value||0,B3:+$('s3B').value||0,HR:+$('sHR').value||0,BB:+$('sBB').value||0,HBP:+$('sHBP').value||0,SO:+$('sSO').value||0,RBI:+$('sRBI').value||0,R:+$('sR').value||0,SB:+$('sSB').value||0};
- draft.memo=$('sMemo').value.trim();draft.summaryDirections=summaryDirs.map(d=>({id:d.id,fieldX:d.fieldX,fieldY:d.fieldY,direction:d.direction}));const i=db.games.findIndex(g=>g.id===draft.id);if(i>=0)db.games[i]=draft;else db.games.push(draft);editingGameId=null;draft=null;persist();closeModal($('summaryModal'));alert('成績を保存しました⚾️')
+ draft.memo=$('sMemo').value.trim();saveScore('s',draft);draft.summaryDirections=summaryDirs.map(d=>({id:d.id,fieldX:d.fieldX,fieldY:d.fieldY,direction:d.direction}));const i=db.games.findIndex(g=>g.id===draft.id);if(i>=0)db.games[i]=draft;else db.games.push(draft);editingGameId=null;draft=null;persist();closeModal($('summaryModal'));alert('成績を保存しました⚾️')
 };
 
 $('addPlayerBtn').onclick=()=>{editingPlayer=null;$('playerModalTitle').textContent='選手を追加';$('playerName').value='';$('playerGrade').value='小学2年生';openModal($('playerModal'))};
@@ -523,7 +615,7 @@ window.editPlayer=id=>{const p=db.players.find(x=>x.id===id);editingPlayer=id;$(
 $('savePlayer').onclick=()=>{const name=$('playerName').value.trim();if(!name){alert('表示名を入力してください');return}if(editingPlayer){const p=db.players.find(x=>x.id===editingPlayer);p.name=name;p.grade=$('playerGrade').value}else{const id=crypto.randomUUID();db.players.push({id,name,grade:$('playerGrade').value});db.currentPlayerId=id}persist();closeModal($('playerModal'))};
 
 
-window.editGame=id=>{const g=db.games.find(x=>x.id===id);if(!g)return;editingGameId=id;selectedPositions=[...(g.positions||[])];defenseChanges=(g.defenseChanges||[]).map(c=>({...c}));$('gDate').value=g.date||'';$('gOpp').value=g.opponent||'';$('gGameNo').value=g.gameNo||'';$('gGrade').value=g.grade||currentPlayer().grade;$('gType').value=g.type||'練習試合';$('gOrder').value=g.batOrder||'';setMode(g.mode||'detail');document.querySelectorAll('[data-pos]').forEach(z=>z.classList.toggle('active',selectedPositions.includes(z.dataset.pos)));renderDefenseChanges();openModal($('gameModal'))};
+window.editGame=id=>{const g=db.games.find(x=>x.id===id);if(!g)return;editingGameId=id;selectedPositions=[...(g.positions||[])];defenseChanges=(g.defenseChanges||[]).map(c=>({...c}));$('gDate').value=g.date||'';$('gOpp').value=g.opponent||'';$('gGameNo').value=g.gameNo||'';$('gGrade').value=g.grade||currentPlayer().grade;$('gType').value=g.type==='大会'?'公式戦':(g.type||'練習試合');$('gTournament').value=g.tournamentName||'';$('gRound').value=g.roundName||'';$('gEvent').value=g.eventName||'';refreshGameTypeFields();$('gOrder').value=g.batOrder||'';setMode(g.mode||'detail');document.querySelectorAll('[data-pos]').forEach(z=>z.classList.toggle('active',selectedPositions.includes(z.dataset.pos)));renderDefenseChanges();openModal($('gameModal'))};
 window.deleteGame=id=>{const g=db.games.find(x=>x.id===id);if(!g)return;if(!confirm(`${g.date||''} ${g.opponent?'vs '+g.opponent:''} の記録を削除しますか？`))return;db.games=db.games.filter(x=>x.id!==id);persist()};
 function renderHeatmap(abs){const src=(heatFilter==='hits'?abs.filter(a=>['1B','2B','3B','HR','ITPHR'].includes(a.result)):abs).filter(a=>a.direction);if(!src.length){$('heatmap').innerHTML='<div class="empty">対象の打球データがありません。</div>';return}const cells={};src.forEach(a=>{const q=(a.fieldX!=null&&a.fieldY!=null)?[+a.fieldX,+a.fieldY]:fieldXYForDir(a.direction),x=Math.round(q[0]/6)*6,y=Math.round(q[1]/6)*6,k=x+'_'+y;cells[k]=cells[k]||{x,y,n:0};cells[k].n++});const max=Math.max(...Object.values(cells).map(c=>c.n),1);$('heatmap').innerHTML=`<div class="realField">${baseballFieldSVG()}${Object.values(cells).map(c=>{const sz=25+35*c.n/max,a=.18+.52*c.n/max;return `<div class="heat2" style="left:${c.x}%;top:${c.y}%;width:${sz}px;height:${sz}px;background:rgba(231,87,61,${a})">${c.n}</div>`}).join('')}</div>`}document.querySelectorAll('[data-heat]').forEach(b=>b.onclick=()=>{heatFilter=b.dataset.heat;document.querySelectorAll('[data-heat]').forEach(x=>x.classList.toggle('active',x===b));const abs=gamesForPlayer().flatMap(g=>g.mode==='summary'?(g.summaryDirections||[]):(g.atbats||[]));renderHeatmap(abs)});
 
@@ -576,8 +668,27 @@ $('exportBtn').onclick=()=>{
 $('importBtn').onclick=()=>$('importFile').click();
 $('importFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const obj=JSON.parse(r.result);const data=obj.data||obj;if(!Array.isArray(data.players)||!Array.isArray(data.games))throw new Error();if(confirm('現在のデータをバックアップの内容で置き換えますか？')){db=data;persist();alert('復元しました')}}catch(err){alert('このファイルは読み込めませんでした')}};r.readAsText(f);e.target.value=''};
 
-render();
+// Firebase側の認証完了後に render() します。
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>r.update().catch(()=>{})).catch(()=>{})}
+</script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+const firebaseConfig={apiKey:"AIzaSyBMiPEVWcwYh2L9tVlHph7lZ0ouu0perLU",authDomain:"baseball-growth-cd183.firebaseapp.com",projectId:"baseball-growth-cd183",storageBucket:"baseball-growth-cd183.firebasestorage.app",messagingSenderId:"696848365221",appId:"1:696848365221:web:008de1124f3cff755cbf4c"};
+const app=initializeApp(firebaseConfig),auth=getAuth(app),fire=getFirestore(app);
+let sharedRef=null;
+let cloudReady=false,unsub=null,saving=false;
+const pill=document.getElementById('syncPill');
+function syncState(t,cls=''){pill.textContent=t;pill.className='syncPill '+cls}
+window.cloudSave=async function(){if(!cloudReady||!auth.currentUser||saving)return;try{saving=true;syncState('☁️ 保存中…');await setDoc(sharedRef,{data:db,updatedAt:serverTimestamp(),updatedBy:auth.currentUser.uid},{merge:true});syncState('☁️ 同期済み','ok')}catch(e){console.error(e);syncState('☁️ 同期エラー','err')}finally{saving=false}};
+document.getElementById('loginBtn').onclick=async()=>{const email=document.getElementById('loginEmail').value.trim(),pw=document.getElementById('loginPassword').value,err=document.getElementById('authErr');err.textContent='';try{await signInWithEmailAndPassword(auth,email,pw)}catch(e){console.error(e);err.textContent='メールアドレスまたはパスワードを確認してください。'}};
+document.getElementById('loginPassword').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('loginBtn').click()});
+onAuthStateChanged(auth,async user=>{if(!user){cloudReady=false;document.getElementById('authGate').classList.remove('hidden');syncState('☁️ 未接続');return}document.getElementById('authGate').classList.add('hidden');syncState('☁️ 接続中…');sharedRef=doc(fire,'users',user.uid,'appData','main');try{const snap=await getDoc(sharedRef);if(snap.exists()&&snap.data().data){db=snap.data().data;db.games=(db.games||[]).map(normalizeOldGame);localStorage.setItem(KEY,JSON.stringify(db))}else{await setDoc(sharedRef,{data:db,updatedAt:serverTimestamp(),updatedBy:user.uid})}cloudReady=true;render();syncState('☁️ 同期済み','ok');if(unsub)unsub();unsub=onSnapshot(sharedRef,s=>{if(!s.exists()||!s.data().data||saving)return;db=s.data().data;db.games=(db.games||[]).map(normalizeOldGame);localStorage.setItem(KEY,JSON.stringify(db));
+$('gType').onchange=refreshGameTypeFields;
+['g','s'].forEach(prefix=>{$(prefix+'TeamScore').oninput=()=>refreshScore(prefix);$(prefix+'OppScore').oninput=()=>refreshScore(prefix)});
+refreshGameChoices();refreshGameTypeFields();
+render();syncState('☁️ 同期済み','ok')},e=>{console.error(e);syncState('☁️ 同期エラー','err')})}catch(e){console.error(e);document.getElementById('authGate').classList.remove('hidden');document.getElementById('authErr').textContent='Firestoreに接続できません。ルール設定を確認してください。';syncState('☁️ 接続エラー','err')}});
 </script>
 </body>
 </html>
