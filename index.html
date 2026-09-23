@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.json">
-<title>Baseball Growth Ver.3.7</title>
+<title>Baseball Growth Ver.3.8</title>
 <style>
 :root{--navy:#0c386f;--navy2:#092b57;--blue:#1967d2;--bg:#f5f7fa;--card:#fff;--text:#17212c;--muted:#6c7684;--line:#dfe5ec;--green:#e4f7e9;--greenb:#57a96f;--yellow:#fff4cf;--yellowb:#d6a92f;--red:#fee9e6;--redb:#e1786b;--purple:#f0e9ff;--purpleb:#9b78d0}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;color:var(--text)}
@@ -54,6 +54,10 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 
 .bulkRow{border:1px solid var(--line);border-radius:12px;padding:10px;margin:8px 0;background:#fff}.bulkTop{display:flex;gap:8px;align-items:flex-start}.bulkTop input{width:20px;height:20px;margin-top:2px}.bulkTitle{font-weight:900}.bulkPAs{font-size:11px;line-height:1.55;margin-top:5px;color:#53606d}.bulkWarn{display:inline-block;background:#fff0ed;color:#a52c25;border-radius:999px;padding:2px 7px;font-size:10px;font-weight:900;margin-left:5px}.bulkOk{display:inline-block;background:#edf8ef;color:#28783b;border-radius:999px;padding:2px 7px;font-size:10px;font-weight:900;margin-left:5px}
 
+
+.growthControls{display:flex;gap:7px;flex-wrap:wrap;margin:4px 0 10px}.growthCtl{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 10px;font-size:11px;font-weight:850}.growthCtl.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.trendChart{width:100%;overflow:hidden}.trendChart svg{display:block;width:100%;height:auto}.trendLegend{display:flex;justify-content:space-between;gap:8px;font-size:10px;color:var(--muted);margin-top:4px}.trendSummary{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}.trendMini{border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center}.trendMini .n{font-size:17px;font-weight:900;margin-top:2px}.trendEmpty{text-align:center;color:var(--muted);padding:28px 8px}.trendNote{font-size:11px;color:var(--muted);line-height:1.55;margin-top:8px}
+
 @media(max-width:480px){.grid2{grid-template-columns:1fr}.result-grid{grid-template-columns:repeat(3,1fr)}.v{font-size:21px}.fieldWrap{height:220px}}
 </style>
 </head>
@@ -61,7 +65,7 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 <div class="app">
 <header>
 <div class="top">
-<div><div class="brand">⚾ Baseball Growth</div><div class="sub">野球成長記録・Ver.3.7</div></div>
+<div><div class="brand">⚾ Baseball Growth</div><div class="sub">野球成長記録・Ver.3.8</div></div>
 <select id="playerSelect" class="playerSelect"></select>
 </div>
 </header>
@@ -100,6 +104,20 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 
 <section id="growth" class="page">
 <div class="title">成長</div>
+<div class="card">
+<div class="section">📈 成長グラフ</div>
+<div class="modeNote">記録済みの試合から自動で作成します。入力項目を増やす必要はありません。</div>
+<div class="tiny" style="margin-top:10px;font-weight:800">表示する指標</div>
+<div class="growthControls" id="growthMetricControls">
+<button class="growthCtl active" data-growth-metric="AVG">打率</button><button class="growthCtl" data-growth-metric="OBP">出塁率</button><button class="growthCtl" data-growth-metric="SLG">長打率</button><button class="growthCtl" data-growth-metric="OPS">OPS</button><button class="growthCtl" data-growth-metric="Kpct">三振率</button><button class="growthCtl" data-growth-metric="BBpct">四球率</button>
+</div>
+<div class="tiny" style="font-weight:800">グラフ</div>
+<div class="growthControls" id="growthModeControls">
+<button class="growthCtl active" data-growth-mode="monthly">月別成績</button><button class="growthCtl" data-growth-mode="cumulative">通算成績の推移</button>
+</div>
+<div id="growthTrend" class="trendChart"></div>
+<div id="growthTrendNote" class="trendNote"></div>
+</div>
 <div class="card"><div class="section">学年別</div><div id="gradeGrowth" class="grow"></div></div>
 <div class="card"><div class="section">選手管理</div><div id="playerList"></div><button id="addPlayerBtn" class="btn outline" style="width:100%;margin-top:8px">＋ 選手を追加</button></div>
 <div class="card">
@@ -319,6 +337,27 @@ function calc(gs){
  const risp=detailed.filter(a=>a.risp),rispAB=risp.filter(a=>['1B','2B','3B','HR','ITPHR','SO','GO','FO','LO','E','FC','KWP'].includes(a.result)).length,rispH=risp.filter(a=>['1B','2B','3B','HR','ITPHR'].includes(a.result)).length;
  t.RISPAVG=rispAB?rispH/rispAB:NaN;t.Kpct=t.PA?t.SO/t.PA:NaN;t.BBpct=t.PA?t.BB/t.PA:NaN;return t;
 }
+let growthMetric='AVG',growthMode='monthly';
+function monthKey(d){const m=String(d||'').match(/^(\d{4})-(\d{2})/);return m?m[1]+'-'+m[2]:''}
+function metricValue(x,k){if(k==='AVG')return x.AVG;if(k==='OBP')return x.OBP;if(k==='SLG')return x.SLG;if(k==='OPS')return x.OPS;if(k==='Kpct')return x.Kpct;if(k==='BBpct')return x.BBpct;return NaN}
+function metricLabel(k){return({AVG:'打率',OBP:'出塁率',SLG:'長打率',OPS:'OPS',Kpct:'三振率',BBpct:'四球率'})[k]||k}
+function trendFmt(v,k){if(!Number.isFinite(v))return'---';if(k==='Kpct'||k==='BBpct')return Math.round(v*100)+'%';return v.toFixed(3).replace(/^0/,'')}
+function renderGrowthTrend(games){
+ const el=$('growthTrend'),note=$('growthTrendNote');if(!el)return;
+ const dated=games.filter(g=>monthKey(g.date)).sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+ const months=[...new Set(dated.map(g=>monthKey(g.date)))];let pts=[];
+ if(growthMode==='monthly'){pts=months.map(m=>{const gs=dated.filter(g=>monthKey(g.date)===m),x=calc(gs);return{key:m,label:(+m.slice(5))+'月',value:metricValue(x,growthMetric),games:gs.length,pa:x.PA}})}
+ else{pts=months.map(m=>{const gs=dated.filter(g=>monthKey(g.date)<=m),x=calc(gs);return{key:m,label:(+m.slice(5))+'月',value:metricValue(x,growthMetric),games:gs.length,pa:x.PA}})}
+ const valid=pts.filter(p=>Number.isFinite(p.value));if(!valid.length){el.innerHTML='<div class="trendEmpty">グラフにできるデータがまだありません。</div>';note.textContent='';return}
+ const vals=valid.map(p=>p.value),maxRaw=Math.max(...vals),minRaw=Math.min(...vals);let ymin=0,ymax=Math.max(growthMetric==='OPS'?1.5:1,maxRaw*1.12);if(growthMetric==='Kpct'||growthMetric==='BBpct')ymax=Math.max(.25,maxRaw*1.2);if(ymax<=ymin)ymax=1;
+ const W=620,H=260,L=42,R=16,T=20,B=42,iw=W-L-R,ih=H-T-B;const x=i=>valid.length===1?L+iw/2:L+iw*i/(valid.length-1),y=v=>T+ih-(v-ymin)/(ymax-ymin)*ih;
+ const path=valid.map((p,i)=>(i?'L':'M')+x(i).toFixed(1)+','+y(p.value).toFixed(1)).join(' ');
+ let grid='';for(let i=0;i<=4;i++){const yy=T+ih*i/4,v=ymax*(1-i/4);grid+=`<line x1="${L}" y1="${yy}" x2="${W-R}" y2="${yy}" stroke="#e6ebf1" stroke-width="1"/><text x="${L-6}" y="${yy+4}" text-anchor="end" font-size="10" fill="#77818d">${trendFmt(v,growthMetric)}</text>`}
+ const labels=valid.map((p,i)=>`<text x="${x(i)}" y="${H-16}" text-anchor="middle" font-size="10" fill="#687582">${p.label}</text>`).join('');
+ const dots=valid.map((p,i)=>`<circle cx="${x(i)}" cy="${y(p.value)}" r="5" fill="#1967d2" stroke="#fff" stroke-width="3"/><text x="${x(i)}" y="${Math.max(12,y(p.value)-10)}" text-anchor="middle" font-size="10" font-weight="800" fill="#173a67">${trendFmt(p.value,growthMetric)}</text>`).join('');
+ el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${metricLabel(growthMetric)}の成長グラフ">${grid}<path d="${path}" fill="none" stroke="#1967d2" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>${dots}${labels}</svg><div class="trendSummary"><div class="trendMini"><div class="tiny">最初</div><div class="n">${trendFmt(valid[0].value,growthMetric)}</div></div><div class="trendMini"><div class="tiny">最新</div><div class="n">${trendFmt(valid.at(-1).value,growthMetric)}</div></div><div class="trendMini"><div class="tiny">記録月</div><div class="n">${valid.length}</div></div></div>`;
+ note.textContent=growthMode==='monthly'?'各月だけの成績です。試合数が少ない月は数字が大きく動くことがあります。':'その月までの全試合を合算した推移です。長期的な変化を見やすくしています。';
+}
 function persist(){localStorage.setItem(KEY,JSON.stringify(db));render()}
 
 function render(){
@@ -336,12 +375,16 @@ function render(){
  renderHeatmap(abs);renderBars($('dirAnalysis'),['左','左中間','中','右中間','右'].map(d=>[d,abs.filter(a=>a.direction===d).length]));
  renderBars($('contactAnalysis'),CONTACTS.map(d=>[d,abs.filter(a=>a.contact===d).length]));
  $('discAnalysis').innerHTML=`<div class="analysis-row"><div>三振率</div><div class="bar"><div style="width:${Number.isFinite(s.Kpct)?s.Kpct*100:0}%"></div></div><div>${Number.isFinite(s.Kpct)?Math.round(s.Kpct*100):0}%</div></div><div class="analysis-row"><div>四球率</div><div class="bar"><div style="width:${Number.isFinite(s.BBpct)?s.BBpct*100:0}%"></div></div><div>${Number.isFinite(s.BBpct)?Math.round(s.BBpct*100):0}%</div></div><div class="row"><b>得点圏打率</b><b>${rate(s.RISPAVG)}</b></div>`;
- const grades=[...new Set(games.map(g=>g.grade).filter(Boolean))];
+ renderGrowthTrend(games);
+  const grades=[...new Set(games.map(g=>g.grade).filter(Boolean))];
  $('gradeGrowth').innerHTML=grades.length?grades.map(gr=>{const x=calc(games.filter(g=>g.grade===gr));return `<div class="growcard"><b>${gr}</b><div class="meta">${games.filter(g=>g.grade===gr).length}試合</div><div style="margin-top:7px">打率 <b>${rate(x.AVG)}</b></div><div>出塁率 <b>${rate(x.OBP)}</b></div><div>OPS <b>${rate(x.OPS)}</b></div></div>`}).join(''):`<div class="empty">試合を記録すると学年別に残ります。</div>`;
  $('playerList').innerHTML=db.players.map(x=>`<div class="row"><div><b>${esc(x.name)}</b><div class="meta">${x.grade} / ${db.games.filter(g=>g.playerId===x.id).length}試合</div></div><button class="btn outline" style="padding:7px 11px" onclick="editPlayer('${x.id}')">編集</button></div>`).join('');
 }
 function gameRow(g){const x=statOfGame(g),dc=(g.defenseChanges||[]).filter(c=>c.inning&&c.position);const dct=dc.length?`<div class="meta">守備変更：${dc.map(c=>`${c.inning}回〜${c.position}`).join(' → ')}</div>`:'';return `<div class="row"><div><b>${esc(g.date||'')} vs ${esc(g.opponent||'未入力')}${g.gameNo?'（第'+esc(g.gameNo)+'試合）':''}</b><div class="meta">${g.grade||''}${g.batOrder?'・'+g.batOrder+'番':''}${(g.positions||[]).length?'・'+g.positions.join('／'):''}・${g.mode==='summary'?'成績入力':'詳細入力'}</div>${dct}<div class="gameActions"><button class="miniBtn" onclick="editGame('${g.id}')">修正</button><button class="miniBtn del" onclick="deleteGame('${g.id}')">削除</button></div></div><div style="text-align:right;white-space:nowrap"><b>${x.H}安打 ${x.RBI}打点</b><div class="meta">${x.AB}打数</div></div></div>`}
 function renderBars(el,pairs){const t=pairs.reduce((s,x)=>s+x[1],0);el.innerHTML=t?pairs.map(([k,v])=>{const p=Math.round(v/t*100);return `<div class="analysis-row"><div>${k}</div><div class="bar"><div style="width:${p}%"></div></div><div>${p}%</div></div>`}).join(''):`<div class="empty">詳しく入力した試合がたまると表示されます。</div>`}
+
+document.querySelectorAll('[data-growth-metric]').forEach(b=>b.onclick=()=>{growthMetric=b.dataset.growthMetric;document.querySelectorAll('[data-growth-metric]').forEach(x=>x.classList.toggle('active',x===b));renderGrowthTrend([...gamesForPlayer()].sort((a,b)=>String(a.date).localeCompare(String(b.date))))});
+document.querySelectorAll('[data-growth-mode]').forEach(b=>b.onclick=()=>{growthMode=b.dataset.growthMode;document.querySelectorAll('[data-growth-mode]').forEach(x=>x.classList.toggle('active',x===b));renderGrowthTrend([...gamesForPlayer()].sort((a,b)=>String(a.date).localeCompare(String(b.date))))});
 
 $('playerSelect').onchange=()=>{db.currentPlayerId=$('playerSelect').value;persist()};
 document.querySelectorAll('.nav').forEach(b=>b.onclick=()=>{document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===b.dataset.tab));document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('active',n===b));window.scrollTo(0,0)});
