@@ -83,7 +83,7 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 <div class="app">
 <header>
 <div class="top">
-<div><div class="brand">⚾ Baseball Growth</div><div class="sub">野球成長記録・Ver.4.0</div></div>
+<div><div class="brand">⚾ Baseball Growth</div><div class="sub">野球成長記録・Ver.4.0.1</div></div>
 <select id="playerSelect" class="playerSelect"></select>
 </div>
 </header>
@@ -175,7 +175,7 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 <div class="sheethead"><div><b style="font-size:18px">試合を記録する</b><div class="tiny">過去の日付も選べます</div></div><button class="close" onclick="closeModal(gameModal)">×</button></div>
 <div class="card"><div class="grid2">
 <label>日付<input id="gDate" type="date"></label>
-<label>対戦相手<input id="gOpp" list="oppHistory" placeholder="例：○○クラブ" autocomplete="off"><datalist id="oppHistory"></datalist><span class="inputHint">過去の相手は候補から選べます</span></label>
+<label>対戦相手<input id="gOpp" list="oppHistory" placeholder="例：○○クラブ" autocomplete="off"><datalist id="oppHistory"></datalist><span class="inputHint">新しい相手はそのまま入力できます</span><button type="button" class="btn secondary" id="oppPickerBtn" style="width:100%;margin-top:7px;padding:9px 10px">▼ 過去の対戦相手から選ぶ</button><div id="oppPicker" style="display:none;margin-top:7px;max-height:190px;overflow:auto;border:1px solid var(--line);border-radius:12px;background:#fff"></div></label>
 <label>同日カード（任意）<select id="gGameNo"><option value="">未設定</option><option value="1">第1試合</option><option value="2">第2試合</option><option value="3">第3試合</option></select></label>
 <label>試合時点の学年<select id="gGrade"></select></label>
 <label>試合区分<select id="gType"><option>練習試合</option><option>公式戦</option><option>紅白戦</option><option>その他</option></select></label>
@@ -411,10 +411,12 @@ function allGames(){return db.games||[]}
 function uniqueGameValues(key){return [...new Set(allGames().map(g=>String(g[key]||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ja'))}
 function fillList(id,vals){const e=$(id);if(e)e.innerHTML=vals.map(v=>`<option value="${esc(v)}"></option>`).join('')}
 function refreshGameChoices(){
- fillList('oppHistory',uniqueGameValues('opponent'));
+ const opponents=uniqueGameValues('opponent');
+ fillList('oppHistory',opponents);
  fillList('tournamentHistory',uniqueGameValues('tournamentName'));
  fillList('roundHistory',uniqueGameValues('roundName'));
  fillList('eventHistory',uniqueGameValues('eventName'));
+ const box=$('oppPicker');if(box)box.innerHTML=opponents.length?opponents.map(v=>`<button type="button" class="btn" style="display:block;width:100%;border:0;border-bottom:1px solid var(--line);border-radius:0;text-align:left;padding:11px 13px" data-opp="${esc(v)}">${esc(v)}</button>`).join(''):'<div class="tiny" style="padding:12px">まだ履歴がありません</div>';
 }
 function refreshGameTypeFields(){
  const t=$('gType').value;
@@ -525,7 +527,7 @@ function renderDraft(){
  $('detailTitle').textContent=`${draft?.opponent?'vs '+draft.opponent:'試合入力'}`;
  $('detailMeta').textContent=`${draft?.date||''}・${draft?.grade||''}${draft?.batOrder?'・'+draft.batOrder+'番':''}${(draft?.defenseChanges||[]).length?'・守備変更あり':''}`;
  const A=draft?.atbats||[];
- $('paList').innerHTML=A.length?A.map((a,i)=>`<div class="paCard" onclick="editPA(${i})"><div class="paTop"><b>第${i+1}打席</b><span class="tag ${resultClass(a.result)}">${resultName(a.result)}</span></div><div class="meta">${a.direction?dirLabel(a):''}${a.contact?'・'+a.contact:''}${a.rbi?'・'+a.rbi+'打点':''}${a.base?'・到達 '+a.base:''}</div></div>`).join(''):`<div class="empty">まだ打席がありません。</div>`;
+ $('paList').innerHTML=A.length?A.map((a,i)=>`<div class="paCard" onclick="editPA(${i})"><div class="paTop"><b>第${i+1}打席</b><span class="tag ${resultClass(a.result)}">${resultName(a.result)}</span></div><div class="meta">${a.direction?dirLabel(a):''}${a.contact?'・'+a.contact:''}${a.rbi?'・'+a.rbi+'打点':''}${a.base?'・到達 '+a.base:''}${a.runnersKnown===true?'・走者 '+(a.runners?.length?a.runners.map(x=>x.replace('B','塁')).join('・'):'なし'):''}</div><div class="tiny" style="margin-top:5px;color:var(--primary)">タップして編集</div></div>`).join(''):`<div class="empty">まだ打席がありません。</div>`;
 }
 const resultName=c=>RESULTS.find(x=>x.c===c)?.n||c||'未入力';
 const resultClass=c=>RESULTS.find(x=>x.c===c)?.cls||'';
@@ -551,7 +553,7 @@ function renderRunnerState(){
  if(note){
    if(!runnerKnown) note.textContent='現在：不明（得点圏打率の集計対象外）';
    else if(runnerSet.size===0) note.textContent='現在：走者なし';
-   else note.textContent='現在：'+[...runnerSet].map(x=>x.replace('B','塁')).join('・');
+   else{const ordered=['1B','2B','3B'].filter(x=>runnerSet.has(x));const risp=runnerSet.has('2B')||runnerSet.has('3B');note.textContent='現在：'+ordered.map(x=>x.replace('B','塁')).join('・')+(risp?'　✓ 得点圏':'')}
  }
 }
 document.querySelectorAll('[data-runner]').forEach(b=>b.addEventListener('click',()=>{
@@ -687,6 +689,8 @@ document.getElementById('loginPassword').addEventListener('keydown',e=>{if(e.key
 onAuthStateChanged(auth,async user=>{if(!user){cloudReady=false;document.getElementById('authGate').classList.remove('hidden');syncState('☁️ 未接続');return}document.getElementById('authGate').classList.add('hidden');syncState('☁️ 接続中…');sharedRef=doc(fire,'users',user.uid,'appData','main');try{const snap=await getDoc(sharedRef);if(snap.exists()&&snap.data().data){db=snap.data().data;db.games=(db.games||[]).map(normalizeOldGame);localStorage.setItem(KEY,JSON.stringify(db))}else{await setDoc(sharedRef,{data:db,updatedAt:serverTimestamp(),updatedBy:user.uid})}cloudReady=true;render();syncState('☁️ 同期済み','ok');if(unsub)unsub();unsub=onSnapshot(sharedRef,s=>{if(!s.exists()||!s.data().data||saving)return;db=s.data().data;db.games=(db.games||[]).map(normalizeOldGame);localStorage.setItem(KEY,JSON.stringify(db));
 $('gType').onchange=refreshGameTypeFields;
 ['g','s'].forEach(prefix=>{$(prefix+'TeamScore').oninput=()=>refreshScore(prefix);$(prefix+'OppScore').oninput=()=>refreshScore(prefix)});
+$('oppPickerBtn').onclick=()=>{const b=$('oppPicker');b.style.display=b.style.display==='none'?'block':'none'};
+$('oppPicker').onclick=e=>{const b=e.target.closest('[data-opp]');if(!b)return;$('gOpp').value=b.dataset.opp;$('oppPicker').style.display='none'};
 refreshGameChoices();refreshGameTypeFields();
 render();syncState('☁️ 同期済み','ok')},e=>{console.error(e);syncState('☁️ 同期エラー','err')})}catch(e){console.error(e);document.getElementById('authGate').classList.remove('hidden');document.getElementById('authErr').textContent='Firestoreに接続できません。ルール設定を確認してください。';syncState('☁️ 接続エラー','err')}});
 </script>
