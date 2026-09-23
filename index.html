@@ -74,6 +74,9 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 .inputHint{font-size:10px;color:var(--muted);margin-top:3px}
 .scoreLine{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:end}
 .scoreDash{padding-bottom:11px;font-weight:900;color:var(--muted)}
+
+.filterCard{padding:12px 14px}.filterTitle{font-size:12px;font-weight:900;color:#46505b;margin-bottom:8px}.quickFilters{display:flex;gap:6px;flex-wrap:wrap}.quickFilter{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 10px;font-size:11px;font-weight:850}.quickFilter.active{background:var(--navy);color:#fff;border-color:var(--navy)}.filterSelects{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}.filterSelects select{margin-top:0;padding:9px;font-size:12px}.filterSummary{font-size:11px;color:var(--muted);margin-top:9px}.manageDetails{border:1px solid var(--line);border-radius:14px;background:#fff;margin:12px 0}.manageDetails summary{cursor:pointer;padding:14px;font-weight:900;list-style:none}.manageDetails summary::-webkit-details-marker{display:none}.manageDetails summary:after{content:'＋';float:right;color:var(--blue)}.manageDetails[open] summary:after{content:'−'}.manageInner{padding:0 12px 12px}.manageInner .card{box-shadow:none;margin:8px 0;border-radius:12px}.career{display:grid;gap:9px}.careerCard{border:1px solid var(--line);border-radius:13px;padding:12px;background:#fff}.careerTop{display:flex;justify-content:space-between;gap:10px;align-items:center}.careerStats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:9px}.careerStat{text-align:center;background:#f7f9fc;border-radius:9px;padding:7px}.careerStat b{display:block;font-size:16px}.careerArrow{text-align:center;color:#8b97a4;font-size:20px}
+@media(max-width:480px){.filterSelects{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
@@ -83,7 +86,7 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 <div class="app">
 <header>
 <div class="top">
-<div><div class="brand">⚾ Baseball Growth</div><div class="sub">野球成長記録・Ver.4.0.2</div></div>
+<div><div class="brand">⚾ Baseball Growth</div><div class="sub">野球成長記録・Ver.4.1</div></div>
 <select id="playerSelect" class="playerSelect"></select>
 </div>
 </header>
@@ -110,10 +113,10 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 <div id="gameList" class="card"></div>
 </section>
 
-<section id="stats" class="page"><div class="title">成績</div><div class="card"><div id="statsGrid" class="stats"></div></div></section>
+<section id="stats" class="page"><div class="title">成績</div><div class="card filterCard"><div class="filterTitle">表示する記録</div><div class="quickFilters"><button class="quickFilter active" data-period="all">通算</button><button class="quickFilter" data-period="season">今季</button><button class="quickFilter" data-period="last5">直近5試合</button><button class="quickFilter" data-period="last10">直近10試合</button></div><div class="filterSelects"><select id="filterGrade"><option value="">全学年</option></select><select id="filterType"><option value="">全試合</option></select></div><div class="filterSelects"><select id="filterTournament"><option value="">全大会・試合名</option></select><button id="clearFilters" class="btn outline" style="padding:8px">条件をリセット</button></div><div id="filterSummary" class="filterSummary"></div></div><div class="card"><div id="statsGrid" class="stats"></div></div></section>
 
 <section id="analysis" class="page">
-<div class="title">分析</div>
+<div class="title">分析</div><div class="card filterCard"><div class="filterTitle">表示する記録</div><div class="quickFilters"><button class="quickFilter active" data-period="all">通算</button><button class="quickFilter" data-period="season">今季</button><button class="quickFilter" data-period="last5">直近5試合</button><button class="quickFilter" data-period="last10">直近10試合</button></div><div class="filterSelects"><select id="filterGradeA"><option value="">全学年</option></select><select id="filterTypeA"><option value="">全試合</option></select></div><div class="filterSelects"><select id="filterTournamentA"><option value="">全大会・試合名</option></select><button id="clearFiltersA" class="btn outline" style="padding:8px">条件をリセット</button></div><div id="filterSummaryA" class="filterSummary"></div></div>
 <div class="card"><div class="section">打順別成績</div><div id="orderAnalysis"></div></div>
 <div class="card"><div class="section">打球方向ヒートマップ</div><div class="heatControls"><button class="heatCtl active" data-heat="all">全打球</button><button class="heatCtl" data-heat="hits">安打のみ</button></div><div id="heatmap"></div><div class="tiny">詳しく入力した打席の打球方向を反映します。</div></div><div class="card"><div class="section">打球方向</div><div id="dirAnalysis"></div></div>
 <div class="card"><div class="section">打球タイプ</div><div id="contactAnalysis"></div></div>
@@ -127,7 +130,7 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 <div class="modeNote">記録済みの試合から自動で作成します。入力項目を増やす必要はありません。</div>
 <div class="tiny" style="margin-top:10px;font-weight:800">表示する指標</div>
 <div class="growthControls" id="growthMetricControls">
-<button class="growthCtl active" data-growth-metric="AVG">打率</button><button class="growthCtl" data-growth-metric="OBP">出塁率</button><button class="growthCtl" data-growth-metric="SLG">長打率</button><button class="growthCtl" data-growth-metric="OPS">OPS</button><button class="growthCtl" data-growth-metric="Kpct">三振率</button><button class="growthCtl" data-growth-metric="BBpct">四球率</button>
+<button class="growthCtl active" data-growth-metric="AVG">打率</button><button class="growthCtl" data-growth-metric="OBP">出塁率</button><button class="growthCtl" data-growth-metric="SLG">長打率</button><button class="growthCtl" data-growth-metric="OPS">OPS</button><button class="growthCtl" data-growth-metric="Kpct">三振率</button><button class="growthCtl" data-growth-metric="BBpct">四球率</button><button class="growthCtl" data-growth-metric="RISPAVG">得点圏打率</button>
 </div>
 <div class="tiny" style="font-weight:800">グラフ</div>
 <div class="growthControls" id="growthModeControls">
@@ -136,7 +139,8 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 <div id="growthTrend" class="trendChart"></div>
 <div id="growthTrendNote" class="trendNote"></div><div id="growthMonthDetail" class="monthDetail"></div>
 </div>
-<div class="card"><div class="section">学年別</div><div id="gradeGrowth" class="grow"></div></div>
+<div class="card"><div class="section">⚾ 野球歴・学年別</div><div id="gradeGrowth" class="career"></div></div>
+<details class="manageDetails"><summary>⚙️ データ・選手管理</summary><div class="manageInner">
 <div class="card"><div class="section">選手管理</div><div id="playerList"></div><button id="addPlayerBtn" class="btn outline" style="width:100%;margin-top:8px">＋ 選手を追加</button></div>
 <div class="card">
 <div class="section">過去データ一括取込</div>
@@ -158,6 +162,7 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 </div>
 <input id="importFile" class="fileInput" type="file" accept="application/json">
 </div>
+</div></details>
 </section>
 </main>
 
@@ -379,8 +384,8 @@ function calc(gs){
 }
 let growthMetric='AVG',growthMode='monthly',selectedGrowthMonth=null;
 function monthKey(d){const m=String(d||'').match(/^(\d{4})-(\d{2})/);return m?m[1]+'-'+m[2]:''}
-function metricValue(x,k){if(k==='AVG')return x.AVG;if(k==='OBP')return x.OBP;if(k==='SLG')return x.SLG;if(k==='OPS')return x.OPS;if(k==='Kpct')return x.Kpct;if(k==='BBpct')return x.BBpct;return NaN}
-function metricLabel(k){return({AVG:'打率',OBP:'出塁率',SLG:'長打率',OPS:'OPS',Kpct:'三振率',BBpct:'四球率'})[k]||k}
+function metricValue(x,k){if(k==='AVG')return x.AVG;if(k==='OBP')return x.OBP;if(k==='SLG')return x.SLG;if(k==='OPS')return x.OPS;if(k==='Kpct')return x.Kpct;if(k==='BBpct')return x.BBpct;if(k==='RISPAVG')return x.RISPAVG;return NaN}
+function metricLabel(k){return({AVG:'打率',OBP:'出塁率',SLG:'長打率',OPS:'OPS',Kpct:'三振率',BBpct:'四球率',RISPAVG:'得点圏打率'})[k]||k}
 function trendFmt(v,k){if(!Number.isFinite(v))return'---';if(k==='Kpct'||k==='BBpct')return Math.round(v*100)+'%';return v.toFixed(3).replace(/^0/,'')}
 function monthDetailHtml(months,dated){
  if(!months.length)return'';
@@ -440,25 +445,43 @@ function saveScore(prefix,g){g.teamScore=$(prefix+'TeamScore').value===''?null:+
 
 function persist(){localStorage.setItem(KEY,JSON.stringify(db));render();cloudSave()}
 
+let viewPeriod='all',viewGrade='',viewType='',viewTournament='';
+function filteredGames(games){
+ let out=[...games];
+ if(viewGrade)out=out.filter(g=>g.grade===viewGrade);
+ if(viewType)out=out.filter(g=>g.gameType===viewType||(viewType==='公式戦'&&g.gameType==='大会'));
+ if(viewTournament)out=out.filter(g=>(g.tournamentName||g.eventName||'')===viewTournament);
+ out.sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+ if(viewPeriod==='season'){const y=String(new Date().getFullYear());out=out.filter(g=>String(g.date||'').startsWith(y+'-'))}
+ if(viewPeriod==='last5')out=out.slice(0,5);
+ if(viewPeriod==='last10')out=out.slice(0,10);
+ return out;
+}
+function filterLabel(gs){const bits=[];bits.push(viewPeriod==='all'?'通算':viewPeriod==='season'?'今季':viewPeriod==='last5'?'直近5試合':'直近10試合');if(viewGrade)bits.push(viewGrade);if(viewType)bits.push(viewType);if(viewTournament)bits.push(viewTournament);return `対象：${bits.join('・')}　${gs.length}試合`;}
+function syncFilterUI(all,shown){
+ const grades=[...new Set(all.map(g=>g.grade).filter(Boolean))];const types=[...new Set(all.map(g=>g.gameType).filter(Boolean).map(x=>x==='大会'?'公式戦':x))];const tours=[...new Set(all.map(g=>g.tournamentName||g.eventName).filter(Boolean))];
+ [['filterGrade','filterGradeA',grades,'全学年'],['filterType','filterTypeA',types,'全試合'],['filterTournament','filterTournamentA',tours,'全大会・試合名']].forEach(([a,b,vals,label])=>[a,b].forEach(id=>{const e=$(id);if(!e)return;const cur=id.includes('Grade')?viewGrade:id.includes('Type')?viewType:viewTournament;e.innerHTML=`<option value="">${label}</option>`+vals.map(v=>`<option value="${esc(v)}" ${v===cur?'selected':''}>${esc(v)}</option>`).join('')}));
+ document.querySelectorAll('.quickFilter').forEach(b=>b.classList.toggle('active',b.dataset.period===viewPeriod));$('filterSummary').textContent=filterLabel(shown);$('filterSummaryA').textContent=filterLabel(shown);
+}
 function render(){
  refreshGameChoices();
- const p=currentPlayer(),games=[...gamesForPlayer()].sort((a,b)=>String(b.date).localeCompare(String(a.date))),s=calc(games);
+ const p=currentPlayer(),games=[...gamesForPlayer()].sort((a,b)=>String(b.date).localeCompare(String(a.date))),viewGames=filteredGames(games),s=calc(games),vs=calc(viewGames);syncFilterUI(games,viewGames);
  $('playerSelect').innerHTML=db.players.map(x=>`<option value="${x.id}" ${x.id===p.id?'selected':''}>${esc(x.name)}</option>`).join('');
  $('playerSummary').innerHTML=`<div class="row"><div><b style="font-size:18px">${esc(p.name)}</b><div class="meta">${p.grade} / ${games.length}試合記録</div></div><div class="tiny">選手を切替できます</div></div>`;
  $('hAVG').textContent=rate(s.AVG);$('hOBP').textContent=rate(s.OBP);$('hOPS').textContent=rate(s.OPS);$('hH').textContent=s.H;$('hRBI').textContent=s.RBI;$('hSB').textContent=s.SB;
  $('recent').innerHTML=games.length?games.slice(0,5).map(gameRow).join(''):`<div class="empty">まだ試合データがありません。</div>`;
  $('gameList').innerHTML=games.length?games.map(gameRow).join(''):`<div class="empty">試合を記録してみよう⚾️</div>`;
- const stats=[['打率',rate(s.AVG)],['出塁率',rate(s.OBP)],['長打率',rate(s.SLG)],['OPS',rate(s.OPS)],['打席',s.PA],['打数',s.AB],['安打',s.H],['二塁打',s.B2],['三塁打',s.B3],['本塁打',s.HR],['打点',s.RBI],['得点',s.R],['四球',s.BB],['死球',s.HBP],['三振',s.SO],['盗塁',s.SB],['盗塁死',s.CS],['得点圏打率',rate(s.RISPAVG)]];
+ const stats=[['打率',rate(vs.AVG)],['出塁率',rate(vs.OBP)],['長打率',rate(vs.SLG)],['OPS',rate(vs.OPS)],['打席',vs.PA],['打数',vs.AB],['安打',vs.H],['二塁打',vs.B2],['三塁打',vs.B3],['本塁打',vs.HR],['打点',vs.RBI],['得点',vs.R],['四球',vs.BB],['死球',vs.HBP],['三振',vs.SO],['盗塁',vs.SB],['盗塁死',vs.CS],['得点圏打率',rate(vs.RISPAVG)]];
  $('statsGrid').innerHTML=stats.map(([k,v])=>`<div class="stat"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');
- const orders=[1,2,3,4,5,6,7,8,9].map(o=>[o,games.filter(g=>+g.batOrder===o)]).filter(x=>x[1].length);
+ const orders=[1,2,3,4,5,6,7,8,9].map(o=>[o,viewGames.filter(g=>+g.batOrder===o)]).filter(x=>x[1].length);
  $('orderAnalysis').innerHTML=orders.length?orders.map(([o,gs])=>{const x=calc(gs);return `<div class="row"><div><b>${o}番</b><div class="meta">${gs.length}試合・${x.PA}打席</div></div><div style="text-align:right"><b>打率 ${rate(x.AVG)}</b><div class="meta">出塁率 ${rate(x.OBP)} / OPS ${rate(x.OPS)}</div></div></div>`}).join(''):`<div class="empty">打順を記録すると表示されます。</div>`;
- const abs=games.flatMap(g=>g.mode==='summary'?(g.summaryDirections||[]):(g.atbats||[]));
+ const abs=viewGames.flatMap(g=>g.mode==='summary'?(g.summaryDirections||[]):(g.atbats||[]));
  renderHeatmap(abs);renderBars($('dirAnalysis'),['左','左中間','中','右中間','右'].map(d=>[d,abs.filter(a=>a.direction===d).length]));
  renderBars($('contactAnalysis'),CONTACTS.map(d=>[d,abs.filter(a=>a.contact===d).length]));
- $('discAnalysis').innerHTML=`<div class="analysis-row"><div>三振率</div><div class="bar"><div style="width:${Number.isFinite(s.Kpct)?s.Kpct*100:0}%"></div></div><div>${Number.isFinite(s.Kpct)?Math.round(s.Kpct*100):0}%</div></div><div class="analysis-row"><div>四球率</div><div class="bar"><div style="width:${Number.isFinite(s.BBpct)?s.BBpct*100:0}%"></div></div><div>${Number.isFinite(s.BBpct)?Math.round(s.BBpct*100):0}%</div></div><div class="row"><b>得点圏打率</b><b>${rate(s.RISPAVG)}</b></div>`;
+ $('discAnalysis').innerHTML=`<div class="analysis-row"><div>三振率</div><div class="bar"><div style="width:${Number.isFinite(vs.Kpct)?vs.Kpct*100:0}%"></div></div><div>${Number.isFinite(vs.Kpct)?Math.round(vs.Kpct*100):0}%</div></div><div class="analysis-row"><div>四球率</div><div class="bar"><div style="width:${Number.isFinite(vs.BBpct)?vs.BBpct*100:0}%"></div></div><div>${Number.isFinite(vs.BBpct)?Math.round(vs.BBpct*100):0}%</div></div><div class="row"><b>得点圏打率</b><b>${rate(vs.RISPAVG)}</b></div>`;
  renderGrowthTrend(games);
   const grades=[...new Set(games.map(g=>g.grade).filter(Boolean))];
- $('gradeGrowth').innerHTML=grades.length?grades.map(gr=>{const x=calc(games.filter(g=>g.grade===gr));return `<div class="growcard"><b>${gr}</b><div class="meta">${games.filter(g=>g.grade===gr).length}試合</div><div style="margin-top:7px">打率 <b>${rate(x.AVG)}</b></div><div>出塁率 <b>${rate(x.OBP)}</b></div><div>OPS <b>${rate(x.OPS)}</b></div></div>`}).join(''):`<div class="empty">試合を記録すると学年別に残ります。</div>`;
+ $('gradeGrowth').innerHTML=grades.length?grades.map((gr,i)=>{const gs=games.filter(g=>g.grade===gr),x=calc(gs);return `${i?'<div class="careerArrow">↓</div>':''}<div class="careerCard"><div class="careerTop"><b>${gr}</b><span class="meta">${gs.length}試合</span></div><div class="careerStats"><div class="careerStat"><span class="tiny">打率</span><b>${rate(x.AVG)}</b></div><div class="careerStat"><span class="tiny">出塁率</span><b>${rate(x.OBP)}</b></div><div class="careerStat"><span class="tiny">OPS</span><b>${rate(x.OPS)}</b></div></div></div>`}).join(''):`<div class="empty">試合を記録すると学年別に残ります。</div>`;
  $('playerList').innerHTML=db.players.map(x=>`<div class="row"><div><b>${esc(x.name)}</b><div class="meta">${x.grade} / ${db.games.filter(g=>g.playerId===x.id).length}試合</div></div><button class="btn outline" style="padding:7px 11px" onclick="editPlayer('${x.id}')">編集</button></div>`).join('');
 }
 function gameRow(g){const x=statOfGame(g),eventMeta=g.tournamentName?`・${esc(g.tournamentName)}${g.roundName?' '+esc(g.roundName):''}`:(g.eventName?`・${esc(g.eventName)}`:''),scoreMeta=(g.teamScore!=null&&g.oppScore!=null)?`・${g.teamScore}-${g.oppScore}${g.result?' '+g.result:''}`:'',dc=(g.defenseChanges||[]).filter(c=>c.inning&&c.position);const dct=dc.length?`<div class="meta">守備変更：${dc.map(c=>`${c.inning}回〜${c.position}`).join(' → ')}</div>`:'';return `<div class="row"><div><b>${esc(g.date||'')} vs ${esc(g.opponent||'未入力')}${g.gameNo?'（第'+esc(g.gameNo)+'試合）':''}</b><div class="meta">${g.grade||''}${g.batOrder?'・'+g.batOrder+'番':''}${(g.positions||[]).length?'・'+g.positions.join('／'):''}・${g.mode==='summary'?'成績入力':'詳細入力'}${eventMeta}${scoreMeta}</div>${dct}<div class="gameActions"><button class="miniBtn" onclick="editGame('${g.id}')">修正</button><button class="miniBtn del" onclick="deleteGame('${g.id}')">削除</button></div></div><div style="text-align:right;white-space:nowrap"><b>${x.H}安打 ${x.RBI}打点</b><div class="meta">${x.AB}打数</div></div></div>`}
@@ -466,6 +489,10 @@ function renderBars(el,pairs){const t=pairs.reduce((s,x)=>s+x[1],0);el.innerHTML
 
 document.querySelectorAll('[data-growth-metric]').forEach(b=>b.onclick=()=>{growthMetric=b.dataset.growthMetric;document.querySelectorAll('[data-growth-metric]').forEach(x=>x.classList.toggle('active',x===b));renderGrowthTrend([...gamesForPlayer()].sort((a,b)=>String(a.date).localeCompare(String(b.date))))});
 document.querySelectorAll('[data-growth-mode]').forEach(b=>b.onclick=()=>{growthMode=b.dataset.growthMode;document.querySelectorAll('[data-growth-mode]').forEach(x=>x.classList.toggle('active',x===b));renderGrowthTrend([...gamesForPlayer()].sort((a,b)=>String(a.date).localeCompare(String(b.date))))});
+
+document.querySelectorAll('.quickFilter').forEach(b=>b.onclick=()=>{viewPeriod=b.dataset.period;render()});
+[['filterGrade','filterGradeA','grade'],['filterType','filterTypeA','type'],['filterTournament','filterTournamentA','tour']].forEach(([a,b,k])=>[a,b].forEach(id=>{$(id).onchange=()=>{const v=$(id).value;if(k==='grade')viewGrade=v;if(k==='type')viewType=v;if(k==='tour')viewTournament=v;render()}}));
+[$('clearFilters'),$('clearFiltersA')].forEach(b=>b.onclick=()=>{viewPeriod='all';viewGrade='';viewType='';viewTournament='';render()});
 
 $('playerSelect').onchange=()=>{db.currentPlayerId=$('playerSelect').value;persist()};
 document.querySelectorAll('.nav').forEach(b=>b.onclick=()=>{document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===b.dataset.tab));document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('active',n===b));window.scrollTo(0,0)});
