@@ -83,7 +83,7 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 <div class="app">
 <header>
 <div class="top">
-<div><div class="brand">⚾ Baseball Growth</div><div class="sub">野球成長記録・Ver.4.0.1</div></div>
+<div><div class="brand">⚾ Baseball Growth</div><div class="sub">野球成長記録・Ver.4.0.2</div></div>
 <select id="playerSelect" class="playerSelect"></select>
 </div>
 </header>
@@ -281,6 +281,7 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 <label>二塁打<input id="s2B" type="number" min="0" value="0"></label><label>三塁打<input id="s3B" type="number" min="0" value="0"></label><label>本塁打<input id="sHR" type="number" min="0" value="0"></label>
 <label>四球<input id="sBB" type="number" min="0" value="0"></label><label>死球<input id="sHBP" type="number" min="0" value="0"></label><label>三振<input id="sSO" type="number" min="0" value="0"></label>
 <label>打点<input id="sRBI" type="number" min="0" value="0"></label><label>得点<input id="sR" type="number" min="0" value="0"></label><label>盗塁<input id="sSB" type="number" min="0" value="0"></label>
+<label>得点圏打数 <span class="tiny">（任意）</span><input id="sRISPAB" type="number" min="0" value=""></label><label>得点圏安打 <span class="tiny">（任意）</span><input id="sRISPH" type="number" min="0" value=""></label>
 </div>
 <div class="summaryDirBox"><div class="summaryDirHead"><div><b>打球方向を追加（任意）</b><div class="tiny">分かる打球だけ、飛んだ場所をタップ</div></div><button type="button" id="clearSummaryDirs" class="btn outline mini">クリア</button></div><div class="realField" id="summaryField"></div><div class="fieldNames"><span>レフト</span><span>センター</span><span>ライト</span></div><div class="summaryDirCount" id="summaryDirCount">0球登録</div><div class="summaryDirList" id="summaryDirList"></div></div><div style="margin-top:12px"><div class="section">試合結果 <span class="tiny">（任意）</span></div>
 <div class="scoreLine"><label>自チーム<input id="sTeamScore" type="number" min="0" inputmode="numeric" placeholder="-"></label><div class="scoreDash">－</div><label>相手<input id="sOppScore" type="number" min="0" inputmode="numeric" placeholder="-"></label></div>
@@ -371,7 +372,9 @@ function calc(gs){
  gs.forEach(g=>{const x=statOfGame(g);Object.keys(t).forEach(k=>t[k]+=+x[k]||0)});
  t.AVG=t.AB?t.H/t.AB:NaN;t.OBP=(t.AB+t.BB+t.HBP+t.SF)?(t.H+t.BB+t.HBP)/(t.AB+t.BB+t.HBP+t.SF):NaN;t.SLG=t.AB?t.TB/t.AB:NaN;t.OPS=Number.isFinite(t.OBP)&&Number.isFinite(t.SLG)?t.OBP+t.SLG:NaN;
  const detailed=gs.filter(g=>g.mode!=='summary').flatMap(g=>g.atbats||[]);
- const risp=detailed.filter(a=>(a.runnersKnown===true&&Array.isArray(a.runners)&&(a.runners.includes('2B')||a.runners.includes('3B')))||(a.runnersKnown!==true&&a.risp===true)),rispAB=risp.filter(a=>['1B','2B','3B','HR','ITPHR','SO','GO','FO','LO','E','FC','KWP'].includes(a.result)).length,rispH=risp.filter(a=>['1B','2B','3B','HR','ITPHR'].includes(a.result)).length;
+ const risp=detailed.filter(a=>(a.runnersKnown===true&&Array.isArray(a.runners)&&(a.runners.includes('2B')||a.runners.includes('3B')))||(a.runnersKnown!==true&&a.risp===true));
+ let rispAB=risp.filter(a=>['1B','2B','3B','HR','ITPHR','SO','GO','FO','LO','E','FC','KWP'].includes(a.result)).length,rispH=risp.filter(a=>['1B','2B','3B','HR','ITPHR'].includes(a.result)).length;
+ gs.filter(g=>g.mode==='summary').forEach(g=>{const q=g.summary||{};if(q.RISPAB!=null&&q.RISPH!=null){rispAB+=+q.RISPAB||0;rispH+=+q.RISPH||0}});
  t.RISPAVG=rispAB?rispH/rispAB:NaN;t.Kpct=t.PA?t.SO/t.PA:NaN;t.BBpct=t.PA?t.BB/t.PA:NaN;return t;
 }
 let growthMetric='AVG',growthMode='monthly',selectedGrowthMonth=null;
@@ -514,7 +517,7 @@ $('startGame').onclick=()=>{
  const existing=editingGameId?db.games.find(g=>g.id===editingGameId):null;draft={...(existing||{}),id:existing?.id||crypto.randomUUID(),playerId:existing?.playerId||currentPlayer().id,date:$('gDate').value,opponent:$('gOpp').value.trim(),gameNo:$('gGameNo').value,grade:$('gGrade').value,type:$('gType').value,tournamentName:$('gType').value==='公式戦'?$('gTournament').value.trim():'',roundName:$('gType').value==='公式戦'?$('gRound').value.trim():'',eventName:$('gType').value==='その他'?$('gEvent').value.trim():'',batOrder:$('gOrder').value,positions:[...selectedPositions],defenseChanges:defenseChanges.filter(c=>c.inning&&c.position).map(c=>({inning:String(c.inning),position:c.position})),mode:inputMode};
  closeModal($('gameModal'));
  if(inputMode==='summary'){
-   const q=draft.summary||{};const mp={sPA:'PA',sAB:'AB',sH:'H',s2B:'B2',s3B:'B3',sHR:'HR',sBB:'BB',sHBP:'HBP',sSO:'SO',sRBI:'RBI',sR:'R',sSB:'SB'};Object.entries(mp).forEach(([id,k])=>$(id).value=+q[k]||0);$('sMemo').value=draft.memo||'';loadScore('s',draft);summaryDirs=(draft.summaryDirections||[]).map(d=>({...d,id:d.id||crypto.randomUUID()}));openModal($('summaryModal'));drawSummaryField();renderSummaryDirList();
+   const q=draft.summary||{};const mp={sPA:'PA',sAB:'AB',sH:'H',s2B:'B2',s3B:'B3',sHR:'HR',sBB:'BB',sHBP:'HBP',sSO:'SO',sRBI:'RBI',sR:'R',sSB:'SB'};Object.entries(mp).forEach(([id,k])=>$(id).value=+q[k]||0);$('sRISPAB').value=q.RISPAB==null?'':q.RISPAB;$('sRISPH').value=q.RISPH==null?'':q.RISPH;$('sMemo').value=draft.memo||'';loadScore('s',draft);summaryDirs=(draft.summaryDirections||[]).map(d=>({...d,id:d.id||crypto.randomUUID()}));openModal($('summaryModal'));drawSummaryField();renderSummaryDirList();
  }else{
    draft.atbats=draft.atbats||[];draft.runs=+draft.runs||0;draft.sb=+draft.sb||0;draft.cs=+draft.cs||0;draft.errors=+draft.errors||0;draft.memo=draft.memo||'';counters={runs:draft.runs,sb:draft.sb,cs:draft.cs,errors:draft.errors};$('gMemo').value=draft.memo;loadScore('g',draft);syncCounters();renderDraft();openModal($('detailModal'));
  }
@@ -608,7 +611,10 @@ $('confirmSave').onclick=()=>{const i=db.games.findIndex(g=>g.id===draft.id);if(
 
 $('clearSummaryDirs').onclick=()=>{if(summaryDirs.length&&!confirm('登録した打球方向をすべて消しますか？'))return;summaryDirs=[];drawSummaryField();renderSummaryDirList()};
 $('saveSummary').onclick=()=>{
- draft.summary={PA:+$('sPA').value||0,AB:+$('sAB').value||0,H:+$('sH').value||0,B2:+$('s2B').value||0,B3:+$('s3B').value||0,HR:+$('sHR').value||0,BB:+$('sBB').value||0,HBP:+$('sHBP').value||0,SO:+$('sSO').value||0,RBI:+$('sRBI').value||0,R:+$('sR').value||0,SB:+$('sSB').value||0};
+ const rispABRaw=$('sRISPAB').value,rispHRaw=$('sRISPH').value;
+ if((rispABRaw===''&&rispHRaw!=='')||(rispABRaw!==''&&rispHRaw==='')){alert('得点圏成績は「得点圏打数」と「得点圏安打」を両方入力してください。分からない場合は両方空欄でOKです。');return}
+ if(rispABRaw!==''&&(+rispHRaw>+rispABRaw)){alert('得点圏安打は得点圏打数以下で入力してください。');return}
+ draft.summary={PA:+$('sPA').value||0,AB:+$('sAB').value||0,H:+$('sH').value||0,B2:+$('s2B').value||0,B3:+$('s3B').value||0,HR:+$('sHR').value||0,BB:+$('sBB').value||0,HBP:+$('sHBP').value||0,SO:+$('sSO').value||0,RBI:+$('sRBI').value||0,R:+$('sR').value||0,SB:+$('sSB').value||0,RISPAB:rispABRaw===''?null:+rispABRaw,RISPH:rispHRaw===''?null:+rispHRaw};
  draft.memo=$('sMemo').value.trim();saveScore('s',draft);draft.summaryDirections=summaryDirs.map(d=>({id:d.id,fieldX:d.fieldX,fieldY:d.fieldY,direction:d.direction}));const i=db.games.findIndex(g=>g.id===draft.id);if(i>=0)db.games[i]=draft;else db.games.push(draft);editingGameId=null;draft=null;persist();closeModal($('summaryModal'));alert('成績を保存しました⚾️')
 };
 
