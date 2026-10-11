@@ -86,7 +86,7 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 <div class="app">
 <header>
 <div class="top">
-<div><div class="brand">⚾ Baseball Growth</div><div class="sub">野球成長記録・Ver.4.1</div></div>
+<div><div class="brand">⚾ Baseball Growth</div><div class="sub">野球成長記録・Ver.4.2</div></div>
 <select id="playerSelect" class="playerSelect"></select>
 </div>
 </header>
@@ -117,7 +117,7 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 
 <section id="analysis" class="page">
 <div class="title">分析</div><div class="card filterCard"><div class="filterTitle">表示する記録</div><div class="quickFilters"><button class="quickFilter active" data-period="all">通算</button><button class="quickFilter" data-period="season">今季</button><button class="quickFilter" data-period="last5">直近5試合</button><button class="quickFilter" data-period="last10">直近10試合</button></div><div class="filterSelects"><select id="filterGradeA"><option value="">全学年</option></select><select id="filterTypeA"><option value="">全試合</option></select></div><div class="filterSelects"><select id="filterTournamentA"><option value="">全大会・試合名</option></select><button id="clearFiltersA" class="btn outline" style="padding:8px">条件をリセット</button></div><div id="filterSummaryA" class="filterSummary"></div></div>
-<div class="card"><div class="section">打順別成績</div><div id="orderAnalysis"></div></div>
+<div class="card"><div class="section">⚾ 投手成績（表示条件に連動）</div><div id="pitchAnalysis"></div></div><div class="card"><div class="section">打順別成績</div><div id="orderAnalysis"></div></div>
 <div class="card"><div class="section">打球方向ヒートマップ</div><div class="heatControls"><button class="heatCtl active" data-heat="all">全打球</button><button class="heatCtl" data-heat="hits">安打のみ</button></div><div id="heatmap"></div><div class="tiny">詳しく入力した打席の打球方向を反映します。</div></div><div class="card"><div class="section">打球方向</div><div id="dirAnalysis"></div></div>
 <div class="card"><div class="section">打球タイプ</div><div id="contactAnalysis"></div></div>
 <div class="card"><div class="section">選球・得点圏</div><div id="discAnalysis"></div></div>
@@ -139,7 +139,7 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 <div id="growthTrend" class="trendChart"></div>
 <div id="growthTrendNote" class="trendNote"></div><div id="growthMonthDetail" class="monthDetail"></div>
 </div>
-<div class="card"><div class="section">⚾ 野球歴・学年別</div><div id="gradeGrowth" class="career"></div></div>
+<div class="card"><div class="section">⚾ 投手としての成長</div><div id="pitchGrowth"></div></div><div class="card"><div class="section">⚾ 野球歴・学年別</div><div id="gradeGrowth" class="career"></div></div>
 <details class="manageDetails"><summary>⚙️ データ・選手管理</summary><div class="manageInner">
 <div class="card"><div class="section">選手管理</div><div id="playerList"></div><button id="addPlayerBtn" class="btn outline" style="width:100%;margin-top:8px">＋ 選手を追加</button></div>
 <div class="card">
@@ -175,6 +175,25 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 </nav>
 </div>
 
+<!-- 投手成績：保存済みの試合に紐づけて後から追加 -->
+<div id="pitchModal" class="modal"><div class="sheet">
+<div class="sheethead"><div><b style="font-size:18px">⚾ 投手記録</b><div id="pitchGameName" class="tiny"></div></div><button class="close" onclick="closeModal(document.getElementById('pitchModal'))">×</button></div>
+<div class="card"><label style="display:flex;align-items:center;gap:10px"><input type="checkbox" id="pAppeared" style="width:20px;height:20px"> この試合で登板した</label><div class="tiny">登板した試合だけ記録します。分からない項目は空欄でOK。</div></div>
+<div class="card"><div class="grid2">
+<label>登板区分<select id="pRole"><option value="">未設定</option><option value="先発">先発</option><option value="リリーフ">リリーフ</option></select></label>
+<label>勝敗<select id="pDecision"><option value="">未設定</option><option value="勝">勝利</option><option value="負">敗戦</option><option value="なし">勝敗なし</option></select></label>
+<label>投球回（整数）<input id="pInnings" type="number" min="0" step="1" placeholder="例：2"></label>
+<label>端数のアウト<select id="pOuts"><option value="0">0（ちょうど）</option><option value="1">1アウト＝1/3</option><option value="2">2アウト＝2/3</option></select></label>
+<label>球数<input id="pPitches" type="number" min="0" step="1" placeholder="例：45"></label>
+<label>被安打<input id="pHits" type="number" min="0" step="1" placeholder="任意"></label>
+<label>奪三振<input id="pStrikeouts" type="number" min="0" step="1" placeholder="任意"></label>
+<label>与四球<input id="pWalks" type="number" min="0" step="1" placeholder="任意"></label>
+<label>与死球<input id="pHbp" type="number" min="0" step="1" placeholder="任意"></label>
+<label>失点<input id="pRuns" type="number" min="0" step="1" placeholder="任意"></label>
+<label>自責点<input id="pEarned" type="number" min="0" step="1" placeholder="任意"></label>
+</div><div class="tiny" style="margin-top:12px">投球回は「2回＋1アウト」で2回1/3として保存。防御率は7回制で計算します。</div></div>
+<button id="pitchSave" class="btn primary">投手記録を保存</button>
+</div></div>
 <!-- 試合設定 -->
 <div id="gameModal" class="modal"><div class="sheet">
 <div class="sheethead"><div><b style="font-size:18px">試合を記録する</b><div class="tiny">過去の日付も選べます</div></div><button class="close" onclick="closeModal(gameModal)">×</button></div>
@@ -472,6 +491,7 @@ function render(){
  $('recent').innerHTML=games.length?games.slice(0,5).map(gameRow).join(''):`<div class="empty">まだ試合データがありません。</div>`;
  $('gameList').innerHTML=games.length?games.map(gameRow).join(''):`<div class="empty">試合を記録してみよう⚾️</div>`;
  const stats=[['打率',rate(vs.AVG)],['出塁率',rate(vs.OBP)],['長打率',rate(vs.SLG)],['OPS',rate(vs.OPS)],['打席',vs.PA],['打数',vs.AB],['安打',vs.H],['二塁打',vs.B2],['三塁打',vs.B3],['本塁打',vs.HR],['打点',vs.RBI],['得点',vs.R],['四球',vs.BB],['死球',vs.HBP],['三振',vs.SO],['盗塁',vs.SB],['盗塁死',vs.CS],['得点圏打率',rate(vs.RISPAVG)]];
+ renderPitching(viewGames,'pitchAnalysis');renderPitchGrowth(games);
  $('statsGrid').innerHTML=stats.map(([k,v])=>`<div class="stat"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');
  const orders=[1,2,3,4,5,6,7,8,9].map(o=>[o,viewGames.filter(g=>+g.batOrder===o)]).filter(x=>x[1].length);
  $('orderAnalysis').innerHTML=orders.length?orders.map(([o,gs])=>{const x=calc(gs);return `<div class="row"><div><b>${o}番</b><div class="meta">${gs.length}試合・${x.PA}打席</div></div><div style="text-align:right"><b>打率 ${rate(x.AVG)}</b><div class="meta">出塁率 ${rate(x.OBP)} / OPS ${rate(x.OPS)}</div></div></div>`}).join(''):`<div class="empty">打順を記録すると表示されます。</div>`;
@@ -484,7 +504,51 @@ function render(){
  $('gradeGrowth').innerHTML=grades.length?grades.map((gr,i)=>{const gs=games.filter(g=>g.grade===gr),x=calc(gs);return `${i?'<div class="careerArrow">↓</div>':''}<div class="careerCard"><div class="careerTop"><b>${gr}</b><span class="meta">${gs.length}試合</span></div><div class="careerStats"><div class="careerStat"><span class="tiny">打率</span><b>${rate(x.AVG)}</b></div><div class="careerStat"><span class="tiny">出塁率</span><b>${rate(x.OBP)}</b></div><div class="careerStat"><span class="tiny">OPS</span><b>${rate(x.OPS)}</b></div></div></div>`}).join(''):`<div class="empty">試合を記録すると学年別に残ります。</div>`;
  $('playerList').innerHTML=db.players.map(x=>`<div class="row"><div><b>${esc(x.name)}</b><div class="meta">${x.grade} / ${db.games.filter(g=>g.playerId===x.id).length}試合</div></div><button class="btn outline" style="padding:7px 11px" onclick="editPlayer('${x.id}')">編集</button></div>`).join('');
 }
-function gameRow(g){const x=statOfGame(g),eventMeta=g.tournamentName?`・${esc(g.tournamentName)}${g.roundName?' '+esc(g.roundName):''}`:(g.eventName?`・${esc(g.eventName)}`:''),scoreMeta=(g.teamScore!=null&&g.oppScore!=null)?`・${g.teamScore}-${g.oppScore}${g.result?' '+g.result:''}`:'',dc=(g.defenseChanges||[]).filter(c=>c.inning&&c.position);const dct=dc.length?`<div class="meta">守備変更：${dc.map(c=>`${c.inning}回〜${c.position}`).join(' → ')}</div>`:'';return `<div class="row"><div><b>${esc(g.date||'')} vs ${esc(g.opponent||'未入力')}${g.gameNo?'（第'+esc(g.gameNo)+'試合）':''}</b><div class="meta">${g.grade||''}${g.batOrder?'・'+g.batOrder+'番':''}${(g.positions||[]).length?'・'+g.positions.join('／'):''}・${g.mode==='summary'?'成績入力':'詳細入力'}${eventMeta}${scoreMeta}</div>${dct}<div class="gameActions"><button class="miniBtn" onclick="editGame('${g.id}')">修正</button><button class="miniBtn del" onclick="deleteGame('${g.id}')">削除</button></div></div><div style="text-align:right;white-space:nowrap"><b>${x.H}安打 ${x.RBI}打点</b><div class="meta">${x.AB}打数</div></div></div>`}
+
+// 投手成績は各試合の pitching に保存。既存の打撃・走塁データは変更しない。
+let pitchGameId=null;
+const pitchKeys={pPitches:'pitches',pHits:'hits',pStrikeouts:'strikeouts',pWalks:'walks',pHbp:'hbp',pRuns:'runs',pEarned:'earned'};
+window.editPitch=function(id){
+ const g=db.games.find(x=>x.id===id);if(!g)return;
+ pitchGameId=id;const q=g.pitching||{};
+ $('pitchGameName').textContent=(g.date||'')+' vs '+(g.opponent||'');
+ $('pAppeared').checked=!!q.appeared;$('pRole').value=q.role||'';$('pDecision').value=q.decision||'';
+ $('pInnings').value=q.outsRecorded==null?'':Math.floor(q.outsRecorded/3);
+ $('pOuts').value=q.outsRecorded==null?'0':String(q.outsRecorded%3);
+ for(const [el,k] of Object.entries(pitchKeys))$(el).value=q[k]??'';
+ openModal($('pitchModal'));
+};
+$('pitchSave').onclick=()=>{
+ const g=db.games.find(x=>x.id===pitchGameId);if(!g)return;
+ if(!$('pAppeared').checked){delete g.pitching;persist();closeModal($('pitchModal'));return}
+ const innings=$('pInnings').value, extra=+$('pOuts').value;
+ if(innings!==''&&(!Number.isInteger(+innings)||+innings<0)){alert('投球回は0以上の整数で入力してね');return}
+ const q={appeared:true,role:$('pRole').value,decision:$('pDecision').value,outsRecorded:innings===''?null:+innings*3+extra};
+ for(const [el,k] of Object.entries(pitchKeys)){
+  const v=$(el).value;q[k]=v===''?null:Number(v);
+  if(q[k]!==null&&(!Number.isInteger(q[k])||q[k]<0)){alert('数値は0以上の整数で入力してね');return}
+ }
+ if(q.earned!==null&&q.runs!==null&&q.earned>q.runs){alert('自責点は失点以下にしてね');return}
+ g.pitching=q;persist();closeModal($('pitchModal'));alert('投手記録を保存しました⚾️');
+};
+function pitchAggregate(gs){
+ const ps=gs.map(g=>g.pitching).filter(p=>p?.appeared),sum=k=>ps.reduce((n,p)=>n+(p[k]??0),0),known=k=>ps.every(p=>p[k]!=null);
+ const outs=ps.reduce((n,p)=>n+(p.outsRecorded||0),0),innings=outs?Math.floor(outs/3)+'回'+(outs%3?outs%3+'/3':''):'0回';
+ const era=outs&&known('earned')?((sum('earned')*21/outs).toFixed(2)):'---';
+ const whip=outs&&known('hits')&&known('walks')?((sum('hits')+sum('walks'))*3/outs).toFixed(2):'---';
+ return {ps,outs,innings,era,whip,sum,known};
+}
+function renderPitching(gs,id){const e=$(id);if(!e)return;const a=pitchAggregate(gs);
+ if(!a.ps.length){e.innerHTML='<div class="empty">登板した試合の「⚾ 投手」から記録できます。</div>';return}
+ const v=[['登板',a.ps.length+'試合'],['投球回',a.innings],['球数',a.known('pitches')?a.sum('pitches'):'一部未入力'],['奪三振',a.known('strikeouts')?a.sum('strikeouts'):'一部未入力'],['与四球',a.known('walks')?a.sum('walks'):'一部未入力'],['被安打',a.known('hits')?a.sum('hits'):'一部未入力'],['失点',a.known('runs')?a.sum('runs'):'一部未入力'],['自責点',a.known('earned')?a.sum('earned'):'一部未入力'],['防御率（7回制）',a.era],['WHIP',a.whip]];
+ e.innerHTML='<div class="stats">'+v.map(([k,x])=>`<div class="stat"><div class="k">${k}</div><div class="v">${x}</div></div>`).join('')+'</div><div class="tiny" style="margin-top:10px">※ 不明な項目は未入力のまま保持。防御率・WHIPは必要な数値がそろった場合のみ表示。</div>';
+}
+function renderPitchGrowth(gs){const e=$('pitchGrowth');if(!e)return;const games=[...gs].filter(g=>g.pitching?.appeared).sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+ if(!games.length){e.innerHTML='<div class="empty">投手記録を追加すると、登板ごとの球数・投球回がここに並びます。</div>';return}
+ e.innerHTML=games.map(g=>{const p=g.pitching;const ip=p.outsRecorded==null?'未入力':Math.floor(p.outsRecorded/3)+'回'+(p.outsRecorded%3?p.outsRecorded%3+'/3':'');return `<div class="row"><div><b>${esc(g.date)} vs ${esc(g.opponent)}</b><div class="meta">${esc(p.role||'登板')}・投球回 ${ip}</div></div><div style="text-align:right"><b>${p.pitches==null?'球数未入力':p.pitches+'球'}</b><div class="meta">奪三振 ${p.strikeouts??'---'}</div></div></div>`}).join('');
+}
+
+function gameRow(g){const x=statOfGame(g),eventMeta=g.tournamentName?`・${esc(g.tournamentName)}${g.roundName?' '+esc(g.roundName):''}`:(g.eventName?`・${esc(g.eventName)}`:''),scoreMeta=(g.teamScore!=null&&g.oppScore!=null)?`・${g.teamScore}-${g.oppScore}${g.result?' '+g.result:''}`:'',dc=(g.defenseChanges||[]).filter(c=>c.inning&&c.position);const dct=dc.length?`<div class="meta">守備変更：${dc.map(c=>`${c.inning}回〜${c.position}`).join(' → ')}</div>`:'';return `<div class="row"><div><b>${esc(g.date||'')} vs ${esc(g.opponent||'未入力')}${g.gameNo?'（第'+esc(g.gameNo)+'試合）':''}</b><div class="meta">${g.grade||''}${g.batOrder?'・'+g.batOrder+'番':''}${(g.positions||[]).length?'・'+g.positions.join('／'):''}・${g.mode==='summary'?'成績入力':'詳細入力'}${eventMeta}${scoreMeta}</div>${dct}<div class="gameActions"><button class="miniBtn" onclick="editGame('${g.id}')">修正</button><button class="miniBtn" onclick="editPitch('${g.id}')">⚾ 投手${g.pitching?.appeared?" ✓":""}</button><button class="miniBtn del" onclick="deleteGame('${g.id}')">削除</button></div></div><div style="text-align:right;white-space:nowrap"><b>${x.H}安打 ${x.RBI}打点</b><div class="meta">${x.AB}打数</div></div></div>`}
 function renderBars(el,pairs){const t=pairs.reduce((s,x)=>s+x[1],0);el.innerHTML=t?pairs.map(([k,v])=>{const p=Math.round(v/t*100);return `<div class="analysis-row"><div>${k}</div><div class="bar"><div style="width:${p}%"></div></div><div>${p}%</div></div>`}).join(''):`<div class="empty">詳しく入力した試合がたまると表示されます。</div>`}
 
 document.querySelectorAll('[data-growth-metric]').forEach(b=>b.onclick=()=>{growthMetric=b.dataset.growthMetric;document.querySelectorAll('[data-growth-metric]').forEach(x=>x.classList.toggle('active',x===b));renderGrowthTrend([...gamesForPlayer()].sort((a,b)=>String(a.date).localeCompare(String(b.date))))});
