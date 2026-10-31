@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.json">
-<title>Baseball Growth Ver.4.0</title>
+<title>Baseball Growth Ver.4.3.4</title>
 <style>
 :root{--navy:#0c386f;--navy2:#092b57;--blue:#1967d2;--bg:#f5f7fa;--card:#fff;--text:#17212c;--muted:#6c7684;--line:#dfe5ec;--green:#e4f7e9;--greenb:#57a96f;--yellow:#fff4cf;--yellowb:#d6a92f;--red:#fee9e6;--redb:#e1786b;--purple:#f0e9ff;--purpleb:#9b78d0}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;color:var(--text)}
@@ -78,10 +78,12 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 .filterCard{padding:12px 14px}.filterTitle{font-size:12px;font-weight:900;color:#46505b;margin-bottom:8px}.quickFilters{display:flex;gap:6px;flex-wrap:wrap}.quickFilter{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 10px;font-size:11px;font-weight:850}.quickFilter.active{background:var(--navy);color:#fff;border-color:var(--navy)}.filterSelects{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}.filterSelects select{margin-top:0;padding:9px;font-size:12px}.filterSummary{font-size:11px;color:var(--muted);margin-top:9px}.manageDetails{border:1px solid var(--line);border-radius:14px;background:#fff;margin:12px 0}.manageDetails summary{cursor:pointer;padding:14px;font-weight:900;list-style:none}.manageDetails summary::-webkit-details-marker{display:none}.manageDetails summary:after{content:'＋';float:right;color:var(--blue)}.manageDetails[open] summary:after{content:'−'}.manageInner{padding:0 12px 12px}.manageInner .card{box-shadow:none;margin:8px 0;border-radius:12px}.career{display:grid;gap:9px}.careerCard{border:1px solid var(--line);border-radius:13px;padding:12px;background:#fff}.careerTop{display:flex;justify-content:space-between;gap:10px;align-items:center}.careerStats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:9px}.careerStat{text-align:center;background:#f7f9fc;border-radius:9px;padding:7px}.careerStat b{display:block;font-size:16px}.careerArrow{text-align:center;color:#8b97a4;font-size:20px}
 @media(max-width:480px){.filterSelects{grid-template-columns:1fr 1fr}}
 
-/* Game date: match other full-width inputs, iOS-safe */
+/* Game date: use a fixed-height wrapper to contain iOS Safari native date controls. */
 #gameModal .gameDateLabel{display:block;grid-column:1 / -1;min-width:0}
-#gameModal #gDate{display:block;width:100%;max-width:100%;height:44px;min-height:44px;margin-top:5px;padding:11px;font-size:16px;text-align:left;box-sizing:border-box}
-#gameModal #gDate::-webkit-date-and-time-value{text-align:left;min-height:1em}
+#gameModal .dateControl{position:relative;width:100%;height:44px;margin-top:5px;overflow:hidden;border:1px solid var(--line);border-radius:10px;background:#fff}
+#gameModal #gDate{position:absolute;inset:0;display:block;width:100%;max-width:100%;height:44px!important;min-height:0!important;max-height:44px!important;margin:0;padding:9px 11px;border:0;border-radius:0;background:transparent;color:var(--text);font-size:16px;line-height:24px;text-align:left;box-sizing:border-box;-webkit-appearance:none;appearance:none}
+#gameModal #gDate::-webkit-date-and-time-value{text-align:left;min-height:0;line-height:24px}
+#gameModal #gDate::-webkit-datetime-edit{padding:0;line-height:24px}
 </style>
 </head>
 <body>
@@ -91,7 +93,7 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 <div class="app">
 <header>
 <div class="top">
-<div><div class="brand">⚾ Baseball Growth</div><div class="sub">野球成長記録・Ver.4.3.3</div></div>
+<div><div class="brand">⚾ Baseball Growth</div><div class="sub">野球成長記録・Ver.4.3.4</div></div>
 <select id="playerSelect" class="playerSelect"></select>
 </div>
 </header>
@@ -203,7 +205,7 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 <div id="gameModal" class="modal"><div class="sheet">
 <div class="sheethead"><div><b style="font-size:18px">試合を記録する</b><div class="tiny">過去の日付も選べます</div></div><button class="close" onclick="closeModal(gameModal)">×</button></div>
 <div class="card"><div class="grid2">
-<label class="gameDateLabel">日付<input id="gDate" type="date"></label>
+<label class="gameDateLabel">日付<div class="dateControl"><input id="gDate" type="date"></div></label>
 <label>対戦相手<input id="gOpp" list="oppHistory" placeholder="例：○○クラブ" autocomplete="off"><datalist id="oppHistory"></datalist><span class="inputHint">新しい相手はそのまま入力できます</span><button type="button" class="btn secondary" id="oppPickerBtn" style="width:100%;margin-top:7px;padding:9px 10px">▼ 過去の対戦相手から選ぶ</button><div id="oppPicker" style="display:none;margin-top:7px;max-height:190px;overflow:auto;border:1px solid var(--line);border-radius:12px;background:#fff"></div></label>
 <label>同日カード（任意）<select id="gGameNo"><option value="">未設定</option><option value="1">第1試合</option><option value="2">第2試合</option><option value="3">第3試合</option></select></label>
 <label>試合時点の学年<select id="gGrade"></select></label>
