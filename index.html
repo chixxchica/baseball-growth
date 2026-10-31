@@ -78,9 +78,9 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 .filterCard{padding:12px 14px}.filterTitle{font-size:12px;font-weight:900;color:#46505b;margin-bottom:8px}.quickFilters{display:flex;gap:6px;flex-wrap:wrap}.quickFilter{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 10px;font-size:11px;font-weight:850}.quickFilter.active{background:var(--navy);color:#fff;border-color:var(--navy)}.filterSelects{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}.filterSelects select{margin-top:0;padding:9px;font-size:12px}.filterSummary{font-size:11px;color:var(--muted);margin-top:9px}.manageDetails{border:1px solid var(--line);border-radius:14px;background:#fff;margin:12px 0}.manageDetails summary{cursor:pointer;padding:14px;font-weight:900;list-style:none}.manageDetails summary::-webkit-details-marker{display:none}.manageDetails summary:after{content:'＋';float:right;color:var(--blue)}.manageDetails[open] summary:after{content:'−'}.manageInner{padding:0 12px 12px}.manageInner .card{box-shadow:none;margin:8px 0;border-radius:12px}.career{display:grid;gap:9px}.careerCard{border:1px solid var(--line);border-radius:13px;padding:12px;background:#fff}.careerTop{display:flex;justify-content:space-between;gap:10px;align-items:center}.careerStats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:9px}.careerStat{text-align:center;background:#f7f9fc;border-radius:9px;padding:7px}.careerStat b{display:block;font-size:16px}.careerArrow{text-align:center;color:#8b97a4;font-size:20px}
 @media(max-width:480px){.filterSelects{grid-template-columns:1fr 1fr}}
 
-/* Game date: compact, left-aligned, iOS-safe */
+/* Game date: match other full-width inputs, iOS-safe */
 #gameModal .gameDateLabel{display:block;grid-column:1 / -1;min-width:0}
-#gameModal #gDate{display:block;width:210px;max-width:100%;height:46px;min-height:46px;margin-top:5px;padding:8px 10px;font-size:16px;text-align:left;box-sizing:border-box}
+#gameModal #gDate{display:block;width:100%;max-width:100%;height:44px;min-height:44px;margin-top:5px;padding:11px;font-size:16px;text-align:left;box-sizing:border-box}
 #gameModal #gDate::-webkit-date-and-time-value{text-align:left;min-height:1em}
 </style>
 </head>
@@ -91,7 +91,7 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 <div class="app">
 <header>
 <div class="top">
-<div><div class="brand">⚾ Baseball Growth</div><div class="sub">野球成長記録・Ver.4.3.2</div></div>
+<div><div class="brand">⚾ Baseball Growth</div><div class="sub">野球成長記録・Ver.4.3.3</div></div>
 <select id="playerSelect" class="playerSelect"></select>
 </div>
 </header>
