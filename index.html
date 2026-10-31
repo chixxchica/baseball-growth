@@ -86,7 +86,7 @@ main{padding:14px}.page{display:none}.page.active{display:block}.title{font-size
 <div class="app">
 <header>
 <div class="top">
-<div><div class="brand">⚾ Baseball Growth</div><div class="sub">野球成長記録・Ver.4.3</div></div>
+<div><div class="brand">⚾ Baseball Growth</div><div class="sub">野球成長記録・Ver.4.3.1</div></div>
 <select id="playerSelect" class="playerSelect"></select>
 </div>
 </header>
@@ -367,7 +367,6 @@ function pitchState(seq){let balls=0,strikes=0,seenTwo=false,seenFull=false,firs
 function renderPitchEditor(){if(!paDraft)return;const seq=Array.isArray(paDraft.pitches)?paDraft.pitches:[];const st=pitchState(seq);$('pitchCount').textContent=`${st.balls}ボール・${st.strikes}ストライク（${seq.length}球）`;$('pitchSequence').innerHTML=seq.length?seq.map((c,i)=>`<span class="chip">${i+1}. ${esc(PITCH_TYPES[c]?.[0]||c)}</span>`).join(''):'<span class="tiny">未入力</span>';$('pitchNote').textContent='※ バントファウルは2ストライク後も三振扱い。ファウルチップは捕手が正規に捕球した場合の選択肢です。';}
 function addPitch(code){if(!paDraft)return;paDraft.pitches=Array.isArray(paDraft.pitches)?paDraft.pitches:[];paDraft.pitches.push(code);renderPitchEditor()}
 function initPitchButtons(){for(const [id,codes] of [['pitchButtons',['B','C','S','F','X']],['pitchExtraButtons',['T','U','V','H']]]){$(id).innerHTML=codes.map(c=>`<button type="button" class="chip" data-pitch="${c}">${esc(PITCH_TYPES[c][0])}</button>`).join('')}document.querySelectorAll('[data-pitch]').forEach(b=>b.onclick=()=>addPitch(b.dataset.pitch));$('pitchUndo').onclick=()=>{paDraft?.pitches?.pop();renderPitchEditor()};$('pitchClear').onclick=()=>{if(paDraft){paDraft.pitches=[];renderPitchEditor()}};}
-initPitchButtons();
 function renderCountAnalysis(gs){const abs=gs.filter(g=>g.mode!=='summary').flatMap(g=>g.atbats||[]).filter(a=>Array.isArray(a.pitches)&&a.pitches.length);const el=$('countAnalysis');if(!abs.length){el.innerHTML='<div class="empty">投球経過を入力すると、初球・2ストライク・フルカウントの分析が表示されます。</div>';return}const pct=(n,d)=>d?(100*n/d).toFixed(1)+'%':'---';const avg=(aa)=>{const ab=aa.filter(a=>AB_RESULTS.includes(a.result)),h=ab.filter(a=>HIT_RESULTS.includes(a.result));return ab.length?rate(h.length/ab.length):'.---'};const first=abs.filter(a=>a.pitches[0]),swing=first.filter(a=>pitchState(a.pitches).firstSwing),firstHit=abs.filter(a=>a.pitches.length===1&&['X','H'].includes(a.pitches[0]));const two=abs.filter(a=>pitchState(a.pitches).seenTwo),full=abs.filter(a=>pitchState(a.pitches).seenFull);const so=abs.filter(a=>['SO','KWP'].includes(a.result)),called=so.filter(a=>a.pitches.at(-1)==='C'),swingSo=so.filter(a=>['S','T','V'].includes(a.pitches.at(-1)));const rows=[['記録済み打席',abs.length+'打席'],['初球スイング率',pct(swing.length,first.length)],['初球打ち打率',avg(firstHit)+'（'+firstHit.length+'打席）'],['2ストライク経験打席の打率',avg(two)+'（'+two.length+'打席）'],['フルカウント経験打席の打率',avg(full)+'（'+full.length+'打席）'],['見逃し三振',called.length+'件'],['空振り・捕球チップ三振',swingSo.length+'件']];el.innerHTML=rows.map(([k,v])=>`<div class="row"><span>${k}</span><b>${v}</b></div>`).join('')+'<div class="tiny">※ 初球打ち打率は1球目に打球となった打席が対象。途中経過の記録がある打席のみで計算します。</div>'}
 const CONTACTS=['ゴロ','ライナー','フライ'];
 const POSITIONS=['投','捕','一','二','三','遊','左','中','右','DH'];
@@ -386,6 +385,8 @@ const openModal=m=>m.classList.add('open');
 const currentPlayer=()=>db.players.find(p=>p.id===db.currentPlayerId)||db.players[0];
 const gamesForPlayer=()=>db.games.filter(g=>g.playerId===currentPlayer().id);
 const rate=x=>Number.isFinite(x)?x.toFixed(3).replace(/^0/,''):'.---';
+// Initialize pitch controls only after DOM helpers and draft state exist.
+initPitchButtons();
 
 function normalizeOldGame(g){
  if(g.mode)return g;
